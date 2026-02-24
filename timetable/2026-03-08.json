@@ -1,0 +1,25 @@
+{
+  "weekStartDate": "2026-03-09",
+  "days": [
+    {
+      "date": "Mon, 10-Mar-2026",
+      "classes": []
+    },
+    {
+      "date": "Tue, 11-Mar-2026",
+      "classes": []
+    },
+    {
+      "date": "Wed, 12-Mar-2026",
+      "classes": []
+    },
+    {
+      "date": "Thu, 13-Mar-2026",
+      "classes": []
+    },
+    {
+      "date": "Fri, 14-Mar-2026",
+      "classes": []
+    }
+  ]
+}

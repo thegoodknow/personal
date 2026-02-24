@@ -1,21 +1,9 @@
 {
-  "weekStartDate": "2026-01-18",
+  "weekStartDate": "2026-02-22",
   "days": [
     {
-      "date": "Mon, 19-Jan-2026",
+      "date": "Mon, 23-Feb-2026",
       "classes": [
-        {
-          "moduleCode": "AAQS038-4-1-MSC-T-23",
-          "moduleName": "MATHEMATICS AND STATISTICS FOR COMPUTING",
-          "time": "14:30 - 15:30",
-          "location": "A-05-05",
-          "campus": "APU CAMPUS",
-          "lecturer": "KHOR LIAN PENG",
-          "isOnline": false,
-          "classType": "Tutorial",
-          "isReplacement": false,
-          "replacementType": ""
-        },
         {
           "moduleCode": "AICT023-4-1-CA-L-7",
           "moduleName": "COMPUTER ARCHITECTURE",
@@ -26,25 +14,15 @@
           "isOnline": false,
           "classType": "Lecture",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
     {
-      "date": "Tue, 20-Jan-2026",
+      "date": "Tue, 24-Feb-2026",
       "classes": [
-        {
-          "moduleCode": "ABUS007-4-1-ARS-T-33",
-          "moduleName": "ACADEMIC RESEARCH SKILLS",
-          "time": "08:30 - 10:30",
-          "location": "E-09-04",
-          "campus": "APU CAMPUS",
-          "lecturer": "IMAN DANISH SHA BINTI MOHD SUHAIMI AKBAR",
-          "isOnline": false,
-          "classType": "Tutorial",
-          "isReplacement": false,
-          "replacementType": ""
-        },
         {
           "moduleCode": "AICT023-4-1-CA-T-21",
           "moduleName": "COMPUTER ARCHITECTURE",
@@ -55,24 +33,42 @@
           "isOnline": false,
           "classType": "Tutorial",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "ABUS007-4-1-ARS-T-33",
+          "moduleName": "ACADEMIC RESEARCH SKILLS",
+          "time": "15:45 - 17:45",
+          "location": "B-08-03",
+          "campus": "APU CAMPUS",
+          "lecturer": "IMAN DANISH SHA BINTI MOHD SUHAIMI AKBAR",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
     {
-      "date": "Wed, 21-Jan-2026",
+      "date": "Wed, 25-Feb-2026",
       "classes": [
         {
           "moduleCode": "ABUS007-4-1-ARS-L-9",
           "moduleName": "ACADEMIC RESEARCH SKILLS",
           "time": "15:45 - 17:45",
-          "location": "E-09-03",
+          "location": "B-06-05",
           "campus": "APU CAMPUS",
           "lecturer": "IMAN DANISH SHA BINTI MOHD SUHAIMI AKBAR",
           "isOnline": false,
           "classType": "Lecture",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         },
         {
           "moduleCode": "MPU2132-BMK1",
@@ -84,12 +80,14 @@
           "isOnline": true,
           "classType": "Lecture",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
     {
-      "date": "Thu, 22-Jan-2026",
+      "date": "Thu, 26-Feb-2026",
       "classes": [
         {
           "moduleCode": "AAQS038-4-1-MSC-L-9",
@@ -101,7 +99,9 @@
           "isOnline": false,
           "classType": "Lecture",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         },
         {
           "moduleCode": "AICT016-4-1-DTIN-L-9",
@@ -113,7 +113,9 @@
           "isOnline": false,
           "classType": "Lecture",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         },
         {
           "moduleCode": "AAQS038-4-1-MSC-L-8",
@@ -125,24 +127,28 @@
           "isOnline": false,
           "classType": "Lecture",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
     {
-      "date": "Fri, 23-Jan-2026",
+      "date": "Fri, 27-Feb-2026",
       "classes": [
         {
           "moduleCode": "AICT016-4-1-DTIN-T-31",
           "moduleName": "DIGITAL THINKING AND INNOVATION",
           "time": "14:30 - 16:30",
-          "location": "E-08-10",
+          "location": "E-09-10",
           "campus": "APU CAMPUS",
           "lecturer": "DR. SAFA'IE BIN MANGIR",
           "isOnline": false,
           "classType": "Tutorial",
           "isReplacement": false,
-          "replacementType": ""
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
         }
       ]
     }
