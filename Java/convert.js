@@ -362,7 +362,7 @@
                 // Filename uses the Sunday date
                 let filename = "timetable_converted.json";
                 if (weekDate && weekDate !== 'N/A') {
-                    filename = `timetable_${weekDate}.json`;
+                    filename = `${weekDate}.json`;
                 }
 
                 // Create a Blob from the JSON string
