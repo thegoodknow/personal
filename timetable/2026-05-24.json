@@ -68,6 +68,10 @@
       ]
     },
     {
+      "date": "Wed, 27-May-2026",
+      "classes": []
+    },
+    {
       "date": "Thu, 28-May-2026",
       "classes": [
         {
@@ -99,6 +103,10 @@
           "testType": ""
         }
       ]
+    },
+    {
+      "date": "Fri, 29-May-2026",
+      "classes": []
     }
   ]
 }
