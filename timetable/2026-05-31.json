@@ -2,6 +2,14 @@
   "weekStartDate": "2026-05-31",
   "days": [
     {
+      "date": "Mon, 1-Jun-2026",
+      "classes": []
+    },
+    {
+      "date": "Tue, 2-Jun-2026",
+      "classes": []
+    },
+    {
       "date": "Wed, 03-Jun-2026",
       "classes": [
         {
