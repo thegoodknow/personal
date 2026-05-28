@@ -1,0 +1,156 @@
+{
+  "weekStartDate": "2026-06-07",
+  "days": [
+    {
+      "date": "Mon, 08-Jun-2026",
+      "classes": [
+        {
+          "moduleCode": "AAPP015-4-1-PWP-LAB-10",
+          "moduleName": "PROGRAMNG WITH PYTHON",
+          "time": "13:30 - 15:30",
+          "location": "Tech Lab 6-11",
+          "campus": "APU CAMPUS",
+          "lecturer": "AMARDEEP SINGH UTTAM SINGH",
+          "isOnline": false,
+          "classType": "Lab",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Tue, 09-Jun-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT015-4-1-DBM-L-2",
+          "moduleName": "DATABASE MANAGEMENT",
+          "time": "10:45 - 12:45",
+          "location": "E-08-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "NUR SHAMEEN AINA BINTI ABDUL RAHIM",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAPP015-4-1-PWP-L-6",
+          "moduleName": "PROGRAMNG WITH PYTHON",
+          "time": "13:30 - 15:30",
+          "location": "D-09-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "AMARDEEP SINGH UTTAM SINGH",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Wed, 10-Jun-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT021-4-1-OPS-T-4",
+          "moduleName": "OPERATING SYSTEMS",
+          "time": "08:30 - 10:30",
+          "location": "E-06-03",
+          "campus": "APU CAMPUS",
+          "lecturer": "VIJAYALAXMI AMUTHAN",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AICT021-4-1-OPS-L-2",
+          "moduleName": "OPERATING SYSTEMS",
+          "time": "10:45 - 12:45",
+          "location": "D-07-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "VIJAYALAXMI AMUTHAN",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "MPU2112-PEP",
+          "moduleName": "APPRECIATION OF ETHICS AND CIVILIZATIONS",
+          "time": "13:30 - 15:30",
+          "location": "ONLMCO3-14",
+          "campus": "APU CAMPUS",
+          "lecturer": "JUN NAZLIA HILWA MOHD ALI",
+          "isOnline": true,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Thu, 11-Jun-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT015-4-1-DBM-T-6",
+          "moduleName": "DATABASE MANAGEMENT",
+          "time": "13:30 - 15:30",
+          "location": "A-05-05",
+          "campus": "APU CAMPUS",
+          "lecturer": "NUR SHAMEEN AINA BINTI ABDUL RAHIM",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AICT022-4-1-ISCC-T-5",
+          "moduleName": "INFORMATION SYSTEM WITH CLOUD CONCEPTS",
+          "time": "15:45 - 17:45",
+          "location": "A-05-05",
+          "campus": "APU CAMPUS",
+          "lecturer": "MOHD ASYRAF BIN ATARHIM",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Fri, 12-Jun-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT022-4-1-ISCC-L-2",
+          "moduleName": "INFORMATION SYSTEM WITH CLOUD CONCEPTS",
+          "time": "14:30 - 16:30",
+          "location": "D-09-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "ROZITA YATI BINTI MASRI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    }
+  ]
+}
