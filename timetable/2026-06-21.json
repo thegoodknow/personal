@@ -17,20 +17,6 @@
           "replacementType": "",
           "isTest": false,
           "testType": ""
-        },
-        {
-          "moduleCode": "MPU2132-BMK1",
-          "moduleName": "UNKNOWN MODULE NAME",
-          "time": "18:45 - 20:45",
-          "location": "ONLMCO3-11",
-          "campus": "APU CAMPUS",
-          "lecturer": "WILLIAM ANTHONYSAMY",
-          "isOnline": true,
-          "classType": "Lecture",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
         }
       ]
     },
@@ -126,6 +112,20 @@
           "lecturer": "MOHD ASYRAF BIN ATARHIM",
           "isOnline": false,
           "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "BM(A)-L-6 ",
+          "moduleName": "BAHASA KEBANGSAAN (A)",
+          "time": "18:45 - 21:45",
+          "location": "ONLMCO3-10",
+          "campus": "APU CAMPUS",
+          "lecturer": "WILLIAM ANTHONYSAMY",
+          "isOnline": true,
+          "classType": "Lecture",
           "isReplacement": false,
           "replacementType": "",
           "isTest": false,
