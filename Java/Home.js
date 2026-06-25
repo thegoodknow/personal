@@ -12,10 +12,15 @@ const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
 
 // --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
-    { title: "Python Programming Lab 3", module: "AAPP015-4-1-PWP", dueDate: "2026-06-28", type: "Lab" },
-    { title: "Final Assignment Documentation", module: "AAPP015-4-1-PWP", dueDate: "2026-07-10", type: "Assignment" },
-    { title: "Database Systems Core Class Test", module: "DMS-ClassTest", dueDate: "2026-07-02", type: "Test" },
-    { title: "Web UI Personal Portfolio Project", module: "HTML-CSS-Git", dueDate: "2026-07-15", type: "Assignment" }
+    { title: "Part 1 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
+    { title: "Report Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
+    { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
+    { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-07-27", type: "Assignment" },
+    { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
+    { title: "Final Exam", module: "AICT015-4-1-DBM", dueDate: "2026-08-24", type: "Exam" },
+    { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-24", type: "Exam" },
+    { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-24", type: "Exam" },
+    { title: "Final Exam", module: "AAPP015-4-1-PWP", dueDate: "2026-08-24", type: "Exam" }
 ];
 
 // Globally tracks which module code is currently clicked/highlighted
