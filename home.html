@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Dashboard</title>
-    <!-- Google Material Icons Layout Fonts -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
-    <!-- Main Global Stylesheet Styles -->
     <link rel="stylesheet" href="styles.css">
     
     <style>
@@ -22,9 +20,7 @@
         }
 
         @media (max-width: 850px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
 
         .right-column-group {
@@ -122,9 +118,8 @@
             animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .dashboard-section:nth-child(2) {
-            animation-delay: 0.15s;
-        }
+        .dashboard-section:nth-child(2) { animation-delay: 0.1s; }
+        .dashboard-section:nth-child(3) { animation-delay: 0.2s; }
 
         .section-header {
             display: flex;
@@ -136,6 +131,26 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 12px;
             margin-bottom: 15px;
+        }
+
+        /* --- FEATURE 1: Today's Class Progress Bar Styles --- */
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 10px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: none; /* Controlled via JS, only shows if there are classes today */
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #007BFF, #00D2FF);
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* --- Link Elements & Liquid Glow Animations --- */
@@ -165,9 +180,7 @@
             transition: 0.5s;
         }
 
-        .page-item-link:hover::before {
-            left: 100%;
-        }
+        .page-item-link:hover::before { left: 100%; }
 
         .page-item-link:hover {
             background-color: rgba(255, 255, 255, 0.06) !important;
@@ -183,17 +196,31 @@
             gap: 12px;
         }
 
-        @media (max-width: 500px) {
-            .portal-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 500px) { .portal-grid { grid-template-columns: 1fr; } }
+        .portal-card { height: 100%; box-sizing: border-box; }
+        .link-arrow { font-size: 1rem !important; color: var(--text-subtle); }
 
-        .portal-card {
-            height: 100%;
-            box-sizing: border-box;
+        /* --- FEATURE 2: Deadlines & Tasks Layout Cards --- */
+        .deadline-card {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(40, 40, 40, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 12px 16px;
+            border-radius: 10px;
         }
-
-        .link-arrow {
-            font-size: 1rem !important;
+        .deadline-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .deadline-title {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        .deadline-module {
+            font-size: 0.8rem;
             color: var(--text-subtle);
         }
 
@@ -212,19 +239,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Passed/Conducted Schedule Processing State rules */
-        .class-card.conducted {
-            opacity: 0.45;
-            filter: grayscale(40%);
-            border-left: 5px solid #444444 !important;
-            pointer-events: none;
-        }
-
-        .conducted-tag {
-            background-color: #444444 !important;
-            color: var(--text-subtle) !important;
-        }
-
         @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -233,7 +247,6 @@
 </head>
 <body>
 
-    <!-- Unified Navigation Bar Layout Structure -->
     <header class="header">
         <div class="logo-group">
             <img src="img/apspace-white.svg" alt="APSpace" id="logo-icon" style="height: 24px; width: auto;">
@@ -248,29 +261,29 @@
         </div>
     </header>
 
-    <!-- Contextual Dynamic Greetings Frame -->
     <div class="greeting-container" id="greeting-banner">
         Loading workspace greeting...
     </div>
 
-    <!-- Main Workspace Dashboard Hub Content panels -->
     <main class="dashboard-grid">
         
-        <!-- Left Column Pane: Interactive Calendar Schedule Grid -->
         <section class="dashboard-section">
             <div class="section-header">
                 <span class="material-icons">auto_stories</span>
                 <span>Upcoming Schedule</span>
             </div>
+            
+            <div class="progress-bar-container" id="daily-progress-container">
+                <div class="progress-bar-fill" id="daily-progress-fill"></div>
+            </div>
+
             <div id="timetable-container" class="list-container">
                 <div class="empty-state">Loading timetable schedules...</div>
             </div>
         </section>
 
-        <!-- Right Side Column Pane: System Modules Stack Group -->
         <div class="right-column-group">
             
-            <!-- Tool Tracking Cards Row -->
             <section class="dashboard-section">
                 <div class="section-header">
                     <span class="material-icons">layers</span>
@@ -281,7 +294,6 @@
                 </div>
             </section>
 
-            <!-- Student Institutional Access Gateway Panels -->
             <section class="dashboard-section">
                 <div class="section-header">
                     <span class="material-icons">school</span>
@@ -304,11 +316,19 @@
                     </a>
                 </div>
             </section>
+
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <span class="material-icons">assignment_late</span>
+                    <span>Assignments & Deadlines</span>
+                </div>
+                <div id="deadlines-container" class="list-container">
+                    </div>
+            </section>
         </div>
 
     </main>
 
-    <!-- Separated Java Module Script Engine Hook -->
     <script src="Java/Home.js"></script>
 </body>
 </html>
