@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="shortcut icon" href="../img/favicon.ico">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 7 · Subqueries &amp; Nested Queries · Interactive Tutorial</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --deep:#0B5C7A; --teal:#1C7293; --sea:#00A896;
+    --ink:#26323F; --mut:#5B6B7A; --line:#D7E3EC; --light:#F2F7FA; --card:#FFFFFF;
+    --codebg:#0E2433; --codetx:#E6F2F7; --kw:#76D7E8; --cm:#6E8A9C;
+    --ok:#1E9E6A; --okbg:#E7F7EF; --bad:#D14343; --badbg:#FBEAEA; --gold:#E8A33D;
+    --shadow:0 6px 18px rgba(27,42,74,.10);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Segoe UI',Calibri,Arial,sans-serif;color:var(--ink);background:var(--light);line-height:1.55}
+  code,pre,.mono{font-family:'Consolas','Courier New',monospace}
+  a{color:var(--deep)}
+  header.top{background:var(--navy);color:#fff;padding:16px 24px 14px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+  header.top .kick{color:var(--sea);font-size:12px;font-weight:700;letter-spacing:2px}
+  header.top h1{margin:2px 0 0;font-size:21px;font-weight:700}
+  .progwrap{height:6px;background:rgba(255,255,255,.14);border-radius:4px;margin-top:11px;overflow:hidden}
+  .progbar{height:100%;width:0;background:var(--sea);border-radius:4px;transition:width .4s}
+  nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+  nav.tabs button{background:rgba(255,255,255,.08);color:#cfe0ec;border:1px solid rgba(255,255,255,.14);
+    padding:7px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+  nav.tabs button:hover{background:rgba(255,255,255,.18);color:#fff}
+  nav.tabs button.active{background:var(--sea);color:#062b27;border-color:var(--sea)}
+  main{max-width:1080px;margin:0 auto;padding:26px 20px 80px}
+  section.page{display:none;animation:fade .25s ease}
+  section.page.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .timebadge{display:inline-block;background:#E7F1F6;color:var(--deep);font-size:12px;font-weight:700;border-radius:20px;padding:3px 12px;margin-bottom:6px}
+  h2.title{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:30px;margin:4px 0 2px}
+  .lead{color:var(--mut);font-size:16px;margin:0 0 22px}
+  h3{font-family:Cambria,Georgia,serif;color:var(--deep);font-size:20px;margin:26px 0 10px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+  .card.tint{background:#F0FAFB}
+  .card h4{margin:0 0 10px;font-family:Cambria,Georgia,serif;color:var(--navy);font-size:17px}
+  .card ul{margin:0;padding-left:20px}
+  .card li{margin:6px 0}
+  .pill{display:inline-block;background:#E7F1F6;color:var(--deep);font-weight:700;border-radius:6px;padding:1px 7px;font-family:Consolas,monospace;font-size:.92em}
+  pre.code{background:var(--codebg);color:var(--codetx);border-radius:10px;padding:14px 16px;overflow:auto;font-size:14px;margin:10px 0;box-shadow:var(--shadow)}
+  pre.code .kw{color:var(--kw);font-weight:700}
+  pre.code .cm{color:var(--cm)}
+  .caption{color:var(--mut);font-size:13px;font-style:italic;margin:6px 0 0}
+  table.data{border-collapse:collapse;width:100%;font-size:13.5px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table.data th{background:var(--deep);color:#fff;text-align:left;padding:8px 10px;font-weight:700}
+  table.data td{padding:7px 10px;border-top:1px solid var(--line)}
+  table.data tr:nth-child(even) td{background:#EEF5F9}
+  table.data.book th{background:var(--teal)}
+  .note{border-left:4px solid var(--sea);background:#EAFBF7;border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;font-size:14.5px}
+  .warn{border-left:4px solid var(--gold);background:#FFF7E6;border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;font-size:14.5px}
+  .quiz-q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0;box-shadow:var(--shadow)}
+  .quiz-q .qhead{font-weight:700;color:var(--navy);margin-bottom:12px}
+  .quiz-q .qhead .num{display:inline-block;background:var(--deep);color:#fff;border-radius:50%;width:26px;height:26px;line-height:26px;text-align:center;font-size:13px;margin-right:9px}
+  .quiz-q.theory .qhead .num{background:var(--teal)}
+  .opt{display:block;width:100%;text-align:left;background:#F7FAFC;border:1.5px solid var(--line);border-radius:8px;padding:10px 14px;margin:7px 0;cursor:pointer;font-size:14.5px;color:var(--ink);transition:.12s}
+  .opt:hover{border-color:var(--teal);background:#fff}
+  .opt.correct{background:var(--okbg);border-color:var(--ok);color:#15623f;font-weight:600}
+  .opt.wrong{background:var(--badbg);border-color:var(--bad);color:#9b2c2c}
+  .opt:disabled{cursor:default}
+  .explain{margin-top:10px;font-size:13.5px;padding:10px 12px;border-radius:8px;background:#EEF5F9;display:none}
+  .explain.show{display:block}
+  .scorebar{position:sticky;bottom:0;background:var(--navy);color:#fff;border-radius:10px;padding:12px 18px;margin-top:18px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .scorebar button{background:var(--sea);color:#053b35;border:0;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer}
+  .editor-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin:14px 0}
+  .editor-bar{background:#0E2433;color:#cfe7f0;padding:8px 14px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center}
+  textarea.sql{width:100%;border:0;font-family:Consolas,'Courier New',monospace;font-size:14px;padding:14px 16px;resize:vertical;min-height:92px;color:#0d2433;background:#fbfdfe;outline:none}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;background:#F2F7FA;border-top:1px solid var(--line)}
+  button.act{background:var(--deep);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer}
+  button.act:hover{background:#0a4f69}
+  button.ghost{background:#fff;color:var(--deep);border:1.5px solid var(--deep)}
+  button.ghost:hover{background:#eaf3f7}
+  button.sea{background:var(--sea);color:#053b35}
+  button.sea:hover{background:#00c4ac}
+  .result{padding:0 14px 14px}
+  .result .msg{font-size:13.5px;padding:8px 12px;border-radius:8px;margin:10px 0}
+  .msg.okmsg{background:var(--okbg);color:#15623f;border:1px solid var(--ok)}
+  .msg.errmsg{background:var(--badbg);color:#9b2c2c;border:1px solid var(--bad)}
+  .activity{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);margin:16px 0;overflow:hidden}
+  .activity.done{border-color:var(--ok);box-shadow:0 0 0 2px rgba(30,158,106,.25)}
+  .activity .ahead{padding:14px 18px;background:#F0FAFB;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px}
+  .activity .ahead .num{display:inline-block;background:var(--teal);color:#fff;border-radius:50%;width:26px;height:26px;line-height:26px;text-align:center;font-size:13px;font-weight:700;flex:none}
+  .activity.done .ahead .num{background:var(--ok)}
+  .activity .ahead .qtext{font-weight:600;color:var(--navy)}
+  .activity .ahead .tick{margin-left:auto;color:var(--ok);font-weight:800;display:none}
+  .activity.done .ahead .tick{display:inline}
+  .activity .abody{padding:14px 18px}
+  .activity .hint{font-size:13px;color:var(--mut);margin:4px 0 0}
+  details summary{cursor:pointer;color:var(--deep);font-weight:600;font-size:13.5px;margin-top:8px}
+  .loading{text-align:center;color:var(--mut);padding:30px;font-style:italic}
+  .stepflow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+  .step{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow)}
+  .step b{color:var(--deep)}
+  footer{max-width:1080px;margin:0 auto;padding:0 20px 50px;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="kick">AICT015-4-1 · DATABASE MANAGEMENT</div>
+  <h1>Lab 7 · Subqueries &amp; Nested Queries</h1>
+  <div class="progwrap"><div class="progbar" id="progbar"></div></div>
+  <nav class="tabs" id="tabs">
+    <button data-go="intro" class="active">Start</button>
+    <button data-go="theory">Theory recap</button>
+    <button data-go="sql">SQL recap</button>
+    <button data-go="concept">Subqueries</button>
+    <button data-go="patterns">Patterns</button>
+    <button data-go="quiz">Subquery quiz</button>
+    <button data-go="practice">Practice (live SQL)</button>
+    <button data-go="finish">Finish</button>
+  </nav>
+</header>
+<main>
+  <section class="page show" id="intro">
+    <span class="timebadge">Whole activity: about 30 minutes</span>
+    <h2 class="title">Welcome to Lab 7</h2>
+    <p class="lead">A quick, hands-on way to lock in today's lab. Read a little, click a lot, and write real SQL that runs in your browser.</p>
+    <div class="stepflow">
+      <div class="step"><b>1. Recap &amp; check</b><br>Refresh the theory and SQL, then prove it with a quick Theory check. <i>(about 10 min)</i></div>
+      <div class="step"><b>2. Subquery quiz</b><br>Ten fast questions on nested queries, with instant feedback. <i>(about 7 min)</i></div>
+      <div class="step"><b>3. Practice live SQL</b><br>Run Q4 to Q19 against the real tables and get a green tick when you are right. <i>(about 13 min)</i></div>
+    </div>
+    <div class="note"><b>The big idea today:</b> a subquery is simply a <b>SELECT inside another query</b>. The inner query runs first, and its result feeds the outer query.</div>
+    <div class="card">
+      <h4>Today's tables</h4>
+      <div class="grid g2" style="margin-top:8px">
+        <div>
+          <b style="color:var(--deep)">Publisher</b>
+          <table class="data" style="margin-top:6px">
+            <tr><th>PublisherID</th><th>Name</th><th>Address</th></tr>
+            <tr><td>P01</td><td>Pearson</td><td>Bukit Jalil</td></tr>
+            <tr><td>P02</td><td>Deitel</td><td>Puchong</td></tr>
+            <tr><td>P03</td><td>Rainbow</td><td>Subang</td></tr>
+            <tr><td>P04</td><td>MacHill</td><td>Kuala Lumpur</td></tr>
+          </table>
+          <p class="caption">PublisherID is the primary key.</p>
+        </div>
+        <div>
+          <b style="color:var(--teal)">Book</b>
+          <table class="data book" style="margin-top:6px">
+            <tr><th>BookID</th><th>Name</th><th>Author</th><th>Price</th><th>PublishedDate</th><th>Pub.ID</th></tr>
+            <tr><td>B01</td><td>Maths</td><td>J.Wenton</td><td>50.60</td><td>10 Jan 2016</td><td>P01</td></tr>
+            <tr><td>B02</td><td>Science</td><td>S.Hanson</td><td>100.00</td><td>12 Feb 2016</td><td>P01</td></tr>
+            <tr><td>B03</td><td>English</td><td>K.Vince</td><td>89.30</td><td>9 Mar 2016</td><td>P02</td></tr>
+            <tr><td>B04</td><td>Biology</td><td>K.Vince</td><td>150.80</td><td>24 Apr 2016</td><td>P03</td></tr>
+            <tr><td>B05</td><td>Computing</td><td>J.Denzin</td><td>NULL</td><td>NULL</td><td>NULL</td></tr>
+          </table>
+          <p class="caption">BookID is the primary key; PublisherID is a foreign key that points to Publisher.</p>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:24px"><button class="act" data-go="theory">Begin the recap</button></div>
+  </section>
+
+  <section class="page" id="theory">
+    <span class="timebadge">About 7 minutes</span>
+    <h2 class="title">Theory recap</h2>
+    <p class="lead">The ideas behind every table and query, from Weeks 1 to 8. Read the cards, then scroll down for a quick Theory check.</p>
+    <h3>Data models &amp; business rules</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Data models</h4>
+        <ul>
+          <li>A <b>data model</b> is a simple, usually graphical, representation of complex real-world data.</li>
+          <li>Building blocks: <b>entity</b>, <b>attribute</b>, and <b>relationship</b>.</li>
+          <li>Three levels of design: <b>conceptual</b> (high level, the ERD), <b>logical</b> (relational tables), and <b>physical</b> (how it is stored).</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4>Business rules</h4>
+        <ul>
+          <li>Brief, precise, unambiguous descriptions of an organisation's <b>policies, procedures or principles</b>.</li>
+          <li>They tell us how to design the database, and they come from managers, documents and interviews.</li>
+          <li>Rule of thumb when reading them: <b>nouns become entities</b>, and <b>verbs become relationships</b>.</li>
+        </ul>
+      </div>
+    </div>
+    <h3>From a business rule to an ERD</h3>
+    <p class="lead" style="margin-bottom:10px">A business rule is not a relationship by itself. When you read the rule, the <b>nouns become entities</b> and the <b>verb becomes the relationship</b>. So one rule gives you both, and the ERD it produces is a data model.</p>
+    <div class="card tint">
+      <p style="margin:0 0 10px"><b>Example business rule:</b> <i>"A publisher publishes many books; each book is published by exactly one publisher."</i></p>
+      <ul style="margin:0;padding-left:20px">
+        <li><b>Nouns become entities:</b> Publisher, Book.</li>
+        <li><b>The verb becomes the relationship:</b> publishes.</li>
+        <li><b>The wording sets the cardinality:</b> one publisher, many books, so 1:M.</li>
+      </ul>
+      <p style="margin:10px 0 0"><b>As an ERD (a data model):</b> PUBLISHER (1) links to many BOOK (M) through the relationship 'publishes'. That is exactly our two Lab 7 tables, linked by PublisherID.</p>
+    </div>
+
+    <h3>Keys &amp; integrity rules</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Keys</h4>
+        <ul>
+          <li><b>Primary key (PK):</b> uniquely identifies a row; never null.</li>
+          <li><b>Foreign key (FK):</b> matches a PK in another table; the link between tables.</li>
+          <li><b>Candidate key:</b> a column that could be the PK. <b>Composite key:</b> two or more columns that are unique together.</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4>Integrity rules</h4>
+        <ul>
+          <li><b>Entity integrity:</b> a PK must be unique and not null.</li>
+          <li><b>Referential integrity:</b> an FK must match an existing PK, or be null.</li>
+          <li>In our tables, <span class="pill">Book.PublisherID</span> must equal a real <span class="pill">Publisher.PublisherID</span>, or be null (like book B05).</li>
+        </ul>
+      </div>
+    </div>
+    <h3>Entity Relationship Diagram (ERD)</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Components</h4>
+        <ul>
+          <li><b>Entity:</b> a thing we store data about (Publisher, Book).</li>
+          <li><b>Attribute:</b> a property of an entity (Name, Price).</li>
+          <li><b>Relationship:</b> how entities connect, described by <b>connectivity</b> and <b>cardinality</b>.</li>
+          <li>Drawn with Crow's foot or Chen notation.</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4>Relationship types</h4>
+        <ul>
+          <li><b>1:1</b> one to one.</li>
+          <li><b>1:M</b> one to many. One publisher has many books, so Publisher to Book is 1:M.</li>
+          <li><b>M:N</b> many to many. This must be resolved with a bridge (associative) entity.</li>
+        </ul>
+      </div>
+    </div>
+    <h3>Normalization process</h3>
+    <p class="lead" style="margin-bottom:10px">Normalization corrects table structures to reduce redundancy and avoid anomalies. It works in stages.</p>
+    <div class="stepflow">
+      <div class="step"><b>UNF</b><br>Un-normalised. Has repeating groups and redundancy.</div>
+      <div class="step"><b>1NF</b><br>Remove repeating groups, make every cell a single (atomic) value, and choose a primary key.</div>
+      <div class="step"><b>2NF</b><br>In 1NF and remove <b>partial</b> dependencies (a non-key column depending on only part of a composite key).</div>
+      <div class="step"><b>3NF</b><br>In 2NF and remove <b>transitive</b> dependencies (a non-key column depending on another non-key column).</div>
+    </div>
+    <div class="note"><b>Why it matters here:</b> splitting Publisher and Book into two tables linked by a key is normalization in action. Each fact is stored once.</div>
+    <h3>Theory check</h3>
+    <p class="lead" style="margin-bottom:6px">Six quick questions. Click an answer to see if you are right.</p>
+    <div id="theoryBox"></div>
+    <div class="scorebar"><span id="theoryScore">Theory check: 0 of 0 answered</span><button id="resetTheory">Reset</button></div>
+    <div style="text-align:center;margin-top:24px"><button class="act" data-go="sql">Next: SQL recap</button></div>
+  </section>
+
+  <section class="page" id="sql">
+    <span class="timebadge">About 3 minutes</span>
+    <h2 class="title">SQL recap</h2>
+    <p class="lead">The commands from Labs 1 to 6 that you will reuse today.</p>
+    <h3>Create &amp; insert (DDL)</h3>
+    <div class="grid g2">
+      <div>
+        <pre class="code"><span class="kw">CREATE DATABASE</span> Lab7;
+<span class="kw">USE</span> Lab7;
+
+<span class="kw">CREATE TABLE</span> Publisher (
+    PublisherID nvarchar(50) <span class="kw">PRIMARY KEY</span>,
+    Name nvarchar(50),
+    Address nvarchar(50)
+);</pre>
+      </div>
+      <div>
+        <pre class="code"><span class="kw">INSERT INTO</span> Publisher
+    (PublisherID, Name, Address)
+<span class="kw">VALUES</span> ('P01','Pearson','Bukit Jalil');</pre>
+        <div class="card" style="margin-top:6px"><h4>Data types</h4>
+          <ul style="font-size:14px">
+            <li><span class="pill">nvarchar(50)</span> text</li>
+            <li><span class="pill">decimal(10,2)</span> prices</li>
+            <li><span class="pill">date</span> dates (YYYY-MM-DD)</li>
+            <li><span class="pill">integer</span> whole numbers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <h3>Retrieve &amp; filter</h3>
+    <div class="grid g2">
+      <div><pre class="code"><span class="kw">SELECT</span> Name, Price <span class="kw">FROM</span> Book;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> Book
+<span class="kw">WHERE</span> Author = 'K.Vince';
+<span class="kw">SELECT DISTINCT</span> Address <span class="kw">FROM</span> Publisher;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> Book
+<span class="kw">WHERE</span> PublishedDate <span class="kw">IS NULL</span>;</pre></div>
+      <div class="card tint"><h4>Operators</h4>
+        <ul>
+          <li><span class="pill">BETWEEN a AND b</span> range (inclusive)</li>
+          <li><span class="pill">AND</span> / <span class="pill">OR</span> combine conditions</li>
+          <li><span class="pill">LIKE 'b%'</span> pattern (% any, _ one)</li>
+          <li><span class="pill">IN (...)</span> match a list</li>
+          <li><span class="pill">ORDER BY col DESC</span> sort</li>
+        </ul>
+      </div>
+    </div>
+    <h3>Aggregates &amp; grouping</h3>
+    <div class="grid g2">
+      <div><pre class="code"><span class="kw">SELECT COUNT</span>(*) <span class="kw">AS</span> TotalBooks
+<span class="kw">FROM</span> Book;
+
+<span class="kw">SELECT</span> Author, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> Total
+<span class="kw">FROM</span> Book
+<span class="kw">GROUP BY</span> Author;</pre></div>
+      <div class="card"><h4>Remember</h4>
+        <ul>
+          <li><span class="pill">COUNT SUM AVG MIN MAX</span> summarise a column.</li>
+          <li>Use <span class="pill">AS</span> to rename the result column.</li>
+          <li><span class="pill">GROUP BY</span> makes one result row per group.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:24px"><button class="act" data-go="concept">Next: subqueries</button></div>
+  </section>
+
+  <section class="page" id="concept">
+    <span class="timebadge">About 3 minutes</span>
+    <h2 class="title">What is a subquery?</h2>
+    <p class="lead">A query inside another query, the heart of Lab 7.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h4>The idea</h4>
+        <ul>
+          <li>A subquery is a <b>SELECT placed inside another query</b>.</li>
+          <li>The <b style="color:var(--teal)">inner</b> query runs first; its result feeds the <b style="color:var(--deep)">outer</b> query.</li>
+          <li>Use <span class="pill">=</span> when the inner query returns <b>ONE</b> value.</li>
+          <li>Use <span class="pill">IN</span> when it can return <b>SEVERAL</b> values.</li>
+          <li>A subquery can also drive an <span class="pill">UPDATE</span>.</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code"><span class="cm">-- Q4: books published by 'Deitel'</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> Book
+<span class="kw">WHERE</span> PublisherID =
+  (<span class="kw">SELECT</span> PublisherID <span class="kw">FROM</span> Publisher
+   <span class="kw">WHERE</span> Name = 'Deitel');</pre>
+        <p class="caption">Inner query finds Deitel's ID (P02), then the outer query lists that publisher's books.</p>
+      </div>
+    </div>
+    <h3>Why a subquery, and not just <span class="pill">'P02'</span>?</h3>
+    <p class="lead" style="margin-bottom:10px">A fair question: why write a second query to fetch P02 instead of just typing <span class="pill">WHERE PublisherID = 'P02'</span>?</p>
+    <div class="grid g2">
+      <div class="card">
+        <h4>People know names, the database knows codes</h4>
+        <ul>
+          <li>We recognise the publisher by its <b>name</b>, 'Deitel'. The database links the tables by a short internal code, <span class="pill">PublisherID 'P02'</span>, which nobody memorises.</li>
+          <li>The subquery looks up the code from the name you actually know. You ask in human terms ('Deitel'), and SQL finds the matching ID for you.</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4>Two practical wins</h4>
+        <ul>
+          <li><b>No manual lookup.</b> Otherwise you would run one query to discover Deitel is P02, read it, then type 'P02' into a second query. The subquery does both at once.</li>
+          <li><b>It stays correct.</b> If the IDs are ever reorganised, a hard-coded 'P02' breaks. Looking it up by name always returns the right code.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note"><b>Real-world picture:</b> on an online bookstore a customer searches 'Deitel', not 'P02'. Behind the scenes the site looks up Deitel's ID and pulls the matching books. That hidden lookup is exactly what the subquery does for you.</div>
+    <div style="text-align:center;margin-top:24px"><button class="act" data-go="patterns">Next: the patterns</button></div>
+  </section>
+
+  <section class="page" id="patterns">
+    <span class="timebadge">About 2 minutes</span>
+    <h2 class="title">Five subquery patterns</h2>
+    <p class="lead">Almost every Lab 7 question is one of these shapes.</p>
+    <div class="grid g2">
+      <div><h4 style="color:var(--deep)">1. One value, use <span class="pill">=</span></h4>
+        <pre class="code"><span class="kw">WHERE</span> col = (<span class="kw">SELECT</span> col <span class="kw">FROM</span> t <span class="kw">WHERE</span> ...);</pre></div>
+      <div><h4 style="color:var(--deep)">2. Many values, use <span class="pill">IN</span></h4>
+        <pre class="code"><span class="kw">WHERE</span> col <span class="kw">IN</span> (<span class="kw">SELECT</span> col <span class="kw">FROM</span> t <span class="kw">WHERE</span> ...);</pre></div>
+      <div><h4 style="color:var(--deep)">3. Aggregate over a subset</h4>
+        <pre class="code"><span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> t
+<span class="kw">WHERE</span> col = (<span class="kw">SELECT</span> ...);</pre></div>
+      <div><h4 style="color:var(--deep)">4. Rows with no match</h4>
+        <pre class="code"><span class="kw">WHERE NOT EXISTS</span> (<span class="kw">SELECT</span> 1 ...)
+<span class="cm">-- or --</span>
+<span class="kw">WHERE</span> col <span class="kw">NOT IN</span>
+   (<span class="kw">SELECT</span> col <span class="kw">FROM</span> t
+    <span class="kw">WHERE</span> col <span class="kw">IS NOT NULL</span>);</pre></div>
+      <div style="grid-column:1/-1"><h4 style="color:var(--deep)">5. Groups passing a test</h4>
+        <pre class="code"><span class="kw">WHERE</span> col <span class="kw">IN</span> (<span class="kw">SELECT</span> col <span class="kw">FROM</span> t <span class="kw">GROUP BY</span> col <span class="kw">HAVING COUNT</span>(*) &gt; 1);</pre></div>
+    </div>
+    <div class="warn"><b>NULL trap:</b> with <span class="pill">NOT IN</span>, if the subquery contains a NULL (Book B05 has a NULL PublisherID) the whole condition returns <b>no rows</b>. Add <span class="pill">WHERE PublisherID IS NOT NULL</span>, or use <span class="pill">NOT EXISTS</span>.</div>
+    <div style="text-align:center;margin-top:24px"><button class="act" data-go="quiz">Test yourself: take the quiz</button></div>
+  </section>
+
+  <section class="page" id="quiz">
+    <span class="timebadge">About 7 minutes</span>
+    <h2 class="title">Subquery quiz</h2>
+    <p class="lead">Ten quick questions. Click an answer for instant feedback.</p>
+    <div id="quizBox"></div>
+    <div class="scorebar"><span id="scoreText">Score: 0 of 0 answered</span><button id="resetQuiz">Reset quiz</button></div>
+    <div style="text-align:center;margin-top:24px"><button class="act" data-go="practice">Next: write real SQL</button></div>
+  </section>
+
+  <section class="page" id="practice">
+    <span class="timebadge">About 13 minutes</span>
+    <h2 class="title">Practice, live SQL</h2>
+    <p class="lead">This runs a real SQLite database in your browser, loaded with the Publisher and Book tables. The syntax is the same one you type in MS SQL Server.</p>
+    <div id="engineStatus" class="loading">Loading the SQL engine. (Needs internet on the first load.)</div>
+    <div id="practiceArea" style="display:none">
+      <h3>Free playground</h3>
+      <p class="lead" style="margin-bottom:8px">Type any query and press Run. Use <b>Reset data</b> to restore the original tables.</p>
+      <div class="editor-wrap">
+        <div class="editor-bar"><span>SQL editor</span><span>SQLite, in browser</span></div>
+        <textarea class="sql" id="pgSql">SELECT * FROM Book;</textarea>
+        <div class="btnrow">
+          <button class="act" id="pgRun">Run</button>
+          <button class="act ghost" id="pgReset">Reset data</button>
+        </div>
+        <div class="result" id="pgResult"></div>
+      </div>
+      <h3>Guided activities (Q4 to Q19)</h3>
+      <p class="lead" style="margin-bottom:8px">Write a subquery for each task, press <b>Run</b> to see your result, then <b>Check</b> to compare against the expected answer. Stuck? Use the hint or reveal the solution.</p>
+      <div class="scorebar" style="position:static;margin:0 0 12px"><span id="actScore">Solved: 0 of 16</span><span id="actCheer"></span></div>
+      <div id="activityBox"></div>
+      <div id="finalCard"></div>
+      <div style="text-align:center;margin-top:22px"><button class="act" data-go="finish">I am done, get my certificate</button></div>
+    </div>
+  </section>
+
+  <section class="page" id="finish">
+    <span class="timebadge">Last step</span>
+    <h2 class="title">Finish &amp; share</h2>
+    <p class="lead">Type your name, generate your completion card, then screenshot it and share it in our class chat to show you are done.</p>
+    <div class="card" style="max-width:560px">
+      <h4>Your details</h4>
+      <label style="display:block;font-size:14px;font-weight:600;color:var(--mut);margin-bottom:6px">Full name or student ID</label>
+      <input id="userName" type="text" placeholder="e.g. Nurul Aisyah / TP012345"
+        style="width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit;outline:none">
+      <div class="btnrow" style="background:transparent;border:0;padding:14px 0 0">
+        <button class="act sea" id="genCert">Generate my certificate</button>
+      </div>
+      <p id="nameErr" style="color:var(--bad);font-size:13px;margin:0;display:none">Please type your name first.</p>
+    </div>
+    <div id="certHolder"></div>
+  </section>
+</main>
+<footer>
+  AICT015-4-1 Database Management, Lab 7 interactive tutorial. Full written answers are in <b>lab7_answer.docx</b>.
+  Reference: <a href="https://www.w3schools.com/sql/default.asp" target="_blank" rel="noopener">w3schools SQL</a>.
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+<script>
+const ORDER = ['intro','theory','sql','concept','patterns','quiz','practice','finish'];
+const RESULTS = { theory:{c:0,t:6}, quiz:{c:0,t:10} };
+const visited = new Set(['intro']);
+function updateProgress(){ document.getElementById('progbar').style.width = (visited.size/ORDER.length*100)+'%'; }
+function go(id){
+  document.querySelectorAll('section.page').forEach(s=>s.classList.toggle('show', s.id===id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active', b.dataset.go===id));
+  visited.add(id); updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.body.addEventListener('click', e=>{ const t=e.target.closest('[data-go]'); if(t){ go(t.dataset.go); } });
+updateProgress();
+
+function renderMCQ(box, items, scoreEl, cls, key){
+  let answered=0, correct=0;
+  function record(){ if(key && RESULTS[key]){ RESULTS[key].c=correct; RESULTS[key].t=items.length; } }
+  function refresh(){ scoreEl.textContent = (cls==='theory'?'Theory check: ':'Score: ')+correct+' of '+answered+' answered  ('+items.length+' total)'; record(); }
+  box.innerHTML='';
+  items.forEach((item,i)=>{
+    const d=document.createElement('div'); d.className='quiz-q'+(cls?(' '+cls):'');
+    d.innerHTML='<div class="qhead"><span class="num">'+(i+1)+'</span>'+item.q+'</div>';
+    item.opts.forEach((o,j)=>{
+      const b=document.createElement('button'); b.className='opt'; b.innerHTML=o;
+      b.onclick=()=>{
+        if(d.dataset.done) return;
+        d.dataset.done='1'; answered++;
+        d.querySelectorAll('.opt').forEach((bb,k)=>{ bb.disabled=true; if(k===item.a) bb.classList.add('correct'); });
+        if(j===item.a) correct++; else b.classList.add('wrong');
+        d.querySelector('.explain').classList.add('show');
+        refresh();
+        if(answered===items.length){
+          const pct=Math.round(correct/items.length*100);
+          let msg = pct===100?'Perfect score. Outstanding!':pct>=70?'Nice work, you have got this.':'Good start, review the cards above and try again.';
+          scoreEl.textContent = (cls==='theory'?'Theory check ':'Quiz ')+'complete: '+correct+' of '+items.length+'  ('+pct+'%). '+msg;
+        }
+      };
+      d.appendChild(b);
+    });
+    const ex=document.createElement('div'); ex.className='explain'; ex.innerHTML='<b>Why:</b> '+item.e;
+    d.appendChild(ex);
+    box.appendChild(d);
+  });
+  refresh();
+}
+
+const THEORY = [
+  { q:"What is a data model?", opts:["A simple, usually graphical representation of real-world data","A finished database with all the data","A type of primary key","A backup file"], a:0,
+    e:"A data model is a simple, often graphical, representation of complex real-world data, built from entities, attributes and relationships." },
+  { q:"When turning business rules into a design, nouns usually become... and verbs usually become...", opts:["relationships ... entities","entities ... relationships","keys ... tables","columns ... rows"], a:1,
+    e:"Nouns translate into entities; verbs translate into the relationships between them." },
+  { q:"Entity integrity says a primary key must be...", opts:["unique and not null","always a number","a foreign key too","allowed to repeat"], a:0,
+    e:"A PK uniquely identifies a row, so it must be unique and never null." },
+  { q:"Referential integrity says a foreign key must...", opts:["be unique","match an existing primary key, or be null","always be null","be the same as the PK name"], a:1,
+    e:"An FK must point to a real PK value in the related table, or be null." },
+  { q:"One publisher can have many books. This relationship is...", opts:["1:1","1:M","M:N","there is no relationship"], a:1,
+    e:"One to many (1:M): one publisher relates to many books, but each book has one publisher." },
+  { q:"Which normal form removes transitive dependencies?", opts:["1NF","2NF","3NF","UNF"], a:2,
+    e:"3NF builds on 2NF by removing transitive dependencies. 1NF removes repeating groups; 2NF removes partial dependencies." },
+];
+function buildTheory(){ renderMCQ(document.getElementById('theoryBox'), THEORY, document.getElementById('theoryScore'), 'theory', 'theory'); }
+document.getElementById('resetTheory').onclick=buildTheory;
+buildTheory();
+
+const QUIZ = [
+  { q:"What is a subquery?", opts:["A query placed inside another query","A faster type of table","A backup of the database","A primary key rule"], a:0,
+    e:"A subquery is a SELECT nested inside another query. The inner one runs first." },
+  { q:"When the inner query returns exactly ONE value, which operator do you use?", opts:["IN","=","LIKE","BETWEEN"], a:1,
+    e:"Use = for a single value, for example WHERE PublisherID = (SELECT ...)." },
+  { q:"When the inner query can return SEVERAL values, which operator do you use?", opts:["=","IS","IN","ON"], a:2,
+    e:"Use IN for many values, for example WHERE PublisherID IN (SELECT ...). Using = would cause an error." },
+  { q:"In a nested query, which part runs first?", opts:["The outer query","The inner (sub) query","Both at the same time","Whichever is shorter"], a:1,
+    e:"The inner query runs first; its result feeds the outer query." },
+  { q:"Why can WHERE col NOT IN (SELECT ...) return no rows unexpectedly?", opts:["NOT IN is not valid SQL","Because the subquery may contain a NULL","Because it needs GROUP BY","Because IN is faster"], a:1,
+    e:"If the subquery list contains a NULL, NOT IN becomes unknown for every row. Exclude NULLs or use NOT EXISTS." },
+  { q:"Which clause filters GROUPS (used with GROUP BY)?", opts:["WHERE","HAVING","ORDER BY","DISTINCT"], a:1,
+    e:"HAVING filters groups after aggregation; WHERE filters individual rows before grouping." },
+  { q:"To find books written by K.Vince's publishers, the subquery returns two IDs. Which is correct?", opts:["WHERE PublisherID = (subquery)","WHERE PublisherID IN (subquery)","WHERE PublisherID LIKE (subquery)","WHERE PublisherID &gt; (subquery)"], a:1,
+    e:"K.Vince has books under two publishers, so the subquery returns several values. Use IN." },
+  { q:"Can a subquery be used to drive an UPDATE statement?", opts:["No, only SELECT","Yes, for example in the WHERE of an UPDATE","Only with DELETE","Only inside CREATE TABLE"], a:1,
+    e:"Yes. UPDATE Publisher SET ... WHERE PublisherID = (SELECT ...) uses a subquery to choose the row." },
+  { q:"How do you rename a result column, for example to NumOfBook?", opts:["RENAME NumOfBook","USING NumOfBook","AS NumOfBook","SET NumOfBook"], a:2,
+    e:"SELECT COUNT(*) AS NumOfBook names the result column NumOfBook." },
+  { q:"\"Published after the month of January 2016\" is best written as...", opts:["PublishedDate &gt; '2016-01-01'","PublishedDate &gt; '2016-01-31'","PublishedDate = 'January'","PublishedDate &lt; '2016-02-01'"], a:1,
+    e:"After the whole month of January means after its last day, so &gt; '2016-01-31'." },
+];
+function buildQuiz(){ renderMCQ(document.getElementById('quizBox'), QUIZ, document.getElementById('scoreText'), '', 'quiz'); }
+document.getElementById('resetQuiz').onclick=buildQuiz;
+buildQuiz();
+
+function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function generateCert(){
+  const raw=document.getElementById('userName').value.trim();
+  const err=document.getElementById('nameErr');
+  if(!raw){ err.style.display='block'; return; }
+  err.style.display='none';
+  const name=escapeHtml(raw);
+  const today=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+  const th=RESULTS.theory, qz=RESULTS.quiz, act=(typeof solved!=='undefined')?solved.size:0;
+  const total = th.c + qz.c + act;
+  const max = th.t + qz.t + 16;
+  document.getElementById('certHolder').innerHTML =
+    '<div style="background:linear-gradient(160deg,#1B2A4A,#0B5C7A);color:#fff;border-radius:16px;padding:34px 30px;margin-top:22px;max-width:680px;box-shadow:0 10px 30px rgba(11,42,74,.3);text-align:center">'+
+      '<div style="font-size:13px;letter-spacing:3px;color:#7ef0df;font-weight:700">AICT015-4-1 DATABASE MANAGEMENT</div>'+
+      '<div style="font-size:54px;line-height:1;margin:14px 0">&#127881;</div>'+
+      '<div style="font-family:Cambria,Georgia,serif;font-size:30px;font-weight:700;margin-bottom:6px">Congratulations!</div>'+
+      '<div style="font-size:16px;color:#cfe0ec">You have completed your work</div>'+
+      '<div style="font-family:Cambria,Georgia,serif;font-size:26px;font-weight:700;margin:18px 0 4px;color:#fff;border-top:1px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.2);padding:14px 0">'+name+'</div>'+
+      '<div style="font-size:15px;color:#e6f2f7;margin-top:10px">finished the <b>Lab 7: Subqueries &amp; Nested Queries</b> interactive tutorial</div>'+
+      '<div style="font-size:13.5px;color:#cfe0ec;margin-top:4px">on '+today+'</div>'+
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">'+
+        '<div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 16px"><div style="font-size:22px;font-weight:800;color:#7ef0df">'+th.c+'/'+th.t+'</div><div style="font-size:12px;color:#cfe0ec">Theory check</div></div>'+
+        '<div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 16px"><div style="font-size:22px;font-weight:800;color:#7ef0df">'+qz.c+'/'+qz.t+'</div><div style="font-size:12px;color:#cfe0ec">Subquery quiz</div></div>'+
+        '<div style="background:rgba(255,255,255,.12);border-radius:10px;padding:10px 16px"><div style="font-size:22px;font-weight:800;color:#7ef0df">'+act+'/16</div><div style="font-size:12px;color:#cfe0ec">SQL activities</div></div>'+
+      '</div>'+
+      '<div style="font-size:13px;color:#9fc6d8;margin-top:18px">Overall: '+total+' of '+max+' points</div>'+
+    '</div>'+
+    '<div class="note" style="max-width:680px">&#128247; <b>Screenshot this card</b> and share it in our class chat to show you have completed the lab.</div>';
+  document.getElementById('certHolder').scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('genCert').onclick=generateCert;
+document.getElementById('userName').addEventListener('keydown',e=>{ if(e.key==='Enter') generateCert(); });
+
+const SEED = `
+CREATE TABLE Publisher (PublisherID TEXT PRIMARY KEY, Name TEXT, Address TEXT);
+CREATE TABLE Book (BookID TEXT PRIMARY KEY, Name TEXT, Author TEXT, Price REAL, PublishedDate TEXT, PublisherID TEXT);
+INSERT INTO Publisher VALUES ('P01','Pearson','Bukit Jalil'),('P02','Deitel','Puchong'),('P03','Rainbow','Subang'),('P04','MacHill','Kuala Lumpur');
+INSERT INTO Book VALUES
+('B01','Maths','J.Wenton',50.60,'2016-01-10','P01'),
+('B02','Science','S.Hanson',100.00,'2016-02-12','P01'),
+('B03','English','K.Vince',89.30,'2016-03-09','P02'),
+('B04','Biology','K.Vince',150.80,'2016-04-24','P03'),
+('B05','Computing','J.Denzin',NULL,NULL,NULL);
+`;
+let SQLLIB=null, pgDB=null, solved=new Set();
+function freshDB(){ const db=new SQLLIB.Database(); db.run(SEED); return db; }
+function resultToTable(res){
+  if(!res || res.length===0) return '<div class="msg okmsg">Statement ran. No rows returned.</div>';
+  const r=res[res.length-1];
+  let h='<table class="data"><tr>'+r.columns.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
+  r.values.forEach(row=>{ h+='<tr>'+row.map(v=>'<td>'+(v===null?'<i style="color:#9aa">NULL</i>':String(v))+'</td>').join('')+'</tr>'; });
+  h+='</table><div class="caption">'+r.values.length+' row(s).</div>';
+  return h;
+}
+function normalize(res, ordered){
+  if(!res || res.length===0) return [];
+  const rows=res[res.length-1].values.map(r=>r.map(v=>v===null?null:v));
+  let s=rows.map(r=>JSON.stringify(r));
+  if(!ordered) s=s.sort();
+  return s;
+}
+function eq(a,b){ return a.length===b.length && a.every((v,i)=>v===b[i]); }
+function runPlayground(){
+  const sql=document.getElementById('pgSql').value.trim();
+  const out=document.getElementById('pgResult');
+  if(!sql){ out.innerHTML=''; return; }
+  try{
+    const res=pgDB.exec(sql); let extra='';
+    const mod=pgDB.getRowsModified();
+    if((!res||res.length===0) && mod>0) extra='<div class="msg okmsg">'+mod+' row(s) affected.</div>';
+    out.innerHTML=extra+resultToTable(res);
+  }catch(err){ out.innerHTML='<div class="msg errmsg"><b>Error:</b> '+err.message+'</div>'; }
+}
+const ACT = [
+  { n:4, q:"Display a list of books published by 'Deitel'.", hint:"One publisher, so use =. Look up Deitel's PublisherID with a subquery.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Deitel');", ordered:false },
+  { n:5, q:"Display books published by 'Pearson', ordered descending by book name.", hint:"Add ORDER BY Name DESC after the subquery condition.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson')\nORDER BY Name DESC;", ordered:true },
+  { n:6, q:"Display books published by 'Pearson' and written by 'S.Hanson'.", hint:"Combine the subquery with AND Author = 'S.Hanson'.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson')\nAND Author = 'S.Hanson';", ordered:false },
+  { n:7, q:"Display books published by 'Pearson' which cost more than 80.", hint:"AND Price > 80.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson')\nAND Price > 80;", ordered:false },
+  { n:8, q:"Display books by 'Pearson' costing between 30 and 70 and written by 'J.Wenton'.", hint:"Use AND Price BETWEEN 30 AND 70 AND Author = 'J.Wenton'.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson')\nAND Price BETWEEN 30 AND 70\nAND Author = 'J.Wenton';", ordered:false },
+  { n:9, q:"Display books published by 'Deitel' and published after '1 March 2016'.", hint:"AND PublishedDate > '2016-03-01'.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Deitel')\nAND PublishedDate > '2016-03-01';", ordered:false },
+  { n:10, q:"Count how many books published by 'Deitel' (column name: NumOfBook).", hint:"SELECT COUNT(*) AS NumOfBook, with the same subquery in WHERE.",
+    sol:"SELECT COUNT(*) AS NumOfBook FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Deitel');", ordered:false },
+  { n:11, q:"Sum the price of books published by 'Pearson' (column name: TotalPrice).", hint:"Use SUM(Price) AS TotalPrice.",
+    sol:"SELECT SUM(Price) AS TotalPrice FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson');", ordered:false },
+  { n:12, q:"Find the average price of books published by 'Pearson' (column name: AvgPrice).", hint:"Use AVG(Price) AS AvgPrice.",
+    sol:"SELECT AVG(Price) AS AvgPrice FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson');", ordered:false },
+  { n:13, q:"Display books whose publisher's address is 'Bukit Jalil', ordered ascending by name.", hint:"Subquery filters by Address this time. Then ORDER BY Name ASC.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Address = 'Bukit Jalil')\nORDER BY Name ASC;", ordered:true },
+  { n:14, q:"Count how many books published by publishers whose address is 'Puchong'.", hint:"COUNT(*) with a subquery on Address = 'Puchong'.",
+    sol:"SELECT COUNT(*) AS NumOfBook FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Address = 'Puchong');", ordered:false },
+  { n:15, q:"Display books published by 'Pearson' and published after the month of January 2016.", hint:"After January means > '2016-01-31'.",
+    sol:"SELECT * FROM Book\nWHERE PublisherID = (SELECT PublisherID FROM Publisher WHERE Name = 'Pearson')\nAND PublishedDate > '2016-01-31';", ordered:false },
+  { n:16, q:"Display publisher details who published books written by K.Vince.", hint:"K.Vince has books under TWO publishers, so use IN, not =.",
+    sol:"SELECT * FROM Publisher\nWHERE PublisherID IN (SELECT PublisherID FROM Book WHERE Author = 'K.Vince');", ordered:false },
+  { n:17, q:"Change the publisher's address to 'Shah Alam' for the publisher of the Biology book. (UPDATE)", hint:"UPDATE Publisher SET Address='Shah Alam' WHERE PublisherID = (subquery for Biology).",
+    sol:"UPDATE Publisher\nSET Address = 'Shah Alam'\nWHERE PublisherID = (SELECT PublisherID FROM Book WHERE Name = 'Biology');",
+    verify:"SELECT * FROM Publisher ORDER BY PublisherID" },
+  { n:18, q:"Show the publisher who has not published any book.", hint:"NOT EXISTS, or NOT IN with WHERE PublisherID IS NOT NULL.",
+    sol:"SELECT * FROM Publisher p\nWHERE NOT EXISTS (SELECT 1 FROM Book b WHERE b.PublisherID = p.PublisherID);", ordered:false },
+  { n:19, q:"Show the publisher who published more than 1 book.", hint:"Subquery: GROUP BY PublisherID HAVING COUNT(*) > 1, then IN.",
+    sol:"SELECT * FROM Publisher\nWHERE PublisherID IN (\n    SELECT PublisherID FROM Book\n    GROUP BY PublisherID\n    HAVING COUNT(*) > 1);", ordered:false },
+];
+const REAL = {
+  4:"You know the publisher by name ('Deitel'), not the code P02. The subquery looks up the code, like searching a bookstore site for 'Deitel'.",
+  5:"Same name-to-code lookup, plus sorting, like a publisher's catalogue page listed Z to A.",
+  6:"Two filters at once (publisher by name + author), like filter checkboxes on a shopping site.",
+  7:"A publisher filter plus a 'price above RM80' filter on that publisher's range.",
+  8:"Narrowing a search with several filters (publisher, price band, author) in one go.",
+  9:"A 'new releases since...' view for one publisher you picked by name.",
+  10:"A dashboard number: 'how many titles does Deitel have?' Counted by the publisher's code behind the scenes.",
+  11:"Inventory valuation: the total catalogue value of one publisher's books.",
+  12:"Pricing analysis: 'what does a typical Pearson book cost?'",
+  13:"Searching by location, not name: 'books from the publisher based in Bukit Jalil'. Book has no address column, so the subquery finds it in Publisher.",
+  14:"Regional reporting: 'how many titles come from publishers in Puchong?'",
+  15:"A catalogue filter for one publisher's recent titles.",
+  16:"Reverse lookup: start from an author and find every publisher that carries their work. An author can span several publishers, so the result is a LIST (use IN).",
+  17:"An admin task: the publisher of the Biology book moved, so update its address. You identify the record by a book it published.",
+  18:"Finding inactive partners: 'which publishers have supplied nothing yet?'",
+  19:"Spotting major suppliers: 'which publishers gave us more than one title?'",
+};
+function updateActScore(){
+  document.getElementById('actScore').textContent='Solved: '+solved.size+' of '+ACT.length;
+  const cheer=document.getElementById('actCheer');
+  if(solved.size===ACT.length){ cheer.textContent='All done. Subquery champion!'; document.getElementById('finalCard').innerHTML='<div class="note" style="text-align:center;font-size:16px"><b>You solved every Lab 7 question.</b> You are ready for the exam questions on subqueries. Compare your work with <b>lab7_answer.docx</b> if you like.</div>'; }
+  else if(solved.size>=8){ cheer.textContent='Over halfway, keep going!'; }
+  else { cheer.textContent=''; }
+}
+function buildActivities(){
+  const box=document.getElementById('activityBox'); box.innerHTML='';
+  ACT.forEach(a=>{
+    const d=document.createElement('div'); d.className='activity';
+    const starter = a.n===4 ? a.sol : "";
+    d.innerHTML =
+      '<div class="ahead"><span class="num">'+a.n+'</span><span class="qtext">'+a.q+'</span><span class="tick">Solved</span></div>'+
+      '<div class="abody">'+
+        '<div style="background:#EAF7EF;border-left:3px solid var(--ok);border-radius:0 6px 6px 0;padding:8px 12px;font-size:13px;color:#2c5e44;margin:0 0 12px"><b>Real-world:</b> '+REAL[a.n]+'</div>'+
+        '<textarea class="sql" style="border:1px solid var(--line);border-radius:8px">'+starter+'</textarea>'+
+        '<div class="btnrow" style="background:transparent;border:0;padding:10px 0 0">'+
+          '<button class="act run">Run</button>'+
+          '<button class="act sea check">Check answer</button>'+
+          '<button class="act ghost hintbtn">Hint</button>'+
+        '</div>'+
+        '<p class="hint" style="display:none"></p>'+
+        '<details><summary>Show solution</summary><pre class="code">'+a.sol.replace(/</g,'&lt;')+'</pre></details>'+
+        '<div class="result"></div>'+
+      '</div>';
+    const ta=d.querySelector('textarea');
+    const out=d.querySelector('.result');
+    const hintP=d.querySelector('.hint');
+    d.querySelector('.hintbtn').onclick=()=>{ hintP.style.display='block'; hintP.innerHTML='<b>Hint:</b> '+a.hint; };
+    d.querySelector('.run').onclick=()=>{
+      const sql=ta.value.trim(); if(!sql){ out.innerHTML=''; return; }
+      const db=freshDB();
+      try{ const res=db.exec(sql); let extra=''; const mod=db.getRowsModified();
+        if((!res||res.length===0)&&mod>0) extra='<div class="msg okmsg">'+mod+' row(s) affected. Press Check to verify.</div>';
+        out.innerHTML=extra+resultToTable(res);
+      }catch(err){ out.innerHTML='<div class="msg errmsg"><b>Error:</b> '+err.message+'</div>'; }
+    };
+    d.querySelector('.check').onclick=()=>{
+      const sql=ta.value.trim();
+      if(!sql){ out.innerHTML='<div class="msg errmsg">Write a query first.</div>'; return; }
+      const sdb=freshDB(), edb=freshDB();
+      try{
+        let mine, expected;
+        if(a.verify){
+          sdb.exec(sql); mine=normalize(sdb.exec(a.verify), true);
+          edb.exec(a.sol); expected=normalize(edb.exec(a.verify), true);
+        }else{
+          mine=normalize(sdb.exec(sql), a.ordered);
+          expected=normalize(edb.exec(a.sol), a.ordered);
+        }
+        if(eq(mine,expected)){
+          out.innerHTML='<div class="msg okmsg"><b>Correct!</b> Your result matches the expected answer.</div>';
+          if(!solved.has(a.n)){ solved.add(a.n); d.classList.add('done'); updateActScore(); }
+        }else{
+          out.innerHTML='<div class="msg errmsg"><b>Not quite.</b> Your result does not match yet. Press Run to see what your query returns, check the hint, or reveal the solution.</div>';
+        }
+      }catch(err){ out.innerHTML='<div class="msg errmsg"><b>Error:</b> '+err.message+'</div>'; }
+    };
+    box.appendChild(d);
+  });
+  updateActScore();
+}
+initSqlJs({ locateFile: f => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/'+f })
+  .then(SQL=>{
+    SQLLIB=SQL; pgDB=freshDB();
+    document.getElementById('engineStatus').style.display='none';
+    document.getElementById('practiceArea').style.display='block';
+    document.getElementById('pgRun').onclick=runPlayground;
+    document.getElementById('pgReset').onclick=()=>{ pgDB=freshDB(); document.getElementById('pgResult').innerHTML='<div class="msg okmsg">Data reset to the original tables.</div>'; };
+    buildActivities();
+  })
+  .catch(err=>{
+    document.getElementById('engineStatus').innerHTML='<div class="msg errmsg">Could not load the SQL engine (no internet?). The lesson and quizzes still work. For the live playground, open this page once while connected.</div>';
+  });
+</script>
+</body>
+</html>
