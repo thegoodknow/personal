@@ -1,17 +1,19 @@
 /**
  * Core Automation Script Modules for Workspace Hub
- * - Class progress bar engine
- * - Assignment & Lab tracking dashboard arrays
- * - Smart blending greetings and 12-hour clock transformations
+ * - Hides past/conducted classes
+ * - Blends time-of-day greetings with real-time class status updates live
+ * - Complete 12-hour AM/PM time formatting
+ * - Groups deadlines dynamically by module with entrance animations
  */
 
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
 
-// --- DATA SOURCE CONFIG: FEATURE 2 (Edit this array anytime to update tasks) ---
+// --- REGISTRY DATA SOURCE: ASSIGNMENTS & DEADLINES ---
 const ACADEMIC_DEADLINES = [
     { title: "Python Programming Lab 3", module: "AAPP015-4-1-PWP", dueDate: "2026-06-28", type: "Lab" },
+    { title: "Final Assignment Documentation", module: "AAPP015-4-1-PWP", dueDate: "2026-07-10", type: "Assignment" },
     { title: "Database Systems Core Class Test", module: "DMS-ClassTest", dueDate: "2026-07-02", type: "Test" },
     { title: "Web UI Personal Portfolio Project", module: "HTML-CSS-Git", dueDate: "2026-07-15", type: "Assignment" }
 ];
@@ -66,7 +68,7 @@ function getCurrentWeeklyFileName() {
     return `${sunday.getFullYear()}-${String(sunday.getMonth() + 1).padStart(2, '0')}-${String(sunday.getDate()).padStart(2, '0')}.json`;
 }
 
-// Render Local Repos Workspace Pages Links
+// Render Workspace Sub-pages Links
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
     const myPages = ["CA_Quiz.html", "convert.html", "DBM LAB7.html", "department.html", "gdp.html", "record.html", "timetable test.html", "timetable.html"];
@@ -84,7 +86,7 @@ function loadRepositoryPages() {
     });
 }
 
-// FEATURE 2: Render Deadlines Component with Urgency Evaluation
+// FEATURE 2: Render Modules first, then nest their respective assignment items
 function loadDeadlinesWidget() {
     const container = document.getElementById('deadlines-container');
     container.innerHTML = '';
@@ -94,55 +96,74 @@ function loadDeadlinesWidget() {
         return;
     }
 
+    // Grouping logic array mapping
+    const groupedByModule = {};
+    ACADEMIC_DEADLINES.forEach(task => {
+        if (!groupedByModule[task.module]) {
+            groupedByModule[task.module] = [];
+        }
+        groupedByModule[task.module].push(task);
+    });
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    ACADEMIC_DEADLINES.forEach(task => {
-        const taskDate = new Date(task.dueDate);
-        taskDate.setHours(0, 0, 0, 0);
+    // Build DOM structure module-by-module
+    Object.keys(groupedByModule).forEach(moduleCode => {
+        const moduleCard = document.createElement('div');
+        moduleCard.className = 'module-group-card';
         
-        // Calculate dynamic day offset gap
-        const diffTime = taskDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        let tasksHTML = '';
         
-        let pillClass = "open-tag"; 
-        let countdownLabel = `${diffDays} days left`;
-        let borderOverride = "rgba(255, 255, 255, 0.02)";
+        groupedByModule[moduleCode].forEach(task => {
+            const taskDate = new Date(task.dueDate);
+            taskDate.setHours(0, 0, 0, 0);
+            
+            const diffTime = taskDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            let pillClass = "open-tag"; 
+            let countdownLabel = `${diffDays} days left`;
+            let leftBorderColor = "rgba(255, 255, 255, 0.15)";
 
-        if (diffDays < 0) {
-            pillClass = "conducted-tag";
-            countdownLabel = "Overdue";
-        } else if (diffDays === 0) {
-            pillClass = "test-tag"; // Turns red using variables
-            countdownLabel = "DUE TODAY";
-            borderOverride = "rgba(255, 82, 82, 0.3)";
-        } else if (diffDays <= 3) {
-            pillClass = "replacement-tag"; // Turns amber warning color
-            countdownLabel = "Urgent: Due Soon";
-            borderOverride = "rgba(255, 140, 0, 0.3)";
-        }
+            if (diffDays < 0) {
+                pillClass = "conducted-tag";
+                countdownLabel = "Overdue";
+            } else if (diffDays === 0) {
+                pillClass = "test-tag";
+                countdownLabel = "TODAY";
+                leftBorderColor = "var(--color-test)";
+            } else if (diffDays <= 3) {
+                pillClass = "replacement-tag";
+                countdownLabel = "Urgent";
+                leftBorderColor = "var(--color-replacement)";
+            }
 
-        // Pick specific icons depending on what type of academic track item it matches
-        let iconType = "assignment";
-        if (task.type === "Test") iconType = "assignment_late";
-        if (task.type === "Lab") iconType = "biotech";
+            let iconType = "assignment";
+            if (task.type === "Test") iconType = "assignment_late";
+            if (task.type === "Lab") iconType = "biotech";
 
-        const card = document.createElement('div');
-        card.className = 'deadline-card';
-        card.style.borderColor = borderOverride;
-        card.innerHTML = `
-            <div class="deadline-header-row">
-                <div class="page-title-group">
-                    <span class="material-icons" style="color: var(--color-primary); font-size: 1.2rem;">${iconType}</span>
-                    <span class="deadline-title">${task.title}</span>
+            tasksHTML += `
+                <div class="deadline-task-item" style="border-left-color: ${leftBorderColor}">
+                    <div class="task-info-side">
+                        <span class="deadline-title">${task.title}</span>
+                        <span class="deadline-date-sub">Due Date: ${task.dueDate}</span>
+                    </div>
+                    <span class="pill ${pillClass}" style="font-size:0.7rem; padding:2px 6px;">${countdownLabel}</span>
                 </div>
-                <span class="pill ${pillClass}">${countdownLabel}</span>
+            `;
+        });
+
+        moduleCard.innerHTML = `
+            <div class="module-group-header">
+                <span class="material-icons" style="font-size: 1.1rem;">auto_stories</span>
+                <span>${moduleCode}</span>
             </div>
-            <div class="deadline-header-row">
-                <span class="deadline-module">${task.module} • Due: ${task.dueDate}</span>
+            <div class="module-task-list">
+                ${tasksHTML}
             </div>
         `;
-        container.appendChild(card);
+        container.appendChild(moduleCard);
     });
 }
 
@@ -152,7 +173,6 @@ async function loadTimetable() {
     const headerNextDisplay = document.getElementById('header-next-class');
     const greetingBanner = document.getElementById('greeting-banner');
     
-    // Progress element variables
     const progressBarContainer = document.getElementById('daily-progress-container');
     const progressBarFill = document.getElementById('daily-progress-fill');
     
@@ -186,7 +206,6 @@ async function loadTimetable() {
         let activeClassObj = null;
         let visibleCardsInjected = false;
 
-        // Progress Tracking variables
         let totalClassesToday = 0;
         let conductedClassesToday = 0;
 
@@ -207,11 +226,10 @@ async function loadTimetable() {
                         const startTotalMinutes = startH * 60 + startM;
                         const endTotalMinutes = endH * 60 + endM;
 
-                        // Identify Chronology status properties
                         if (currentDayIndex > jsonDayIndex) {
                             isConducted = true; 
                         } else if (currentDayIndex === jsonDayIndex) {
-                            totalClassesToday++; // Class belongs to today!
+                            totalClassesToday++; 
                             if (currentMinutes > endTotalMinutes) {
                                 isConducted = true; 
                                 conductedClassesToday++;
@@ -221,7 +239,6 @@ async function loadTimetable() {
                         }
                     }
 
-                    // CRITICAL FILTER: Skip rendering completely if past/conducted
                     if (isConducted) return; 
 
                     if (isCurrent) {
@@ -235,7 +252,10 @@ async function loadTimetable() {
                     let badgeMarkup = `<span class="pill open-tag">In-Person</span>`;
                     let iconType = 'school';
 
-                    if (classItem.isOnline) {
+                    if (isCurrent) {
+                        badgeMarkup = `<span class="pill active-now-tag">⚡ Happening Now</span>`;
+                        iconType = classItem.isOnline ? 'computer' : 'school';
+                    } else if (classItem.isOnline) {
                         badgeMarkup = `<span class="pill online-tag">Online</span>`;
                         iconType = 'computer';
                     } else if (classItem.isReplacement) {
@@ -251,7 +271,7 @@ async function loadTimetable() {
 
                     card.innerHTML = `
                         <div class="card-title">
-                            <span class="material-icons ${classItem.isOnline ? 'online-icon' : ''}">${iconType}</span>
+                            <span class="material-icons ${classItem.isOnline && !isCurrent ? 'online-icon' : ''}">${iconType}</span>
                             <span>${classItem.moduleName}</span>
                         </div>
                         <div class="card-subtitle">
@@ -269,7 +289,7 @@ async function loadTimetable() {
             }
         });
 
-        // --- FEATURE 1: Compute and trigger progress bar animations ---
+        // Compute and trigger progress bar percentages
         if (totalClassesToday > 0) {
             progressBarContainer.style.display = 'block';
             const calculatedPercentage = Math.round((conductedClassesToday / totalClassesToday) * 100);
@@ -278,10 +298,10 @@ async function loadTimetable() {
             progressBarContainer.style.display = 'none';
         }
 
-        // Update Header Displays
+        // Update Top Header Summary Text fields
         headerNextDisplay.innerHTML = activeClassText;
 
-        // Construct Blended Class-Aware Greetings
+        // Dynamic Greeting live updates logic checks
         const baseGreetingPrefix = getTimeOfDayGreeting(); 
         if (activeClassObj) {
             const formattedRange = formatRange12Hour(activeClassObj.time);
@@ -313,3 +333,8 @@ async function loadTimetable() {
 loadRepositoryPages();
 loadDeadlinesWidget();
 loadTimetable();
+
+// AUTOMATION POOL: Check status matrices every 30 seconds to change greetings & bar state live
+setInterval(() => {
+    loadTimetable();
+}, 30000);

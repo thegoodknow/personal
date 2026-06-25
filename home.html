@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Dashboard</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     
     <style>
@@ -20,7 +20,9 @@
         }
 
         @media (max-width: 850px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .right-column-group {
@@ -133,7 +135,7 @@
             margin-bottom: 15px;
         }
 
-        /* --- FEATURE 1: Today's Class Progress Bar Styles --- */
+        /* --- Class Progress Bar Tracker Styles --- */
         .progress-bar-container {
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
@@ -142,7 +144,7 @@
             margin-top: -10px;
             margin-bottom: 20px;
             overflow: hidden;
-            display: none; /* Controlled via JS, only shows if there are classes today */
+            display: none; 
         }
 
         .progress-bar-fill {
@@ -200,27 +202,62 @@
         .portal-card { height: 100%; box-sizing: border-box; }
         .link-arrow { font-size: 1rem !important; color: var(--text-subtle); }
 
-        /* --- FEATURE 2: Deadlines & Tasks Layout Cards --- */
-        .deadline-card {
+        /* --- Module & Nested Deadlines Group Design --- */
+        .module-group-card {
+            background: rgba(35, 35, 35, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .module-group-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-group-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-group-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .module-group-header {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-task-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            background: rgba(40, 40, 40, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            padding: 12px 16px;
-            border-radius: 10px;
+            gap: 8px;
         }
-        .deadline-header-row {
+
+        .deadline-task-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid rgba(255, 255, 255, 0.1);
         }
+
+        .task-info-side {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
         .deadline-title {
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-light);
         }
-        .deadline-module {
-            font-size: 0.8rem;
+
+        .deadline-date-sub {
+            font-size: 0.75rem;
             color: var(--text-subtle);
         }
 
@@ -237,6 +274,20 @@
             transform: scale(1.015);
             background-color: rgba(50, 50, 50, 0.45) !important;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Unique animated badge for the class happening right now */
+        .pill.active-now-tag {
+            background-color: var(--color-current) !important; 
+            color: #121212 !important; 
+            font-weight: 700;
+            box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { transform: scale(1); box-shadow: 0 0 8px rgba(255, 193, 7, 0.5); }
+            to { transform: scale(1.04); box-shadow: 0 0 16px rgba(255, 193, 7, 0.8); }
         }
 
         @keyframes slideUpFade {
@@ -323,7 +374,8 @@
                     <span>Assignments & Deadlines</span>
                 </div>
                 <div id="deadlines-container" class="list-container">
-                    </div>
+                    <div class="empty-state">Loading academic tasks...</div>
+                </div>
             </section>
         </div>
 
