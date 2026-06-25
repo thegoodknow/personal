@@ -7,7 +7,22 @@
     },
     {
       "date": "Tue, 30-Jun-2026",
-      "classes": []
+      "classes": [
+         {
+          "moduleCode": "BM",
+          "moduleName": "UNKNOWN MODULE NAME",
+          "time": "18:45 - 21:45",
+          "location": "ONLMCO3-10",
+          "campus": "APU CAMPUS",
+          "lecturer": "WILLIAM ANTHONYSAMY",
+          "isOnline": true,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
     },
     {
       "date": "Wed, 01-Jul-2026",

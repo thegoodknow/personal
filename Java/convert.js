@@ -28,7 +28,7 @@
             'AAPP015': 'PROGRAMNG WITH PYTHON',
             'AICT021': 'OPERATING SYSTEMS',
             'AICT022': 'INFORMATION SYSTEM WITH CLOUD CONCEPTS',
-            'MPU2112': 'APPRECIATION OF ETHICS AND CIVILIZATIONS',
+            'MPU2213': 'BAHASA MALAYU KEBANGSAAN (A)',
             'MPU2412' : 'CO CURRICULAR'
             // Add more module codes and names here
         };
