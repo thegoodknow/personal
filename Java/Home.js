@@ -16,7 +16,8 @@ const ACADEMIC_DEADLINES = [
     { title: "Report Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
+    { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-08-02", type: "Assignment" },
+    { title: "Part 2 Assignment", module: "AICT022-4-1-ISCC", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Final Exam", module: "AICT015-4-1-DBM", dueDate: "2026-08-24", type: "Exam" },
     { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-24", type: "Exam" },
     { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-24", type: "Exam" },
@@ -220,7 +221,7 @@ async function loadTimetable() {
         // Exact real-time minutes positioning including fractional seconds parameters
         const currentMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
         
-        let activeClassText = '<span class="highlight-countdown">NO ACTIVE CLASS NOW</span>';
+        let activeClassText = '<span class="highlight-countdown">NOT HAVING ANY CLASSES NOW</span>';
         let activeClassObj = null;
         let visibleCardsInjected = false;
 
@@ -325,7 +326,7 @@ async function loadTimetable() {
         const baseGreetingPrefix = getTimeOfDayGreeting(); 
         if (activeClassObj) {
             const formattedRange = formatRange12Hour(activeClassObj.time);
-            greetingBanner.textContent = `${baseGreetingPrefix} You are currently attending ${activeClassObj.moduleName} (${activeClassObj.classType || 'Class'}) in ${activeClassObj.location} [${formattedRange}].`;
+            greetingBanner.textContent = `${baseGreetingPrefix} You are currently attending a (${activeClassObj.classType || 'Class'}) for module ${activeClassObj.moduleName} at ${activeClassObj.location} for ${formattedRange}.`;
         } else {
             const hours = new Date().getHours();
             if (hours >= 5 && hours < 12) {
