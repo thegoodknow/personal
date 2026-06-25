@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Custom layout layout additions to match your global classes */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 850px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Clean list styling for pages */
+        .page-item-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #252525;
+            padding: 12px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: background 0.2s, transform 0.1s;
+            border: 1px solid transparent;
+        }
+
+        .page-item-link:hover {
+            background-color: #2e2e2e;
+            border-color: var(--border-color);
+            transform: translateX(3px);
+        }
+
+        .page-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .empty-state {
+            color: var(--text-subtle);
+            font-style: italic;
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-group">
+            <span class="material-icons" style="font-size: 1.8rem;">dashboard</span>
+            <span style="font-weight: bold; font-size: 1.2rem; letter-spacing: 0.5px;">WORKSPACE</span>
+        </div>
+        
+        <div class="header-summary-bar">
+            <div class="summary-item">
+                <span class="material-icons">schedule</span>&nbsp;
+                <span id="live-clock" class="clock-display">00:00:00</span>
+            </div>
+            <div class="summary-item next-class-display">
+                <span class="material-icons online-icon">event_javascript</span>
+                <span id="header-next-class">Checking schedule...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        
+        <section class="dashboard-section">
+            <div class="section-header">
+                <span class="material-icons">auto_stories</span>
+                <span>Upcoming Schedule</span>
+            </div>
+            <div id="timetable-container" class="list-container">
+                <div class="empty-state">Loading timetable schedules...</div>
+            </div>
+        </section>
+
+        <section class="dashboard-section">
+            <div class="section-header">
+                <span class="material-icons">layers</span>
+                <span>Tools & Hosted Pages</span>
+            </div>
+            <div id="pages-container" class="list-container">
+                <div class="empty-state">Scanning repository tools...</div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Repository Details Configuration
+const REPO_OWNER = 'thegoodknow';
+const REPO_NAME = 'personal';
+
+// Base paths for live deployments
+const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
+
+// Live Header Clock
+function updateClock() {
+    const now = new Date();
+    document.getElementById('live-clock').textContent = now.toTimeString().split(' ')[0];
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/**
+ * Calculates the YYYY-MM-DD string of the most recent Sunday
+ * to match your timetable file naming convention.
+ */
+function getCurrentWeeklyFileName() {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    // Subtract days to get back to the most recent Sunday
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - dayOfWeek);
+    
+    // Format to YYYY-MM-DD
+    const year = sunday.getFullYear();
+    const month = String(sunday.getMonth() + 1).padStart(2, '0');
+    const day = String(sunday.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}.json`;
+}
+
+// 1. Fetch Pages dynamically from the GitHub tree
+async function loadRepositoryPages() {
+    const container = document.getElementById('pages-container');
+    try {
+        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/pages`);
+        if (!response.ok) throw new Error('Directory lookup failed');
+        
+        const items = await response.json();
+        
+        // Filters only .html files, ignoring any drafts or test files if you want
+        const htmlFiles = items.filter(item => item.name.endsWith('.html'));
+        
+        if (htmlFiles.length === 0) {
+            container.innerHTML = `<div class="empty-state">No dynamic web tools found in /pages.</div>`;
+            return;
+        }
+
+        container.innerHTML = ''; // Clear status
+        htmlFiles.forEach(file => {
+            // Clean up titles (e.g., "CA_Quiz.html" -> "CA Quiz", "timetable_test.html" -> "Timetable Test")
+            const standardName = file.name
+                .replace('.html', '')
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, char => char.toUpperCase());
+
+            const linkElement = document.createElement('a');
+            linkElement.className = 'page-item-link';
+            linkElement.href = `${BASE_PAGES_URL}${file.name}`;
+            linkElement.innerHTML = `
+                <div class="page-title-group">
+                    <span class="material-icons">construction</span>
+                    <span>${standardName}</span>
+                </div>
+                <span class="material-icons" style="font-size: 1.1rem; color: var(--text-subtle);">arrow_forward</span>
+            `;
+            container.appendChild(linkElement);
+        });
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="message-box error">Failed to discover workspace tools.</div>`;
+    }
+}
+
+// 2. Fetch Classes dynamically based on the current week's Sunday
+async function loadTimetable() {
+    const container = document.getElementById('timetable-container');
+    const headerNextDisplay = document.getElementById('header-next-class');
+    
+    // Automatically gets something like "2026-06-21.json" based on current date
+    const targetFileName = getCurrentWeeklyFileName(); 
+    
+    try {
+        const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/timetable/${targetFileName}`);
+        
+        if (!response.ok) {
+            container.innerHTML = `<div class="empty-state">No timetable file found for this week (${targetFileName}).</div>`;
+            headerNextDisplay.textContent = 'No schedule found';
+            return;
+        }
+
+        const classes = await response.json();
+        if (!classes || classes.length === 0) {
+            container.innerHTML = `<div class="empty-state">No classes scheduled for this week.</div>`;
+            headerNextDisplay.textContent = 'Free Week';
+            return;
+        }
+
+        container.innerHTML = ''; // Clear status
+        
+        // Show the first class of the week in the header bar
+        headerNextDisplay.textContent = `${classes[0].className} (${classes[0].time})`;
+
+        classes.forEach((classItem) => {
+            const card = document.createElement('div');
+            card.className = 'class-card today'; 
+            
+            // Map types to tags from your CSS
+            let badgeMarkup = `<span class="pill online-tag">In-Person</span>`;
+            let iconType = 'school';
+
+            if (classItem.type === 'replacement') {
+                badgeMarkup = `<span class="pill replacement-tag">Replacement</span>`;
+                iconType = 'swap_calls';
+            } else if (classItem.type === 'test' || classItem.type === 'quiz') {
+                badgeMarkup = `<span class="pill test-tag">Exam/Quiz</span>`;
+                iconType = 'assignment_late';
+            }
+
+            card.innerHTML = `
+                <div class="card-title">
+                    <span class="material-icons">${iconType}</span>
+                    <span>${classItem.className}</span>
+                </div>
+                <div class="card-subtitle">${classItem.room || 'Room Assignment Pending'}</div>
+                <div class="card-details">
+                    <span>${classItem.day || 'Scheduled Day'}</span>
+                    <span class="clock-display" style="font-size: 0.85rem;">${classItem.time}</span>
+                    <div class="status-wrapper">${badgeMarkup}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="message-box error">Error loading tracking documents.</div>`;
+        headerNextDisplay.textContent = 'Offline status';
+    }
+}
+
+// Execution Hooks
+loadRepositoryPages();
+loadTimetable();
+    </script>
+</body>
+</html>
