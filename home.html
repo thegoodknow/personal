@@ -207,12 +207,12 @@ async function loadRepositoryPages() {
     }
 }
 
-// 2. Fetch Classes dynamically based on the current week's Sunday
+// 2. Fetch Classes dynamically based on the current week's Sunday schema
 async function loadTimetable() {
     const container = document.getElementById('timetable-container');
     const headerNextDisplay = document.getElementById('header-next-class');
     
-    // Automatically gets something like "2026-06-21.json" based on current date
+    // Automatically matches your Sunday filename scheme (e.g., "2026-07-05.json")
     const targetFileName = getCurrentWeeklyFileName(); 
     
     try {
@@ -224,48 +224,76 @@ async function loadTimetable() {
             return;
         }
 
-        const classes = await response.json();
-        if (!classes || classes.length === 0) {
+        const data = await response.json();
+        
+        // Ensure days array exists and has data
+        if (!data || !data.days || data.days.length === 0) {
             container.innerHTML = `<div class="empty-state">No classes scheduled for this week.</div>`;
             headerNextDisplay.textContent = 'Free Week';
             return;
         }
 
-        container.innerHTML = ''; // Clear status
+        container.innerHTML = ''; // Clear status loader
         
-        // Show the first class of the week in the header bar
-        headerNextDisplay.textContent = `${classes[0].className} (${classes[0].time})`;
+        let firstClassSet = false;
 
-        classes.forEach((classItem) => {
-            const card = document.createElement('div');
-            card.className = 'class-card today'; 
-            
-            // Map types to tags from your CSS
-            let badgeMarkup = `<span class="pill online-tag">In-Person</span>`;
-            let iconType = 'school';
+        // Loop through each day in the schema
+        data.days.forEach((dayGroup) => {
+            // Only process days that actually have classes scheduled
+            if (dayGroup.classes && dayGroup.classes.length > 0) {
+                
+                dayGroup.classes.forEach((classItem) => {
+                    
+                    // Set the header status bar preview using the first upcoming class found
+                    if (!firstClassSet) {
+                        headerNextDisplay.textContent = `${classItem.moduleName} (${classItem.time})`;
+                        firstClassSet = true;
+                    }
 
-            if (classItem.type === 'replacement') {
-                badgeMarkup = `<span class="pill replacement-tag">Replacement</span>`;
-                iconType = 'swap_calls';
-            } else if (classItem.type === 'test' || classItem.type === 'quiz') {
-                badgeMarkup = `<span class="pill test-tag">Exam/Quiz</span>`;
-                iconType = 'assignment_late';
+                    const card = document.createElement('div');
+                    card.className = 'class-card today'; 
+
+                    // Map states directly to your CSS rules
+                    let badgeMarkup = `<span class="pill open-tag">In-Person</span>`;
+                    let iconType = 'school';
+
+                    if (classItem.isOnline) {
+                        badgeMarkup = `<span class="pill online-tag">Online</span>`;
+                        iconType = 'computer';
+                    } else if (classItem.isReplacement) {
+                        badgeMarkup = `<span class="pill replacement-tag">Replacement</span>`;
+                        iconType = 'swap_calls';
+                    } else if (classItem.isTest) {
+                        badgeMarkup = `<span class="pill test-tag">Exam/Test</span>`;
+                        iconType = 'assignment_late';
+                    }
+
+                    // Optional: Custom clean label for class type (e.g., Lecture vs Lab)
+                    const labelType = classItem.classType ? ` • ${classItem.classType}` : '';
+
+                    card.innerHTML = `
+                        <div class="card-title">
+                            <span class="material-icons ${classItem.isOnline ? 'online-icon' : ''}">${iconType}</span>
+                            <span>${classItem.moduleName}</span>
+                        </div>
+                        <div class="card-subtitle">
+                            ${classItem.location} (${classItem.campus})${labelType}
+                        </div>
+                        <div class="card-details">
+                            <span>${dayGroup.date.split(',')[0]} (${dayGroup.date.split(',')[1]?.trim() || ''})</span>
+                            <span class="clock-display" style="font-size: 0.85rem;">${classItem.time}</span>
+                            <div class="status-wrapper">${badgeMarkup}</div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
             }
-
-            card.innerHTML = `
-                <div class="card-title">
-                    <span class="material-icons">${iconType}</span>
-                    <span>${classItem.className}</span>
-                </div>
-                <div class="card-subtitle">${classItem.room || 'Room Assignment Pending'}</div>
-                <div class="card-details">
-                    <span>${classItem.day || 'Scheduled Day'}</span>
-                    <span class="clock-display" style="font-size: 0.85rem;">${classItem.time}</span>
-                    <div class="status-wrapper">${badgeMarkup}</div>
-                </div>
-            `;
-            container.appendChild(card);
         });
+
+        if (!firstClassSet) {
+            container.innerHTML = `<div class="empty-state">No active classes found in this week's file.</div>`;
+            headerNextDisplay.textContent = 'Free Week';
+        }
 
     } catch (err) {
         console.error(err);
