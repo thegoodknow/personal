@@ -1,22 +1,25 @@
 /**
  * Core Automation Script Modules for Workspace Hub
- * - Hides past/conducted classes
- * - Blends time-of-day greetings with real-time class status updates live
- * - Complete 12-hour AM/PM time formatting
- * - Groups deadlines dynamically by module with entrance animations
+ * - Immediate class condition checks (accurate to the second)
+ * - Blends greetings with live class-aware details completely in real time
+ * - Standard 12-hour AM/PM time formatting engines
+ * - Filtered module select system with step stagger layout entry animations
  */
 
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
 
-// --- REGISTRY DATA SOURCE: ASSIGNMENTS & DEADLINES ---
+// --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
     { title: "Python Programming Lab 3", module: "AAPP015-4-1-PWP", dueDate: "2026-06-28", type: "Lab" },
     { title: "Final Assignment Documentation", module: "AAPP015-4-1-PWP", dueDate: "2026-07-10", type: "Assignment" },
     { title: "Database Systems Core Class Test", module: "DMS-ClassTest", dueDate: "2026-07-02", type: "Test" },
     { title: "Web UI Personal Portfolio Project", module: "HTML-CSS-Git", dueDate: "2026-07-15", type: "Assignment" }
 ];
+
+// Globally tracks which module code is currently clicked/highlighted
+let selectedModuleCode = null;
 
 // Utility: Convert 24-hour time string ("HH:MM") to 12-hour string ("H:MM AM/PM")
 function format12Hour(timeStr) {
@@ -37,7 +40,7 @@ function formatRange12Hour(rangeStr) {
     return `${format12Hour(parts[0])} - ${format12Hour(parts[1])}`;
 }
 
-// Real-Time Clock Trigger (12-Hour Format)
+// Real-Time System Navigation Clock Trigger (12-Hour Format)
 function updateClock() {
     const now = new Date();
     let hours = now.getHours();
@@ -68,7 +71,7 @@ function getCurrentWeeklyFileName() {
     return `${sunday.getFullYear()}-${String(sunday.getMonth() + 1).padStart(2, '0')}-${String(sunday.getDate()).padStart(2, '0')}.json`;
 }
 
-// Render Workspace Sub-pages Links
+// Render Local Repos Workspace Pages Links
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
     const myPages = ["CA_Quiz.html", "convert.html", "DBM LAB7.html", "department.html", "gdp.html", "record.html", "timetable test.html", "timetable.html"];
@@ -86,88 +89,96 @@ function loadRepositoryPages() {
     });
 }
 
-// FEATURE 2: Render Modules first, then nest their respective assignment items
-function loadDeadlinesWidget() {
-    const container = document.getElementById('deadlines-container');
-    container.innerHTML = '';
-    
+// INTERACTIVE ASSIGNMENTS PANEL: Generates selection buttons first
+function buildModuleDeadlinesSelector() {
+    const tabsRow = document.getElementById('module-tabs-row');
+    tabsRow.innerHTML = '';
+
     if (ACADEMIC_DEADLINES.length === 0) {
-        container.innerHTML = `<div class="empty-state">No upcoming tasks listed! Clean slate. 😎</div>`;
+        document.getElementById('deadlines-container').innerHTML = `<div class="empty-state">No upcoming tasks listed!</div>`;
         return;
     }
 
-    // Grouping logic array mapping
-    const groupedByModule = {};
-    ACADEMIC_DEADLINES.forEach(task => {
-        if (!groupedByModule[task.module]) {
-            groupedByModule[task.module] = [];
-        }
-        groupedByModule[task.module].push(task);
+    // Isolate unique module lists
+    const uniqueModules = [...new Set(ACADEMIC_DEADLINES.map(t => t.module))];
+
+    // Auto-select the first module if nothing is actively selected yet
+    if (!selectedModuleCode && uniqueModules.length > 0) {
+        selectedModuleCode = uniqueModules[0];
+    }
+
+    uniqueModules.forEach(moduleCode => {
+        const tabBtn = document.createElement('button');
+        tabBtn.className = (moduleCode === selectedModuleCode) ? 'module-tab-btn active-tab' : 'module-tab-btn';
+        tabBtn.textContent = moduleCode;
+        
+        tabBtn.addEventListener('click', () => {
+            selectedModuleCode = moduleCode;
+            // Toggle active visual states on button rows
+            document.querySelectorAll('.module-tab-btn').forEach(b => b.classList.remove('active-tab'));
+            tabBtn.classList.add('active-tab');
+            // Refresh content view to run CSS keyframe slide transitions
+            renderSelectedModuleTasks();
+        });
+        
+        tabsRow.appendChild(tabBtn);
     });
 
+    renderSelectedModuleTasks();
+}
+
+// Injects tasks matching only the selected button choice
+function renderSelectedModuleTasks() {
+    const container = document.getElementById('deadlines-container');
+    
+    // Clear elements completely to force keyframe animations to recalculate
+    container.innerHTML = '';
+
+    if (!selectedModuleCode) return;
+
+    const filteredTasks = ACADEMIC_DEADLINES.filter(t => t.module === selectedModuleCode);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Build DOM structure module-by-module
-    Object.keys(groupedByModule).forEach(moduleCode => {
-        const moduleCard = document.createElement('div');
-        moduleCard.className = 'module-group-card';
+    filteredTasks.forEach(task => {
+        const taskDate = new Date(task.dueDate);
+        taskDate.setHours(0, 0, 0, 0);
         
-        let tasksHTML = '';
+        const diffTime = taskDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
-        groupedByModule[moduleCode].forEach(task => {
-            const taskDate = new Date(task.dueDate);
-            taskDate.setHours(0, 0, 0, 0);
-            
-            const diffTime = taskDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            let pillClass = "open-tag"; 
-            let countdownLabel = `${diffDays} days left`;
-            let leftBorderColor = "rgba(255, 255, 255, 0.15)";
+        let pillClass = "open-tag"; 
+        let countdownLabel = `${diffDays} days left`;
+        let leftBorderColor = "rgba(255, 255, 255, 0.15)";
 
-            if (diffDays < 0) {
-                pillClass = "conducted-tag";
-                countdownLabel = "Overdue";
-            } else if (diffDays === 0) {
-                pillClass = "test-tag";
-                countdownLabel = "TODAY";
-                leftBorderColor = "var(--color-test)";
-            } else if (diffDays <= 3) {
-                pillClass = "replacement-tag";
-                countdownLabel = "Urgent";
-                leftBorderColor = "var(--color-replacement)";
-            }
+        if (diffDays < 0) {
+            pillClass = "conducted-tag";
+            countdownLabel = "Overdue";
+        } else if (diffDays === 0) {
+            pillClass = "test-tag";
+            countdownLabel = "TODAY";
+            leftBorderColor = "var(--color-test)";
+        } else if (diffDays <= 3) {
+            pillClass = "replacement-tag";
+            countdownLabel = "Urgent";
+            leftBorderColor = "var(--color-replacement)";
+        }
 
-            let iconType = "assignment";
-            if (task.type === "Test") iconType = "assignment_late";
-            if (task.type === "Lab") iconType = "biotech";
-
-            tasksHTML += `
-                <div class="deadline-task-item" style="border-left-color: ${leftBorderColor}">
-                    <div class="task-info-side">
-                        <span class="deadline-title">${task.title}</span>
-                        <span class="deadline-date-sub">Due Date: ${task.dueDate}</span>
-                    </div>
-                    <span class="pill ${pillClass}" style="font-size:0.7rem; padding:2px 6px;">${countdownLabel}</span>
-                </div>
-            `;
-        });
-
-        moduleCard.innerHTML = `
-            <div class="module-group-header">
-                <span class="material-icons" style="font-size: 1.1rem;">auto_stories</span>
-                <span>${moduleCode}</span>
+        const taskItem = document.createElement('div');
+        taskItem.className = 'deadline-task-item'; 
+        taskItem.style.borderLeftColor = leftBorderColor;
+        taskItem.innerHTML = `
+            <div class="task-info-side">
+                <span class="deadline-title">${task.title}</span>
+                <span class="deadline-date-sub">Due Date: ${task.dueDate}</span>
             </div>
-            <div class="module-task-list">
-                ${tasksHTML}
-            </div>
+            <span class="pill ${pillClass}" style="font-size:0.7rem; padding:2px 6px;">${countdownLabel}</span>
         `;
-        container.appendChild(moduleCard);
+        container.appendChild(taskItem);
     });
 }
 
-// Fetch Weekly Academic Timetable Files and execute filtering pipelines
+// Fetch Weekly Academic Timetable Files and handle immediate runtime evaluations
 async function loadTimetable() {
     const container = document.getElementById('timetable-container');
     const headerNextDisplay = document.getElementById('header-next-class');
@@ -181,7 +192,7 @@ async function loadTimetable() {
     try {
         const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/timetable/${targetFileName}`);
         if (!response.ok) {
-            container.innerHTML = `<div class="empty-state">No timetable file found for this week (${targetFileName}).</div>`;
+            container.innerHTML = `<div class="empty-state">No timetable found for this week.</div>`;
             headerNextDisplay.textContent = 'No schedule found';
             greetingBanner.textContent = `${getTimeOfDayGreeting()} Ready for today's programming labs?`;
             return;
@@ -200,7 +211,9 @@ async function loadTimetable() {
         const now = new Date();
         const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
         const currentDayIndex = now.getDay();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        
+        // Exact real-time minutes positioning including fractional seconds parameters
+        const currentMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
         
         let activeClassText = '<span class="highlight-countdown">NO ACTIVE CLASS NOW</span>';
         let activeClassObj = null;
@@ -230,15 +243,17 @@ async function loadTimetable() {
                             isConducted = true; 
                         } else if (currentDayIndex === jsonDayIndex) {
                             totalClassesToday++; 
-                            if (currentMinutes > endTotalMinutes) {
+                            // Inclusive time boundaries change states the exact second lectures cross thresholds
+                            if (currentMinutes >= endTotalMinutes) {
                                 isConducted = true; 
                                 conductedClassesToday++;
-                            } else if (currentMinutes >= startTotalMinutes && currentMinutes <= endTotalMinutes) {
+                            } else if (currentMinutes >= startTotalMinutes && currentMinutes < endTotalMinutes) {
                                 isCurrent = true; 
                             }
                         }
                     }
 
+                    // Skip past items
                     if (isConducted) return; 
 
                     if (isCurrent) {
@@ -289,7 +304,7 @@ async function loadTimetable() {
             }
         });
 
-        // Compute and trigger progress bar percentages
+        // Compute progress bar tracking width fills
         if (totalClassesToday > 0) {
             progressBarContainer.style.display = 'block';
             const calculatedPercentage = Math.round((conductedClassesToday / totalClassesToday) * 100);
@@ -298,10 +313,10 @@ async function loadTimetable() {
             progressBarContainer.style.display = 'none';
         }
 
-        // Update Top Header Summary Text fields
+        // Apply metadata updates directly into header layout nodes
         headerNextDisplay.innerHTML = activeClassText;
 
-        // Dynamic Greeting live updates logic checks
+        // Dynamic Greeting Engine Transitions
         const baseGreetingPrefix = getTimeOfDayGreeting(); 
         if (activeClassObj) {
             const formattedRange = formatRange12Hour(activeClassObj.time);
@@ -331,10 +346,11 @@ async function loadTimetable() {
 
 // Initialize Active Subsystems
 loadRepositoryPages();
-loadDeadlinesWidget();
+buildModuleDeadlinesSelector();
 loadTimetable();
 
-// AUTOMATION POOL: Check status matrices every 30 seconds to change greetings & bar state live
+// SECONDARY AUTOMATION SPEED: Scans schedule matrix boundaries every 1 second 
+// to transition headings/greetings live without delays
 setInterval(() => {
     loadTimetable();
-}, 30000);
+}, 1000);
