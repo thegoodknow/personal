@@ -3,321 +3,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Workspace Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Home Dashboard</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    
     <style>
-        :root {
-            --bg-base: #0b0c0e;
-            --surface-glass: rgba(20, 21, 26, 0.75);
-            --card-inner: rgba(30, 32, 40, 0.5);
-            --border-glass: rgba(255, 255, 255, 0.05);
-            --border-glow: rgba(59, 130, 246, 0.2);
-            --text-main: #ffffff;
-            --text-subtle: #94a3b8;
-            
-            /* Sourced from APSpace liquid glass palette color identity */
-            --apspace-blue: #2563eb; 
-            --apspace-cyan: #38bdf8;
-            --apspace-gold: #fbbf24;
-            --apspace-gold-bg: rgba(251, 191, 36, 0.15);
-            --color-test: #ef4444;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 24px;
-            overflow-x: hidden;
-        }
-
-        .workspace-grid {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* --- Dashboard Workspace Layout Framework --- */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 24px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        @media (max-width: 1024px) {
-            .workspace-grid { grid-template-columns: 1fr; }
+        @media (max-width: 850px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* Fluid Glass System Headers */
-        .workspace-header {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--surface-glass);
-            border: 1px solid var(--border-glass);
-            backdrop-filter: blur(20px);
-            padding: 18px 24px;
-            border-radius: 16px;
-        }
-
-        .header-left h1 { 
-            font-size: 1.25rem; 
-            font-weight: 700; 
-            letter-spacing: -0.01em; 
-            color: var(--apspace-cyan);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .header-right { display: flex; align-items: center; gap: 20px; }
-        .live-clock-wrapper { display: flex; align-items: center; gap: 8px; color: var(--apspace-cyan); font-weight: 600; font-size: 0.95rem; }
-        
-        .highlight-countdown {
-            background: rgba(37, 99, 235, 0.15);
-            border: 1px solid rgba(37, 99, 235, 0.3);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #fff;
-        }
-
-        /* Broadcast Dynamic Alerts */
-        .broadcast-banner {
-            grid-column: 1 / -1;
-            background: var(--surface-glass);
-            border: 1px solid var(--border-glass);
-            padding: 16px 20px;
-            border-radius: 14px;
-            font-size: 0.88rem;
-            line-height: 1.5;
-            color: var(--text-main);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        /* Dashboard Containment Cards */
-        .dashboard-section {
-            background: var(--surface-glass);
-            border: 1px solid var(--border-glass);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 24px;
+        .right-column-group {
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .page-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .empty-state {
+            color: var(--text-subtle);
+            font-style: italic;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        /* --- Liquid Glass UI Panel Styles --- */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 30px;
+            padding: 12px 24px;
+            background-color: rgba(30, 30, 30, 0.65) !important;
+            backdrop-filter: blur(14px) saturate(160%);
+            -webkit-backdrop-filter: blur(14px) saturate(160%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s ease;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .clock-display {
+            font-weight: 700;
+            color: #007BFF;
+        }
+
+        .info-play-arrow {
+            color: #FFC107 !important;
+            font-size: 1.2rem;
+            margin-right: 8px;
+            animation: flash-play 1.2s infinite;
+        }
+
+        @keyframes flash-play {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .highlight-countdown {
+            color: #FFC107;
+            font-weight: 700;
+        }
+
+        .greeting-container {
+            max-width: 1200px;
+            margin: 20px auto 0 auto;
+            padding: 15px 20px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: rgba(30, 30, 30, 0.45);
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .dashboard-section {
+            background-color: rgba(30, 30, 30, 0.45) !important;
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .section-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--apspace-blue);
-            letter-spacing: 0.02em;
-            text-transform: capitalize;
-            padding-bottom: 4px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
         }
 
-        .section-header .material-icons { font-size: 1.35rem; color: var(--apspace-blue); }
-
-        /* Modern Lecture Cards Engine */
-        .timetable-scroll-box {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+        /* --- Class Progress Bar Tracker Styles --- */
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 10px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: none; 
         }
 
-        .class-card {
-            background: var(--card-inner);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            padding: 18px;
-            transition: transform 0.2s ease, border-color 0.2s ease;
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #007BFF, #00D2FF);
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .class-card.current-class {
-            border-color: rgba(251, 191, 36, 0.4);
-            background: linear-gradient(145deg, rgba(30,32,40,0.6) 0%, rgba(251,191,36,0.03) 100%);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-title { display: flex; align-items: flex-start; gap: 10px; font-weight: 700; font-size: 0.95rem; color: #ffffff; line-height: 1.4; }
-        .card-title .material-icons { font-size: 1.25rem; color: var(--apspace-cyan); margin-top: 2px; }
-        .card-subtitle { font-size: 0.82rem; color: var(--text-subtle); margin-left: 30px; margin-top: 4px; }
-        
-        .card-details { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-top: 16px; 
-            padding-top: 12px; 
-            border-top: 1px solid rgba(255,255,255,0.03); 
-            font-size: 0.82rem; 
-            color: var(--apspace-cyan);
-            font-weight: 500;
-        }
-        
-        /* Premium Badges System */
-        .pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
-        .open-tag { background: rgba(255,255,255,0.06); color: #fff; }
-        .online-tag { background: rgba(56, 189, 248, 0.12); color: var(--apspace-cyan); border: 1px solid rgba(56, 189, 248, 0.2); }
-        .replacement-tag { background: rgba(251, 191, 36, 0.12); color: var(--apspace-gold); border: 1px solid rgba(251, 191, 36, 0.2); }
-        .test-tag { background: rgba(239, 68, 68, 0.12); color: var(--color-test); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .conducted-tag { background: rgba(148, 163, 184, 0.1); color: var(--text-subtle); }
-        
-        /* Sourced directly from image_47697.jpg asset visualization */
-        .active-now-tag { 
-            background: var(--apspace-gold-bg); 
-            color: var(--apspace-gold); 
-            border: 1px solid rgba(251,191,36,0.3);
-            font-weight: 800;
-            padding: 5px 12px;
-        }
-
-        /* Clean Repository List Groups */
-        .pages-list-container { display: flex; flex-direction: column; gap: 2px; background: var(--card-inner); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-glass); }
+        /* --- Link Elements & Liquid Glow Animations --- */
         .page-item-link {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 16px 18px;
+            justify-content: space-between;
+            background-color: rgba(37, 37, 37, 0.4) !important;
+            padding: 12px 16px;
+            border-radius: 8px !important;
             text-decoration: none;
-            color: var(--text-main);
-            font-size: 0.88rem;
-            font-weight: 500;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            transition: background 0.15s ease;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.03) !important;
+            position: relative;
+            overflow: hidden;
+            transition: cubic-bezier(0.25, 0.8, 0.25, 1) 0.35s !important;
         }
-        .page-item-link:last-child { border-bottom: none; }
-        .page-item-link:hover { background: rgba(255, 255, 255, 0.03); }
-        
-        .page-title-group { display: flex; align-items: center; gap: 14px; text-align: left; }
-        .page-title-group .material-icons { color: var(--apspace-blue); font-size: 1.2rem; }
-        .page-chevron { font-size: 1rem; color: var(--text-subtle); opacity: 0.7; }
 
-        /* Deadlines Segment Control Row */
-        .tabs-navigation-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid var(--border-glass); }
-        .module-tab-btn {
-            background: transparent; border: none; color: var(--text-subtle); padding: 8px 14px; font-family: inherit; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
+        .page-item-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: 0.5s;
         }
-        .module-tab-btn:hover { background: rgba(255,255,255,0.03); color: #fff; }
-        .module-tab-btn.active-tab { background: rgba(37, 99, 235, 0.15); color: var(--apspace-cyan); border: 1px solid rgba(37, 99, 235, 0.2); }
+
+        .page-item-link:hover::before { left: 100%; }
+
+        .page-item-link:hover {
+            background-color: rgba(255, 255, 255, 0.06) !important;
+            border-color: rgba(0, 123, 255, 0.4) !important;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        /* --- Student Portals Grid --- */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 500px) { .portal-grid { grid-template-columns: 1fr; } }
+        .portal-card { height: 100%; box-sizing: border-box; }
+        .link-arrow { font-size: 1rem !important; color: var(--text-subtle); }
+
+        /* --- INTERACTIVE MODULE BUTTONS & SELECTOR PANEL --- */
+        .module-selector-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
         
+        .module-tab-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-subtle);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        .module-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-light);
+        }
+        
+        .module-tab-btn.active-tab {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .module-display-box {
+            background: rgba(35, 35, 35, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 60px;
+        }
+
+        /* --- Smooth Entrance Animation for Selected Tasks --- */
         .deadline-task-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            background: var(--card-inner);
-            border: 1px solid var(--border-glass);
-            padding: 14px;
-            border-radius: 10px;
-            margin-top: 10px;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+            animation: slideUpFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
-        .task-info-side { display: flex; flex-direction: column; gap: 4px; }
-        .deadline-title { font-size: 0.88rem; font-weight: 600; color: #fff; }
-        .deadline-date-sub { font-size: 0.78rem; color: var(--text-subtle); }
-
-        /* Clean Forms Elements */
-        .turnitin-input-group { display: flex; gap: 8px; width: 100%; }
-        .turnitin-input-group input {
-            flex-grow: 1; background: var(--card-inner); border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px 16px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none; transition: border-color 0.2s ease;
+        
+        .deadline-task-item:last-child {
+            margin-bottom: 0;
         }
-        .turnitin-input-group input:focus { border-color: var(--apspace-blue); }
-        .turnitin-btn {
-            background: var(--apspace-blue); color: #fff; border: none; border-radius: 8px; padding: 0 16px; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;
+
+        /* Stagger animation delivery if a module has multiple items */
+        .deadline-task-item:nth-child(1) { animation-delay: 0.05s; }
+        .deadline-task-item:nth-child(2) { animation-delay: 0.1s; }
+        .deadline-task-item:nth-child(3) { animation-delay: 0.15s; }
+        .deadline-task-item:nth-child(4) { animation-delay: 0.2s; }
+
+        .task-info-side {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
-        .turnitin-btn:hover { background: #1d4ed8; }
 
-        .progress-bar-track { width: 100%; height: 5px; background: rgba(255,255,255,0.04); border-radius: 10px; overflow: hidden; margin-top: 4px; }
-        .progress-bar-fill { height: 100%; width: 0%; background: var(--apspace-cyan); transition: width 0.4s ease; }
+        .deadline-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
 
-        .empty-state { text-align: center; padding: 32px; color: var(--text-subtle); font-size: 0.82rem; font-style: italic; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+        .deadline-date-sub {
+            font-size: 0.75rem;
+            color: var(--text-subtle);
+        }
+
+        /* --- Timetable Layout Gloss Cards --- */
+        .class-card {
+            background-color: rgba(40, 40, 40, 0.35) !important;
+            border: 1px solid rgba(255, 255, 255, 0.02) !important;
+            border-radius: 10px !important;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .class-card:hover {
+            transform: scale(1.015);
+            background-color: rgba(50, 50, 50, 0.45) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Unique animated badge for the class happening right now */
+        .pill.active-now-tag {
+            background-color: var(--color-current) !important; 
+            color: #121212 !important; 
+            font-weight: 700;
+            box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { transform: scale(1); box-shadow: 0 0 8px rgba(255, 193, 7, 0.5); }
+            to { transform: scale(1.04); box-shadow: 0 0 16px rgba(255, 193, 7, 0.8); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUpFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="workspace-grid">
-        
-        <header class="workspace-header">
-            <div class="header-left">
-                <span class="material-icons">blur_on</span>
-                <h1>APSpace Workspace</h1>
-            </div>
-            <div class="header-right">
-                <div id="header-next-class" class="header-next-container">
-                    <span class="highlight-countdown">Syncing context telemetry...</span>
-                </div>
-                <div class="live-clock-wrapper">
-                    <span class="material-icons" style="font-size:1.1rem;">schedule</span>
-                    <span id="live-clock">00:00:00 AM</span>
-                </div>
-            </div>
-        </header>
-
-        <div id="greeting-banner" class="broadcast-banner">
-            🚀 Loading system configurations...
+    <header class="header">
+        <div class="logo-group">
+            <img src="img/apspace-white.svg" alt="APSpace" id="logo-icon" style="height: 24px; width: auto;">
+            <span id="live-clock" class="clock-display" style="font-size: 1.1rem; margin-left: 5px;">00:00:00</span>
         </div>
+        
+        <div class="header-summary-bar">
+            <div class="summary-item next-class-display">
+                <span class="material-icons info-play-arrow">play_arrow</span>
+                <span id="header-next-class">Checking schedule...</span>
+            </div>
+        </div>
+    </header>
 
-        <main class="dashboard-section">
+    <div class="greeting-container" id="greeting-banner">
+        Loading workspace greeting...
+    </div>
+
+    <main class="dashboard-grid">
+        
+        <section class="dashboard-section">
             <div class="section-header">
-                <span class="material-icons">segment</span>
+                <span class="material-icons">auto_stories</span>
                 <span>Upcoming Schedule</span>
             </div>
             
-            <div id="daily-progress-container" style="display:none; padding: 0 4px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-subtle); margin-bottom:6px;">
-                    <span>Today's Lecture Track Completion</span>
-                </div>
-                <div class="progress-bar-track">
-                    <div id="daily-progress-fill" class="progress-bar-fill"></div>
-                </div>
+            <div class="progress-bar-container" id="daily-progress-container">
+                <div class="progress-bar-fill" id="daily-progress-fill"></div>
             </div>
 
-            <div id="timetable-container" class="timetable-scroll-box">
-                <div class="empty-state">Assembling fluid pipeline view...</div>
+            <div id="timetable-container" class="list-container">
+                <div class="empty-state">Loading timetable schedules...</div>
             </div>
-        </main>
+        </section>
 
-        <aside style="display: flex; flex-direction: column; gap: 24px;">
+        <div class="right-column-group">
             
             <section class="dashboard-section">
                 <div class="section-header">
-                    <span class="material-icons">date_range</span>
-                    <span>Deadlines Registry</span>
-                </div>
-                <div id="module-tabs-row" class="tabs-navigation-row"></div>
-                <div id="deadlines-container" style="min-height: 120px;"></div>
-            </section>
-
-            <section class="dashboard-section">
-                <div class="section-header">
-                    <span class="material-icons">widgets</span>
+                    <span class="material-icons">layers</span>
                     <span>Tools & Hosted Pages</span>
                 </div>
-                <div id="pages-container" class="pages-list-container"></div>
+                <div id="pages-container" class="list-container">
+                    <div class="empty-state">Loading workspace tools...</div>
+                </div>
             </section>
 
             <section class="dashboard-section">
                 <div class="section-header">
-                    <span class="material-icons">security</span>
-                    <span>Turnitin Portal Linker</span>
+                    <span class="material-icons">school</span>
+                    <span>Student Portals & LMS</span>
                 </div>
-                <div class="turnitin-input-group">
-                    <input type="text" id="turnitin-id-field" placeholder="Enter Assignment Report ID...">
-                    <button class="turnitin-btn" onclick="redirectToTurnitin()">
-                        <span class="material-icons">arrow_forward</span>
-                    </button>
+                <div class="portal-grid">
+                    <a href="https://apspace.apu.edu.my" target="_blank" class="page-item-link portal-card">
+                        <div class="page-title-group">
+                            <span class="material-icons">dashboard</span>
+                            <span>APSpace Portal</span>
+                        </div>
+                        <span class="material-icons link-arrow">launch</span>
+                    </a>
+                    <a href="https://lms2.apiit.edu.my/my/" target="_blank" class="page-item-link portal-card">
+                        <div class="page-title-group">
+                            <span class="material-icons">local_library</span>
+                            <span>APU LMS</span>
+                        </div>
+                        <span class="material-icons link-arrow">launch</span>
+                    </a>
                 </div>
             </section>
 
-        </aside>
-    </div>
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <span class="material-icons">assignment_late</span>
+                    <span>Assignments & Deadlines</span>
+                </div>
+                <div class="module-selector-tabs" id="module-tabs-row"></div>
+                <div class="module-display-box" id="deadlines-container">
+                    <div class="empty-state">Select a module above to view tasks.</div>
+                </div>
+            </section>
+        </div>
+
+    </main>
 
     <script src="Java/Home.js"></script>
 </body>
