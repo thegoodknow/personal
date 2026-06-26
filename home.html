@@ -242,6 +242,48 @@
             min-height: 60px;
         }
 
+        /* --- Turnitin API Integration Form Styling --- */
+        .turnitin-input-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .turnitin-input-field {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 10px 14px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .turnitin-input-field:focus {
+            border-color: var(--color-primary);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .turnitin-submit-btn {
+            background: var(--color-primary);
+            border: none;
+            color: #ffffff;
+            padding: 0 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.25s ease;
+        }
+
+        .turnitin-submit-btn:hover {
+            opacity: 0.9;
+        }
+
         /* --- Smooth Entrance Animation for Selected Tasks --- */
         .deadline-task-item {
             display: flex;
@@ -368,6 +410,19 @@
                 </div>
                 <div id="pages-container" class="list-container">
                     <div class="empty-state">Loading workspace tools...</div>
+                </div>
+            </section>
+
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <span class="material-icons">assignment_turned_in</span>
+                    <span>Turnitin Framework Integration</span>
+                </div>
+                <div class="turnitin-input-group">
+                    <input type="text" id="turnitin-id-field" class="turnitin-input-field" placeholder="Enter Turnitin Assignment/Report ID...">
+                    <button class="turnitin-submit-btn" onclick="redirectToTurnitin()">
+                        <span class="material-icons">launch</span>
+                    </button>
                 </div>
             </section>
 

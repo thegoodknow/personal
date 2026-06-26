@@ -1,14 +1,26 @@
 /**
  * Core Automation Script Modules for Workspace Hub
  * - Immediate class condition checks (accurate to the second)
- * - Blends greetings with live class-aware details completely in real time
- * - Standard 12-hour AM/PM time formatting engines
- * - Filtered module select system with step stagger layout entry animations
+ * - Feature: Separate global configuration fetching for holidays and exam modes
+ * - Feature: Live countdown timer tracking remaining minutes for active/upcoming classes
+ * - Feature: Picks a completely randomized greeting based on time of day on every page visit
+ * - Feature: Categorized academic & subject tags for local hosted pages
  */
 
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
+
+// --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
+const MY_WORKSPACE_PAGES = [
+    { fileName: "CA_Quiz.html", tags: ["Academic", "Quiz"] },
+    { fileName: "convert.html", tags: ["Utility"] },
+    { fileName: "DBM LAB7.html", tags: ["Academic", "Quiz"] },
+    { fileName: "department.html", tags: ["Academic"] },
+    { fileName: "gdp.html", tags: ["Economics", "Data"] },
+    { fileName: "timetable test.html", tags: ["System Testing"] },
+    { fileName: "timetable.html", tags: ["Utility"] }
+];
 
 // --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
@@ -19,15 +31,25 @@ const ACADEMIC_DEADLINES = [
     { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-08-02", type: "Assignment" },
     { title: "Part 2 Assignment", module: "AICT022-4-1-ISCC", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Final Exam", module: "AICT015-4-1-DBM", dueDate: "2026-08-24", type: "Exam" },
-    { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-24", type: "Exam" },
-    { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-24", type: "Exam" },
-    { title: "Final Exam", module: "AAPP015-4-1-PWP", dueDate: "2026-08-24", type: "Exam" }
+    { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-26", type: "Exam" },
+    { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-28", type: "Exam" },
+    { title: "Final Exam", module: "AAPP015-4-1-PWP", dueDate: "2026-09-02", type: "Exam" }
 ];
 
-// Globally tracks which module code is currently clicked/highlighted
 let selectedModuleCode = null;
 
-// Utility: Convert 24-hour time string ("HH:MM") to 12-hour string ("H:MM AM/PM")
+// Turnitin Framework API Link Handler Integration
+function redirectToTurnitin() {
+    const reportId = document.getElementById('turnitin-id-field').value.trim();
+    if (!reportId) {
+        alert("Please enter a valid Turnitin Report ID first!");
+        return;
+    }
+    const turnitinApiUrl = `https://ev.turnitin.com/app/carta/en_us/?lang=en_us&o=${reportId}&u=1192157007&ro=103&s=1&student_user=1`;
+    window.open(turnitinApiUrl, '_blank');
+}
+
+// Utility Time Conversions
 function format12Hour(timeStr) {
     if (!timeStr) return '';
     const [hoursStr, minutesStr] = timeStr.trim().split(':');
@@ -39,14 +61,14 @@ function format12Hour(timeStr) {
     return `${hours}:${minutes} ${ampm}`;
 }
 
-// Utility: Convert a time range string ("13:30 - 15:30") to 12-hour format
+// Format time range string safely
 function formatRange12Hour(rangeStr) {
     const parts = rangeStr.split('-');
     if (parts.length !== 2) return rangeStr;
     return `${format12Hour(parts[0])} - ${format12Hour(parts[1])}`;
 }
 
-// Real-Time System Navigation Clock Trigger (12-Hour Format)
+// Live Digital System Navigation Clock Trigger
 function updateClock() {
     const now = new Date();
     let hours = now.getHours();
@@ -60,12 +82,31 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Smart Time-of-Day Base Greeting Generator
-function getTimeOfDayGreeting() {
+// --- RANDOMIZED GREETING ENGINE ---
+function getRandomizedGreeting() {
     const hours = new Date().getHours();
-    if (hours >= 5 && hours < 12) return "🌅 Good Morning!";
-    if (hours >= 12 && hours < 17) return "☀️ Good Afternoon!";
-    return "🌌 Good Evening!";
+    const morningPhrases = [
+        "🌅 Good Morning! Ready to crush today's cloud architecture labs?",
+        "☕ Morning! Grab a coffee and let's push some code updates.",
+        "🌤️ Wake up and debug! Your workspace is fully primed for today."
+    ];
+    const afternoonPhrases = [
+        "☀️ Good Afternoon! Hope your lectures are moving smoothly.",
+        "⚡ Focus mode activated. What are we building this afternoon?",
+        "🚀 Halfway through the day! Let's check those repository pages."
+    ];
+    const eveningPhrases = [
+        "🌌 Good Evening! Perfect time to work on side projects.",
+        "🌙 Coding late? Remember to test your API queries before pushing.",
+        "🖥️ Evening workspace active. Let's review the academic timeline metrics."
+    ];
+
+    // Compute a clean random selection inside function scope on every invocation
+    const randomIndex = Math.floor(Math.random() * 3);
+
+    if (hours >= 5 && hours < 12) return morningPhrases[randomIndex];
+    if (hours >= 12 && hours < 18) return afternoonPhrases[randomIndex];
+    return eveningPhrases[randomIndex];
 }
 
 // Compute Sunday-Bound File Names
@@ -77,25 +118,42 @@ function getCurrentWeeklyFileName() {
     return `${sunday.getFullYear()}-${String(sunday.getMonth() + 1).padStart(2, '0')}-${String(sunday.getDate()).padStart(2, '0')}.json`;
 }
 
-// Render Local Repos Workspace Pages Links
+// Render Workspace Pages Links with Subject Category Tags
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
-    const myPages = ["CA_Quiz.html", "convert.html", "DBM LAB7.html", "department.html", "gdp.html", "record.html", "timetable test.html", "timetable.html"];
     container.innerHTML = '';
-    myPages.forEach(fileName => {
-        const cleanTitle = fileName.replace('.html', '').replace(/[-_]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+    
+    MY_WORKSPACE_PAGES.forEach(pageObj => {
+        const cleanTitle = pageObj.fileName.replace('.html', '').replace(/[-_]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        
+        let tagsMarkup = '';
+        pageObj.tags.forEach(tag => {
+            let colorClass = 'open-tag'; 
+            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') colorClass = 'test-tag'; 
+            if (tag === 'System') colorClass = 'online-tag'; 
+            if (tag === 'Utility') colorClass = 'replacement-tag'; 
+            
+            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
+        });
+
         const linkElement = document.createElement('a');
         linkElement.className = 'page-item-link';
-        linkElement.href = `${BASE_PAGES_URL}${fileName}`;
+        linkElement.href = `${BASE_PAGES_URL}${pageObj.fileName}`;
         linkElement.innerHTML = `
-            <div class="page-title-group"><span class="material-icons">construction</span><span>${cleanTitle}</span></div>
+            <div class="page-title-group">
+                <span class="material-icons">construction</span>
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <span>${cleanTitle}</span>
+                    <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;">${tagsMarkup}</div>
+                </div>
+            </div>
             <span class="material-icons" style="font-size: 1.1rem; color: var(--text-subtle);">arrow_forward</span>
         `;
         container.appendChild(linkElement);
     });
 }
 
-// INTERACTIVE ASSIGNMENTS PANEL: Generates selection buttons first
+// INTERACTIVE ASSIGNMENTS PANEL
 function buildModuleDeadlinesSelector() {
     const tabsRow = document.getElementById('module-tabs-row');
     tabsRow.innerHTML = '';
@@ -105,12 +163,11 @@ function buildModuleDeadlinesSelector() {
         return;
     }
 
-    // Isolate unique module lists
     const uniqueModules = [...new Set(ACADEMIC_DEADLINES.map(t => t.module))];
 
-    // Auto-select the first module if nothing is actively selected yet
     if (!selectedModuleCode && uniqueModules.length > 0) {
-        selectedModuleCode = uniqueModules[0];
+        const randomIndex = Math.floor(Math.random() * uniqueModules.length);
+        selectedModuleCode = uniqueModules[randomIndex];
     }
 
     uniqueModules.forEach(moduleCode => {
@@ -120,10 +177,8 @@ function buildModuleDeadlinesSelector() {
         
         tabBtn.addEventListener('click', () => {
             selectedModuleCode = moduleCode;
-            // Toggle active visual states on button rows
             document.querySelectorAll('.module-tab-btn').forEach(b => b.classList.remove('active-tab'));
             tabBtn.classList.add('active-tab');
-            // Refresh content view to run CSS keyframe slide transitions
             renderSelectedModuleTasks();
         });
         
@@ -133,11 +188,8 @@ function buildModuleDeadlinesSelector() {
     renderSelectedModuleTasks();
 }
 
-// Injects tasks matching only the selected button choice
 function renderSelectedModuleTasks() {
     const container = document.getElementById('deadlines-container');
-    
-    // Clear elements completely to force keyframe animations to recalculate
     container.innerHTML = '';
 
     if (!selectedModuleCode) return;
@@ -184,45 +236,140 @@ function renderSelectedModuleTasks() {
     });
 }
 
-// Fetch Weekly Academic Timetable Files and handle immediate runtime evaluations
+// --- CORE ENGINE: TIMETABLE LOAD, COUNTDOWN TICKERS & HOLIDAY MATRIX RULES ---
 async function loadTimetable() {
     const container = document.getElementById('timetable-container');
     const headerNextDisplay = document.getElementById('header-next-class');
     const greetingBanner = document.getElementById('greeting-banner');
-    
     const progressBarContainer = document.getElementById('daily-progress-container');
     const progressBarFill = document.getElementById('daily-progress-fill');
     
+    const now = new Date();
+    const currentFormattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const currentMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
+
+    let configData = { announcements: { isExamWeek: false }, exams: [], holidays: [] };
+
+    // 1. Fetch Separated Configuration Overrides parameters
+    try {
+        const configRes = await fetch(`config.json`);
+        if (configRes.ok) {
+            configData = await configRes.json();
+        }
+    } catch (e) {
+        console.warn("Global config parameters offline, running standard cycle configurations.", e);
+    }
+
+    // Evaluate holiday scheduling conditions
+    const currentHoliday = configData.holidays ? configData.holidays.find(h => h.date === currentFormattedDate) : null;
+
+    // --- INTERACTIVE EXAM PERIOD RENDERING MODULE ---
+    if (configData.announcements && configData.announcements.isExamWeek && configData.exams && configData.exams.length > 0) {
+        container.innerHTML = '';
+        if (progressBarContainer) progressBarContainer.style.display = 'none';
+
+        let nextExam = null;
+        let minDiffDays = Infinity;
+        const todayClear = new Date();
+        todayClear.setHours(0,0,0,0);
+
+        configData.exams.forEach(exam => {
+            const examDate = new Date(exam.date);
+            examDate.setHours(0,0,0,0);
+            const diffTime = examDate - todayClear;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays >= 0 && diffDays < minDiffDays) {
+                minDiffDays = diffDays;
+                nextExam = exam;
+            }
+
+            const card = document.createElement('div');
+            card.className = (diffDays === 0) ? 'class-card current-class' : 'class-card today';
+            if (diffDays === 0) card.style.borderLeftColor = "var(--color-test)";
+
+            const examDayShort = exam.date.split('-')[2] || '';
+            const examMonthShort = new Date(exam.date).toLocaleString('default', { month: 'short' });
+
+            card.innerHTML = `
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <div style="text-align: center; min-width: 60px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 15px;">
+                        <span style="font-size: 1.8rem; font-weight: bold; display: block; color: var(--text-main);">${examDayShort}</span>
+                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-subtle);">${examMonthShort}</span>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <div class="card-title" style="margin-bottom: 4px;">
+                            <span class="material-icons" style="color: var(--color-test);">assignment_late</span>
+                            <span style="font-weight: 600;">${exam.module}</span>
+                        </div>
+                        <div class="card-subtitle" style="font-size: 0.8rem; margin-bottom: 6px; color: var(--text-subtle); margin-left:0;">
+                            <span class="material-icons" style="font-size:0.9rem; vertical-align:middle; margin-right:4px; color: var(--accent-primary);">place</span>${exam.location}
+                        </div>
+                        <div style="display: flex; gap: 15px; font-size: 0.75rem; color: #fff; opacity: 0.85; margin-top:4px;">
+                            <span>🕒 ${exam.time}</span>
+                            <span>⏳ ${exam.duration}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        if (nextExam) {
+            if (minDiffDays === 0) {
+                if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown" style="background: var(--color-test); color:#fff; border-color:transparent;">📝 EXAM TODAY</span>`;
+                if (greetingBanner) greetingBanner.textContent = `⚡ Attention: Your examination paper for ${nextExam.module} takes place today at ${nextExam.time}! Bring your student card and laptop cable.`;
+            } else {
+                if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏳ EXAM IN ${minDiffDays} DAYS</span>`;
+                if (greetingBanner) greetingBanner.textContent = `Focus Mode Active! Your next paper [${nextExam.module.split(' (')[0]}] comes up in ${minDiffDays} days on ${nextExam.date}.`;
+            }
+        } else {
+            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">🎉 EXAMS COMPLETED</span>`;
+            if (greetingBanner) greetingBanner.textContent = "All examinations are concluded! Enjoy your break and your side tools repository coding.";
+        }
+        return;
+    }
+
+    // --- PUBLIC HOLIDAY BANNER INTERCEPT MODES ---
+    if (currentHoliday) {
+        container.innerHTML = `
+            <div class="class-card" style="text-align: center; padding: 30px 15px; border-left-color: var(--color-replacement);">
+                <span class="material-icons" style="font-size: 3rem; color: #FFC107; margin-bottom: 10px;">celebration</span>
+                <div class="card-title" style="justify-content: center;">Campus Closed: ${currentHoliday.name}</div>
+                <div class="card-subtitle" style="margin-top: 5px; margin-left:0;">No academic classes scheduled today. Enjoy your break!</div>
+            </div>`;
+        if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">🎉 HOLIDAY: ${currentHoliday.name.toUpperCase()}</span>`;
+        if (greetingBanner) greetingBanner.textContent = `Happy ${currentHoliday.name}! Beautiful day to take a break or work on side tools.`;
+        if (progressBarContainer) progressBarContainer.style.display = 'none';
+        return;
+    }
+
+    // --- 2. STANDARD LECTURE ROUTINE PROCESSING ---
     const targetFileName = getCurrentWeeklyFileName(); 
-    
     try {
         const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/timetable/${targetFileName}`);
         if (!response.ok) {
             container.innerHTML = `<div class="empty-state">No timetable found for this week.</div>`;
-            headerNextDisplay.textContent = 'No schedule found';
-            greetingBanner.textContent = `${getTimeOfDayGreeting()} Ready for today's programming labs?`;
+            if (headerNextDisplay) headerNextDisplay.textContent = 'No schedule found';
+            if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
             return;
         }
 
         const data = await response.json();
         if (!data || !data.days || data.days.length === 0) {
             container.innerHTML = `<div class="empty-state">No classes scheduled for this week.</div>`;
-            headerNextDisplay.textContent = 'Free Week';
-            greetingBanner.textContent = `${getTimeOfDayGreeting()} Looks like a free week!`;
+            if (headerNextDisplay) headerNextDisplay.textContent = 'Free Week';
+            if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
             return;
         }
 
         container.innerHTML = '';
-        
-        const now = new Date();
         const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
         const currentDayIndex = now.getDay();
         
-        // Exact real-time minutes positioning including fractional seconds parameters
-        const currentMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
-        
-        let activeClassText = '<span class="highlight-countdown">NOT HAVING ANY CLASSES NOW</span>';
         let activeClassObj = null;
+        let nextUpcomingClassObj = null;
+        let minUpcomingTimeDiff = Infinity;
         let visibleCardsInjected = false;
 
         let totalClassesToday = 0;
@@ -249,23 +396,24 @@ async function loadTimetable() {
                             isConducted = true; 
                         } else if (currentDayIndex === jsonDayIndex) {
                             totalClassesToday++; 
-                            // Inclusive time boundaries change states the exact second lectures cross thresholds
                             if (currentMinutes >= endTotalMinutes) {
                                 isConducted = true; 
                                 conductedClassesToday++;
                             } else if (currentMinutes >= startTotalMinutes && currentMinutes < endTotalMinutes) {
                                 isCurrent = true; 
+                            } else if (currentMinutes < startTotalMinutes) {
+                                const timeUntilStart = startTotalMinutes - currentMinutes;
+                                if (timeUntilStart < minUpcomingTimeDiff) {
+                                    minUpcomingTimeDiff = timeUntilStart;
+                                    nextUpcomingClassObj = classItem;
+                                }
                             }
                         }
                     }
 
-                    // Skip past items
                     if (isConducted) return; 
 
-                    if (isCurrent) {
-                        activeClassObj = classItem;
-                        activeClassText = `<span class="highlight-countdown">CURRENT CLASS: ${classItem.moduleName}</span> in ${classItem.location}`;
-                    }
+                    if (isCurrent) activeClassObj = classItem;
 
                     const card = document.createElement('div');
                     card.className = isCurrent ? 'class-card current-class' : 'class-card today';
@@ -282,7 +430,7 @@ async function loadTimetable() {
                     } else if (classItem.isReplacement) {
                         badgeMarkup = `<span class="pill replacement-tag">Replacement</span>`;
                         iconType = 'swap_calls';
-                    } else if (classItem.isTest) {
+                    } else if (classItem.isTest || classItem.classType === 'Test' || classItem.classType === 'Exam') {
                         badgeMarkup = `<span class="pill test-tag">Exam/Test</span>`;
                         iconType = 'assignment_late';
                     }
@@ -310,32 +458,29 @@ async function loadTimetable() {
             }
         });
 
-        // Compute progress bar tracking width fills
-        if (totalClassesToday > 0) {
+        if (totalClassesToday > 0 && progressBarContainer && progressBarFill) {
             progressBarContainer.style.display = 'block';
             const calculatedPercentage = Math.round((conductedClassesToday / totalClassesToday) * 100);
             progressBarFill.style.width = `${calculatedPercentage}%`;
-        } else {
+        } else if (progressBarContainer) {
             progressBarContainer.style.display = 'none';
         }
 
-        // Apply metadata updates directly into header layout nodes
-        headerNextDisplay.innerHTML = activeClassText;
-
-        // Dynamic Greeting Engine Transitions
-        const baseGreetingPrefix = getTimeOfDayGreeting(); 
+        // Ticker Countdown Render Logic
         if (activeClassObj) {
-            const formattedRange = formatRange12Hour(activeClassObj.time);
-            greetingBanner.textContent = `${baseGreetingPrefix} You are currently attending a (${activeClassObj.classType || 'Class'}) for module ${activeClassObj.moduleName} at ${activeClassObj.location} for ${formattedRange}.`;
+            const [, endStr] = activeClassObj.time.split('-');
+            const [endH, endM] = endStr.trim().split(':').map(Number);
+            const remainingMinutes = Math.ceil((endH * 60 + endM) - currentMinutes);
+            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⚡ CURRENT CLASS</span> (${remainingMinutes}m left)`;
+            if (greetingBanner) greetingBanner.textContent = `You are currently in ${activeClassObj.moduleName} (${activeClassObj.classType || 'Class'}). Ends in ${remainingMinutes} minutes.`;
+        } else if (nextUpcomingClassObj) {
+            const minutesLeft = Math.ceil(minUpcomingTimeDiff);
+            const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}m`;
+            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ NEXT CLASS in ${timeLabel}</span>`;
+            if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         } else {
-            const hours = new Date().getHours();
-            if (hours >= 5 && hours < 12) {
-                greetingBanner.textContent = `${baseGreetingPrefix} Ready for today's programming labs?`;
-            } else if (hours >= 12 && hours < 17) {
-                greetingBanner.textContent = `${baseGreetingPrefix} Hope your lectures are going well!`;
-            } else {
-                greetingBanner.textContent = `${baseGreetingPrefix} Great time for working on github repository tools.`;
-            }
+            if (headerNextDisplay) headerNextDisplay.innerHTML = '<span class="highlight-countdown">✨ NO MORE CLASSES TODAY</span>';
+            if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         }
 
         if (!visibleCardsInjected) {
@@ -345,8 +490,8 @@ async function loadTimetable() {
     } catch (err) {
         console.error(err);
         container.innerHTML = `<div class="message-box error">Error loading tracking documents.</div>`;
-        headerNextDisplay.textContent = 'Offline status';
-        greetingBanner.textContent = `${getTimeOfDayGreeting()} Workspace is running locally.`;
+        if (headerNextDisplay) headerNextDisplay.textContent = 'Offline status';
+        if (greetingBanner) greetingBanner.textContent = 'Workspace running locally.';
     }
 }
 
@@ -355,8 +500,5 @@ loadRepositoryPages();
 buildModuleDeadlinesSelector();
 loadTimetable();
 
-// SECONDARY AUTOMATION SPEED: Scans schedule matrix boundaries every 1 second 
-// to transition headings/greetings live without delays
-setInterval(() => {
-    loadTimetable();
-}, 1000);
+// Re-scan network and timeline arrays every 30 seconds to avoid GitHub rate-limiting
+setInterval(loadTimetable, 30000);
