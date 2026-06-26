@@ -8,24 +8,26 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0a0a0c;
-            --surface-glass: rgba(22, 22, 26, 0.65);
-            --border-glass: rgba(255, 255, 255, 0.07);
-            --border-glow: rgba(255, 255, 255, 0.15);
-            --text-main: #f3f4f6;
-            --text-subtle: #9ca3af;
-            --accent-primary: #6366f1;
+            --bg-base: #0b0c0e;
+            --surface-glass: rgba(20, 21, 26, 0.75);
+            --card-inner: rgba(30, 32, 40, 0.5);
+            --border-glass: rgba(255, 255, 255, 0.05);
+            --border-glow: rgba(59, 130, 246, 0.2);
+            --text-main: #ffffff;
+            --text-subtle: #94a3b8;
             
-            --color-online: #06b6d4;
-            --color-replacement: #f59e0b;
+            /* Sourced from APSpace liquid glass palette color identity */
+            --apspace-blue: #2563eb; 
+            --apspace-cyan: #38bdf8;
+            --apspace-gold: #fbbf24;
+            --apspace-gold-bg: rgba(251, 191, 36, 0.15);
             --color-test: #ef4444;
-            --color-conducted: #4b5563;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #070709 0%, #0f0f15 50%, #09090b 100%);
+            background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
             padding: 24px;
@@ -36,15 +38,15 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 20px;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
         }
 
         @media (max-width: 1024px) {
             .workspace-grid { grid-template-columns: 1fr; }
         }
 
-        /* Top Header System Row */
+        /* Fluid Glass System Headers */
         .workspace-header {
             grid-column: 1 / -1;
             display: flex;
@@ -52,211 +54,225 @@
             align-items: center;
             background: var(--surface-glass);
             border: 1px solid var(--border-glass);
-            backdrop-filter: blur(12px);
-            padding: 16px 24px;
-            border-radius: 12px;
-            margin-bottom: 4px;
+            backdrop-filter: blur(20px);
+            padding: 18px 24px;
+            border-radius: 16px;
         }
 
-        .header-left h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
-        .header-right { display: flex; align-items: center; gap: 20px; }
-        .live-clock-wrapper { display: flex; align-items: center; gap: 8px; color: var(--accent-primary); font-weight: 600; font-size: 1rem; }
-        
-        .highlight-countdown {
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        /* Dynamic Broadcast Banner */
-        .broadcast-banner {
-            grid-column: 1 / -1;
-            background: linear-gradient(90deg, rgba(99,102,241,0.1) 0%, rgba(22,22,26,0.5) 100%);
-            border: 1px solid var(--border-glass);
-            padding: 14px 20px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            color: var(--text-main);
+        .header-left h1 { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            letter-spacing: -0.01em; 
+            color: var(--apspace-cyan);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+        
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .live-clock-wrapper { display: flex; align-items: center; gap: 8px; color: var(--apspace-cyan); font-weight: 600; font-size: 0.95rem; }
+        
+        .highlight-countdown {
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #fff;
         }
 
-        /* Standard Containers Layout */
+        /* Broadcast Dynamic Alerts */
+        .broadcast-banner {
+            grid-column: 1 / -1;
+            background: var(--surface-glass);
+            border: 1px solid var(--border-glass);
+            padding: 16px 20px;
+            border-radius: 14px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        /* Dashboard Containment Cards */
         .dashboard-section {
             background: var(--surface-glass);
             border: 1px solid var(--border-glass);
-            backdrop-filter: blur(16px);
-            border-radius: 12px;
-            padding: 20px;
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-glass);
-            padding-bottom: 12px;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--apspace-blue);
+            letter-spacing: 0.02em;
+            text-transform: capitalize;
+            padding-bottom: 4px;
         }
 
-        .section-header .material-icons { color: var(--accent-primary); font-size: 1.25rem; }
+        .section-header .material-icons { font-size: 1.35rem; color: var(--apspace-blue); }
 
-        /* Integrated Timetable Components */
+        /* Modern Lecture Cards Engine */
         .timetable-scroll-box {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 620px;
-            overflow-y: auto;
-            padding-right: 4px;
+            gap: 14px;
         }
 
         .class-card {
-            background: rgba(30, 30, 40, 0.3);
+            background: var(--card-inner);
             border: 1px solid var(--border-glass);
-            border-left: 4px solid var(--accent-primary);
-            border-radius: 8px;
-            padding: 14px;
-            transition: all 0.2s ease;
+            border-radius: 12px;
+            padding: 18px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         .class-card.current-class {
-            background: rgba(99, 102, 241, 0.08);
-            border-color: rgba(99, 102, 241, 0.4) rgba(99, 102, 241, 0.4) rgba(99, 102, 241, 0.4) var(--accent-primary);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+            border-color: rgba(251, 191, 36, 0.4);
+            background: linear-gradient(145deg, rgba(30,32,40,0.6) 0%, rgba(251,191,36,0.03) 100%);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
-        .card-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.95rem; color: #fff; }
-        .card-title .material-icons { font-size: 1.15rem; color: var(--accent-primary); }
-        .card-title .online-icon { color: var(--color-online); }
-        .card-subtitle { font-size: 0.8rem; color: var(--text-subtle); margin-left: 26px; margin-top: 2px; }
-        .card-details { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem; color: var(--text-subtle); }
+        .card-title { display: flex; align-items: flex-start; gap: 10px; font-weight: 700; font-size: 0.95rem; color: #ffffff; line-height: 1.4; }
+        .card-title .material-icons { font-size: 1.25rem; color: var(--apspace-cyan); margin-top: 2px; }
+        .card-subtitle { font-size: 0.82rem; color: var(--text-subtle); margin-left: 30px; margin-top: 4px; }
         
-        /* General Status Pills Matrix */
-        .pill { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
-        .open-tag { background: rgba(255,255,255,0.06); color: var(--text-main); }
-        .online-tag { background: rgba(6, 182, 212, 0.15); color: var(--color-online); border: 1px solid rgba(6, 182, 212, 0.2); }
-        .replacement-tag { background: rgba(245, 158, 11, 0.15); color: var(--color-replacement); border: 1px solid rgba(245, 158, 11, 0.2); }
-        .test-tag { background: rgba(239, 68, 68, 0.15); color: var(--color-test); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .conducted-tag { background: rgba(75, 85, 99, 0.2); color: var(--text-subtle); }
-        .active-now-tag { background: #ef4444; color: #ffffff; animation: pulse 2s infinite; }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
+        .card-details { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 16px; 
+            padding-top: 12px; 
+            border-top: 1px solid rgba(255,255,255,0.03); 
+            font-size: 0.82rem; 
+            color: var(--apspace-cyan);
+            font-weight: 500;
+        }
+        
+        /* Premium Badges System */
+        .pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+        .open-tag { background: rgba(255,255,255,0.06); color: #fff; }
+        .online-tag { background: rgba(56, 189, 248, 0.12); color: var(--apspace-cyan); border: 1px solid rgba(56, 189, 248, 0.2); }
+        .replacement-tag { background: rgba(251, 191, 36, 0.12); color: var(--apspace-gold); border: 1px solid rgba(251, 191, 36, 0.2); }
+        .test-tag { background: rgba(239, 68, 68, 0.12); color: var(--color-test); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .conducted-tag { background: rgba(148, 163, 184, 0.1); color: var(--text-subtle); }
+        
+        /* Sourced directly from image_47697.jpg asset visualization */
+        .active-now-tag { 
+            background: var(--apspace-gold-bg); 
+            color: var(--apspace-gold); 
+            border: 1px solid rgba(251,191,36,0.3);
+            font-weight: 800;
+            padding: 5px 12px;
         }
 
-        /* Direct Files Links Group */
-        .pages-list-container { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; }
+        /* Clean Repository List Groups */
+        .pages-list-container { display: flex; flex-direction: column; gap: 2px; background: var(--card-inner); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-glass); }
         .page-item-link {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border-glass);
-            padding: 12px;
-            border-radius: 8px;
+            padding: 16px 18px;
             text-decoration: none;
             color: var(--text-main);
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
+            font-size: 0.88rem;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: background 0.15s ease;
         }
-        .page-item-link:hover { background: rgba(255,255,255,0.05); border-color: var(--border-glow); padding-left: 14px; }
-        .page-title-group { display: flex; align-items: center; gap: 12px; text-align: left; }
-        .page-title-group .material-icons { color: var(--text-subtle); font-size: 1.15rem; }
+        .page-item-link:last-child { border-bottom: none; }
+        .page-item-link:hover { background: rgba(255, 255, 255, 0.03); }
+        
+        .page-title-group { display: flex; align-items: center; gap: 14px; text-align: left; }
+        .page-title-group .material-icons { color: var(--apspace-blue); font-size: 1.2rem; }
+        .page-chevron { font-size: 1rem; color: var(--text-subtle); opacity: 0.7; }
 
-        /* Deadline Dynamic Multi-Tabs Layout */
+        /* Deadlines Segment Control Row */
         .tabs-navigation-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid var(--border-glass); }
         .module-tab-btn {
-            background: transparent; border: none; color: var(--text-subtle); padding: 6px 12px; font-family: inherit; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
+            background: transparent; border: none; color: var(--text-subtle); padding: 8px 14px; font-family: inherit; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
         }
-        .module-tab-btn:hover { background: rgba(255,255,255,0.04); color: #fff; }
-        .module-tab-btn.active-tab { background: var(--accent-primary); color: #fff; }
+        .module-tab-btn:hover { background: rgba(255,255,255,0.03); color: #fff; }
+        .module-tab-btn.active-tab { background: rgba(37, 99, 235, 0.15); color: var(--apspace-cyan); border: 1px solid rgba(37, 99, 235, 0.2); }
         
         .deadline-task-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(20, 20, 25, 0.4);
+            background: var(--card-inner);
             border: 1px solid var(--border-glass);
-            border-left: 3px solid rgba(255,255,255,0.15);
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-top: 8px;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 10px;
         }
-        .task-info-side { display: flex; flex-direction: column; gap: 2px; }
-        .deadline-title { font-size: 0.85rem; font-weight: 500; color: #fff; }
-        .deadline-date-sub { font-size: 0.75rem; color: var(--text-subtle); }
+        .task-info-side { display: flex; flex-direction: column; gap: 4px; }
+        .deadline-title { font-size: 0.88rem; font-weight: 600; color: #fff; }
+        .deadline-date-sub { font-size: 0.78rem; color: var(--text-subtle); }
 
-        /* Turnitin Router Interface Box */
+        /* Clean Forms Elements */
         .turnitin-input-group { display: flex; gap: 8px; width: 100%; }
         .turnitin-input-group input {
-            flex-grow: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: 6px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none; transition: border-color 0.2s ease;
+            flex-grow: 1; background: var(--card-inner); border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px 16px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none; transition: border-color 0.2s ease;
         }
-        .turnitin-input-group input:focus { border-color: var(--accent-primary); }
+        .turnitin-input-group input:focus { border-color: var(--apspace-blue); }
         .turnitin-btn {
-            background: var(--accent-primary); color: #fff; border: none; border-radius: 6px; padding: 0 14px; font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.2s ease;
+            background: var(--apspace-blue); color: #fff; border: none; border-radius: 8px; padding: 0 16px; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;
         }
-        .turnitin-btn:hover { background: #4f46e5; }
+        .turnitin-btn:hover { background: #1d4ed8; }
 
-        /* Track Progress Metrics Ticker */
-        .progress-bar-track { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 4px; }
-        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-primary) 0%, #a855f7 100%); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-bar-track { width: 100%; height: 5px; background: rgba(255,255,255,0.04); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { height: 100%; width: 0%; background: var(--apspace-cyan); transition: width 0.4s ease; }
 
-        .empty-state { text-align: center; padding: 24px; color: var(--text-subtle); font-size: 0.8rem; font-style: italic; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        .empty-state { text-align: center; padding: 32px; color: var(--text-subtle); font-size: 0.82rem; font-style: italic; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div class="workspace-grid">
         
-        <!-- Header Information Bar -->
         <header class="workspace-header">
             <div class="header-left">
-                <h1>Workspace Environment</h1>
+                <span class="material-icons">blur_on</span>
+                <h1>APSpace Workspace</h1>
             </div>
             <div class="header-right">
                 <div id="header-next-class" class="header-next-container">
-                    <span class="highlight-countdown">Loading tracker telemetry...</span>
+                    <span class="highlight-countdown">Syncing context telemetry...</span>
                 </div>
                 <div class="live-clock-wrapper">
-                    <span class="material-icons">schedule</span>
+                    <span class="material-icons" style="font-size:1.1rem;">schedule</span>
                     <span id="live-clock">00:00:00 AM</span>
                 </div>
             </div>
         </header>
 
-        <!-- Greeting Notice Area -->
         <div id="greeting-banner" class="broadcast-banner">
-            🚀 Loading local automation configurations...
+            🚀 Loading system configurations...
         </div>
 
-        <!-- Left Column: Timetable Engine -->
         <main class="dashboard-section">
             <div class="section-header">
-                <span class="material-icons">event_note</span>
-                <span>Weekly Lecture Schedule</span>
+                <span class="material-icons">segment</span>
+                <span>Upcoming Schedule</span>
             </div>
             
-            <!-- Day Progress Bar Module -->
-            <div id="daily-progress-container" style="display:none; padding: 0 4px 6px 4px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-subtle); margin-bottom:4px;">
-                    <span>Today's Class Completion</span>
+            <div id="daily-progress-container" style="display:none; padding: 0 4px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-subtle); margin-bottom:6px;">
+                    <span>Today's Lecture Track Completion</span>
                 </div>
                 <div class="progress-bar-track">
                     <div id="daily-progress-fill" class="progress-bar-fill"></div>
@@ -264,42 +280,38 @@
             </div>
 
             <div id="timetable-container" class="timetable-scroll-box">
-                <div class="empty-state">Syncing network streams...</div>
+                <div class="empty-state">Assembling fluid pipeline view...</div>
             </div>
         </main>
 
-        <!-- Right Column: Hosted Tools & Deadlines -->
-        <aside style="display: flex; flex-direction: column; gap: 20px;">
+        <aside style="display: flex; flex-direction: column; gap: 24px;">
             
-            <!-- Section: Assignment Tracker -->
             <section class="dashboard-section">
                 <div class="section-header">
-                    <span class="material-icons">assignment</span>
+                    <span class="material-icons">date_range</span>
                     <span>Deadlines Registry</span>
                 </div>
                 <div id="module-tabs-row" class="tabs-navigation-row"></div>
                 <div id="deadlines-container" style="min-height: 120px;"></div>
             </section>
 
-            <!-- Section: Hosted Repository Pages -->
             <section class="dashboard-section">
                 <div class="section-header">
-                    <span class="material-icons">layers</span>
+                    <span class="material-icons">widgets</span>
                     <span>Tools & Hosted Pages</span>
                 </div>
                 <div id="pages-container" class="pages-list-container"></div>
             </section>
 
-            <!-- Section: Turnitin Portal Linker -->
             <section class="dashboard-section">
                 <div class="section-header">
-                    <span class="material-icons">verified_user</span>
+                    <span class="material-icons">security</span>
                     <span>Turnitin Portal Linker</span>
                 </div>
                 <div class="turnitin-input-group">
                     <input type="text" id="turnitin-id-field" placeholder="Enter Assignment Report ID...">
                     <button class="turnitin-btn" onclick="redirectToTurnitin()">
-                        <span class="material-icons">launch</span>
+                        <span class="material-icons">arrow_forward</span>
                     </button>
                 </div>
             </section>

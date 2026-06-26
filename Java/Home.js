@@ -11,34 +11,26 @@ const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
 
-// --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
     { fileName: "CA_Quiz.html", tags: ["Academic", "Quiz"] },
     { fileName: "convert.html", tags: ["Utility"] },
-    { fileName: "DBM LAB7.html", tags: ["Academic", "Quiz"] },
+    { fileName: "DBM LAB7.html", tags: ["DMS-ClassTest", "Database"] },
     { fileName: "department.html", tags: ["Academic"] },
     { fileName: "gdp.html", tags: ["Economics", "Data"] },
-    { fileName: "timetable test.html", tags: ["System Testing"] },
-    { fileName: "timetable.html", tags: ["Utility"] }
+    { fileName: "record.html", tags: ["Utility"] },
+    { fileName: "timetable test.html", tags: ["System"] },
+    { fileName: "timetable.html", tags: ["System"] }
 ];
 
-// --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
-    { title: "Part 1 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
-    { title: "Report Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-08-02", type: "Assignment" },
-    { title: "Part 2 Assignment", module: "AICT022-4-1-ISCC", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Final Exam", module: "AICT015-4-1-DBM", dueDate: "2026-08-24", type: "Exam" },
-    { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-26", type: "Exam" },
-    { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-28", type: "Exam" },
-    { title: "Final Exam", module: "AAPP015-4-1-PWP", dueDate: "2026-09-02", type: "Exam" }
+    { title: "Python Programming Lab 3", module: "AAPP015-4-1-PWP", dueDate: "2026-06-28", type: "Lab" },
+    { title: "Final Assignment Documentation", module: "AAPP015-4-1-PWP", dueDate: "2026-07-10", type: "Assignment" },
+    { title: "Database Systems Core Class Test", module: "DMS-ClassTest", dueDate: "2026-07-02", type: "Test" },
+    { title: "Web UI Personal Portfolio Project", module: "HTML-CSS-Git", dueDate: "2026-07-15", type: "Assignment" }
 ];
 
 let selectedModuleCode = null;
 
-// Turnitin Framework API Link Handler Integration
 function redirectToTurnitin() {
     const reportId = document.getElementById('turnitin-id-field').value.trim();
     if (!reportId) {
@@ -49,7 +41,6 @@ function redirectToTurnitin() {
     window.open(turnitinApiUrl, '_blank');
 }
 
-// Utility Time Conversions
 function format12Hour(timeStr) {
     if (!timeStr) return '';
     const [hoursStr, minutesStr] = timeStr.trim().split(':');
@@ -61,14 +52,12 @@ function format12Hour(timeStr) {
     return `${hours}:${minutes} ${ampm}`;
 }
 
-// Format time range string safely
 function formatRange12Hour(rangeStr) {
     const parts = rangeStr.split('-');
     if (parts.length !== 2) return rangeStr;
     return `${format12Hour(parts[0])} - ${format12Hour(parts[1])}`;
 }
 
-// Live Digital System Navigation Clock Trigger
 function updateClock() {
     const now = new Date();
     let hours = now.getHours();
@@ -82,7 +71,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// --- RANDOMIZED GREETING ENGINE ---
 const randomGreetingIndices = { morning: 0, afternoon: 0, evening: 0 };
 function initializeRandomGreetings() {
     randomGreetingIndices.morning = Math.floor(Math.random() * 3);
@@ -114,7 +102,6 @@ function getRandomizedGreeting() {
     return eveningPhrases[randomGreetingIndices.evening];
 }
 
-// Compute Sunday-Bound File Names
 function getCurrentWeeklyFileName() {
     const today = new Date();
     const dayOfWeek = today.getDay();
@@ -123,7 +110,6 @@ function getCurrentWeeklyFileName() {
     return `${sunday.getFullYear()}-${String(sunday.getMonth() + 1).padStart(2, '0')}-${String(sunday.getDate()).padStart(2, '0')}.json`;
 }
 
-// Render Workspace Pages Links with Subject Category Tags
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
     container.innerHTML = '';
@@ -138,7 +124,7 @@ function loadRepositoryPages() {
             if (tag === 'System') colorClass = 'online-tag'; 
             if (tag === 'Utility') colorClass = 'replacement-tag'; 
             
-            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
+            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.62rem; padding: 1px 5px; margin-left: 4px; font-weight:700;">${tag}</span>`;
         });
 
         const linkElement = document.createElement('a');
@@ -149,16 +135,15 @@ function loadRepositoryPages() {
                 <span class="material-icons">construction</span>
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                     <span>${cleanTitle}</span>
-                    <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;">${tagsMarkup}</div>
+                    <div style="display: flex; gap: 2px; flex-wrap: wrap; margin-top: 1px;">${tagsMarkup}</div>
                 </div>
             </div>
-            <span class="material-icons" style="font-size: 1.1rem; color: var(--text-subtle);">arrow_forward</span>
+            <span class="material-icons page-chevron">chevron_right</span>
         `;
         container.appendChild(linkElement);
     });
 }
 
-// INTERACTIVE ASSIGNMENTS PANEL
 function buildModuleDeadlinesSelector() {
     const tabsRow = document.getElementById('module-tabs-row');
     tabsRow.innerHTML = '';
@@ -212,7 +197,6 @@ function renderSelectedModuleTasks() {
         
         let pillClass = "open-tag"; 
         let countdownLabel = `${diffDays} days left`;
-        let leftBorderColor = "rgba(255, 255, 255, 0.15)";
 
         if (diffDays < 0) {
             pillClass = "conducted-tag";
@@ -220,28 +204,24 @@ function renderSelectedModuleTasks() {
         } else if (diffDays === 0) {
             pillClass = "test-tag";
             countdownLabel = "TODAY";
-            leftBorderColor = "var(--color-test)";
         } else if (diffDays <= 3) {
             pillClass = "replacement-tag";
             countdownLabel = "Urgent";
-            leftBorderColor = "var(--color-replacement)";
         }
 
         const taskItem = document.createElement('div');
         taskItem.className = 'deadline-task-item'; 
-        taskItem.style.borderLeftColor = leftBorderColor;
         taskItem.innerHTML = `
             <div class="task-info-side">
                 <span class="deadline-title">${task.title}</span>
                 <span class="deadline-date-sub">Due Date: ${task.dueDate}</span>
             </div>
-            <span class="pill ${pillClass}" style="font-size:0.7rem; padding:2px 6px;">${countdownLabel}</span>
+            <span class="pill ${pillClass}">${countdownLabel}</span>
         `;
         container.appendChild(taskItem);
     });
 }
 
-// --- CORE ENGINE: TIMETABLE LOAD, COUNTDOWN TICKERS & HOLIDAY MATRIX RULES ---
 async function loadTimetable() {
     const container = document.getElementById('timetable-container');
     const headerNextDisplay = document.getElementById('header-next-class');
@@ -255,7 +235,6 @@ async function loadTimetable() {
 
     let configData = { announcements: { isExamWeek: false }, exams: [], holidays: [] };
 
-    // 1. Fetch Separated Configuration Overrides parameters
     try {
         const configRes = await fetch(`config.json`);
         if (configRes.ok) {
@@ -265,10 +244,9 @@ async function loadTimetable() {
         console.warn("Global config parameters offline, running standard cycle configurations.", e);
     }
 
-    // Evaluate holiday scheduling conditions
     const currentHoliday = configData.holidays.find(h => h.date === currentFormattedDate);
 
-    // --- INTERACTIVE EXAM PERIOD RENDERING MODULE (image_f1b05e.png Layout Matrix) ---
+    // --- INTERACTIVE EXAM PERIOD RENDERING MODULE ---
     if (configData.announcements.isExamWeek && configData.exams.length > 0) {
         container.innerHTML = '';
         progressBarContainer.style.display = 'none';
@@ -290,27 +268,26 @@ async function loadTimetable() {
             }
 
             const card = document.createElement('div');
-            card.className = (diffDays === 0) ? 'class-card current-class' : 'class-card today';
-            if (diffDays === 0) card.style.borderLeftColor = "var(--color-test)";
+            card.className = (diffDays === 0) ? 'class-card current-class' : 'class-card';
 
             const examDayShort = exam.date.split('-')[2];
             const examMonthShort = new Date(exam.date).toLocaleString('default', { month: 'short' });
 
             card.innerHTML = `
                 <div style="display: flex; gap: 20px; align-items: center;">
-                    <div style="text-align: center; min-width: 60px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 15px;">
-                        <span style="font-size: 1.8rem; font-weight: bold; display: block; color: var(--text-main);">${examDayShort}</span>
-                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-subtle);">${examMonthShort}</span>
+                    <div style="text-align: center; min-width: 60px; border-right: 1px solid rgba(255,255,255,0.06); padding-right: 15px;">
+                        <span style="font-size: 1.6rem; font-weight: bold; display: block; color: var(--text-main);">${examDayShort}</span>
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-subtle);">${examMonthShort}</span>
                     </div>
                     <div style="flex-grow: 1;">
                         <div class="card-title" style="margin-bottom: 4px;">
                             <span class="material-icons" style="color: var(--color-test);">assignment_late</span>
-                            <span style="font-weight: 600;">${exam.module}</span>
+                            <span>${exam.module}</span>
                         </div>
                         <div class="card-subtitle" style="font-size: 0.8rem; margin-bottom: 6px; color: var(--text-subtle); margin-left:0;">
-                            <span class="material-icons" style="font-size:0.9rem; vertical-align:middle; margin-right:4px; color: var(--accent-primary);">place</span>${exam.location}
+                            <span class="material-icons" style="font-size:0.9rem; vertical-align:middle; margin-right:4px; color: var(--apspace-blue);">place</span>${exam.location}
                         </div>
-                        <div style="display: flex; gap: 15px; font-size: 0.75rem; color: #fff; opacity: 0.85; margin-top:4px;">
+                        <div style="display: flex; gap: 15px; font-size: 0.78rem; color: var(--apspace-cyan); font-weight:500; margin-top:4px;">
                             <span>🕒 ${exam.time}</span>
                             <span>⏳ ${exam.duration}</span>
                         </div>
@@ -338,10 +315,10 @@ async function loadTimetable() {
     // --- PUBLIC HOLIDAY BANNER INTERCEPT MODES ---
     if (currentHoliday) {
         container.innerHTML = `
-            <div class="class-card" style="text-align: center; padding: 30px 15px; border-left-color: var(--color-replacement);">
-                <span class="material-icons" style="font-size: 3rem; color: #FFC107; margin-bottom: 10px;">celebration</span>
+            <div class="class-card" style="text-align: center; padding: 32px 16px;">
+                <span class="material-icons" style="font-size: 2.5rem; color: var(--apspace-gold); margin-bottom: 8px;">celebration</span>
                 <div class="card-title" style="justify-content: center;">Campus Closed: ${currentHoliday.name}</div>
-                <div class="card-subtitle" style="margin-top: 5px; margin-left:0;">No academic classes scheduled today. Enjoy your break!</div>
+                <div class="card-subtitle" style="margin-top: 4px; margin-left:0;">No academic classes scheduled today. Enjoy your break!</div>
             </div>`;
         headerNextDisplay.innerHTML = `<span class="highlight-countdown">🎉 HOLIDAY: ${currentHoliday.name.toUpperCase()}</span>`;
         greetingBanner.textContent = `Happy ${currentHoliday.name}! Beautiful day to take a break or work on side tools.`;
@@ -349,7 +326,7 @@ async function loadTimetable() {
         return;
     }
 
-    // --- 2. STANDARD LECTURE ROUTINE PROCESSING ---
+    // --- STANDARD LECTURE ROUTINE PROCESSING ---
     const targetFileName = getCurrentWeeklyFileName(); 
     try {
         const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/timetable/${targetFileName}`);
@@ -421,13 +398,13 @@ async function loadTimetable() {
                     if (isCurrent) activeClassObj = classItem;
 
                     const card = document.createElement('div');
-                    card.className = isCurrent ? 'class-card current-class' : 'class-card today';
+                    card.className = isCurrent ? 'class-card current-class' : 'class-card';
 
                     let badgeMarkup = `<span class="pill open-tag">In-Person</span>`;
                     let iconType = 'school';
 
                     if (isCurrent) {
-                        badgeMarkup = `<span class="pill active-now-tag">⚡ Happening Now</span>`;
+                        badgeMarkup = `<span class="pill active-now-tag">HAPPENING NOW</span>`;
                         iconType = classItem.isOnline ? 'computer' : 'school';
                     } else if (classItem.isOnline) {
                         badgeMarkup = `<span class="pill online-tag">Online</span>`;
@@ -444,17 +421,21 @@ async function loadTimetable() {
                     const timeDisplay12Hr = formatRange12Hour(classItem.time);
 
                     card.innerHTML = `
-                        <div class="card-title">
-                            <span class="material-icons ${classItem.isOnline && !isCurrent ? 'online-icon' : ''}">${iconType}</span>
-                            <span>${classItem.moduleName}</span>
-                        </div>
-                        <div class="card-subtitle">
-                            ${classItem.location} (${classItem.campus})${labelType}
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+                            <div style="flex-grow:1;">
+                                <div class="card-title">
+                                    <span class="material-icons">${iconType}</span>
+                                    <span>${classItem.moduleName}</span>
+                                </div>
+                                <div class="card-subtitle">
+                                    ${classItem.location} (${classItem.campus})${labelType}
+                                </div>
+                            </div>
+                            <div style="flex-shrink:0; margin-top:2px;">${badgeMarkup}</div>
                         </div>
                         <div class="card-details">
                             <span>${dayGroup.date.split(',')[0]} (${dayGroup.date.split(',')[1]?.trim() || ''})</span>
-                            <span class="clock-display" style="font-size: 0.85rem;">${timeDisplay12Hr}</span>
-                            <div class="status-wrapper">${badgeMarkup}</div>
+                            <span class="clock-display" style="font-size: 0.85rem; font-weight:600;">${timeDisplay12Hr}</span>
                         </div>
                     `;
                     container.appendChild(card);
@@ -471,13 +452,12 @@ async function loadTimetable() {
             progressBarContainer.style.display = 'none';
         }
 
-        // Ticker Countdown Render Logic
         if (activeClassObj) {
             const [, endStr] = activeClassObj.time.split('-');
             const [endH, endM] = endStr.trim().split(':').map(Number);
             const remainingMinutes = Math.ceil((endH * 60 + endM) - currentMinutes);
-            headerNextDisplay.innerHTML = `<span class="highlight-countdown">⚡ CURRENT CLASS</span> (${remainingMinutes}m left)`;
-            greetingBanner.textContent = `You are currently in ${activeClassObj.moduleName} (${activeClassObj.classType || 'Class'}). Ends in ${remainingMinutes} minutes.`;
+            headerNextDisplay.innerHTML = `<span class="highlight-countdown" style="background:var(--apspace-gold-bg); border-color:var(--apspace-gold); color:var(--apspace-gold);">⚡ CURRENT CLASS</span> (${remainingMinutes}m left)`;
+            greetingBanner.innerHTML = `☀️ <b>Good Afternoon!</b> You are currently attending a (${activeClassObj.classType || 'Lecture'}) for module <b>${activeClassObj.moduleName}</b> at ${activeClassObj.location} for ${formatRange12Hour(activeClassObj.time)}.`;
         } else if (nextUpcomingClassObj) {
             const minutesLeft = Math.ceil(minUpcomingTimeDiff);
             const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}m`;
@@ -500,10 +480,8 @@ async function loadTimetable() {
     }
 }
 
-// Initialize Active Subsystems
 loadRepositoryPages();
 buildModuleDeadlinesSelector();
 loadTimetable();
 
-// Re-scan parameters every 15 seconds to sync countdown tickers smoothly
-setInterval(loadTimetable, 1000);
+setInterval(loadTimetable, 15000);
