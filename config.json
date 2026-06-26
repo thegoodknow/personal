@@ -1,0 +1,69 @@
+{
+  "announcements": {
+    "isExamWeek": false
+  },
+  "exams": [
+    {
+      "date": "2026-08-24",
+      "day": "Monday",
+      "module": "Database Management (AICT015-4-1-DBM)",
+      "time": "10:00 AM - 12:30 PM",
+      "duration": "2 Hours, 30 Minutes",
+      "location": "EXAM HALL@APU, Spine L5"
+    },
+    {
+      "date": "2026-08-26",
+      "day": "Wednesday",
+      "module": "Operating Systems (AICT021-4-1-OPS)",
+      "time": "10:00 AM - 12:30 PM",
+      "duration": "2 Hours, 30 Minutes",
+      "location": "EXAM HALL@APU, Spine L5"
+    },
+    {
+      "date": "2026-08-28",
+      "day": "Friday",
+      "module": "Information Systems with Cloud Concepts (AICT022-4-1-ISCC)",
+      "time": "09:30 AM - 12:00 PM",
+      "duration": "2 Hours, 30 Minutes",
+      "location": "EXAM HALL@APU, Spine L5"
+    },
+    {
+      "date": "2026-09-02",
+      "day": "Wednesday",
+      "module": "Programming with Python (AAPP015-4-1-PWP)",
+      "time": "10:00 AM - 12:00 PM",
+      "duration": "2 Hours",
+      "location": "EXAM HALL@APU, Spine L5"
+    }
+  ],
+  "holidays": [
+    { "date": "2026-01-01", "name": "New Year's Day" },
+    { "date": "2026-02-01", "name": "Federal Territory Day / Thaipusam" },
+    { "date": "2026-02-02", "name": "Federal Territory Day Holiday" },
+    { "date": "2026-02-03", "name": "Thaipusam Holiday" },
+    { "date": "2026-02-16", "name": "CNY Additional Holiday" },
+    { "date": "2026-02-17", "name": "Chinese New Year" },
+    { "date": "2026-02-18", "name": "Chinese New Year" },
+    { "date": "2026-02-19", "name": "CNY Additional Holiday" },
+    { "date": "2026-02-20", "name": "CNY Additional Holiday" },
+    { "date": "2026-03-07", "name": "Nuzul Al-Quran" },
+    { "date": "2026-03-20", "name": "Hari Raya Puasa Additional Holiday" },
+    { "date": "2026-03-21", "name": "Hari Raya Puasa" },
+    { "date": "2026-03-22", "name": "Hari Raya Puasa" },
+    { "date": "2026-03-23", "name": "Hari Raya Puasa Holiday" },
+    { "date": "2026-03-24", "name": "Hari Raya Puasa Additional Holiday" },
+    { "date": "2026-05-01", "name": "Labour Day" },
+    { "date": "2026-05-27", "name": "Hari Raya Qurban" },
+    { "date": "2026-05-31", "name": "Wesak Day" },
+    { "date": "2026-06-01", "name": "Birthday of S.P.B. Yang di-Pertuan Agong" },
+    { "date": "2026-06-02", "name": "Wesak Day Holiday" },
+    { "date": "2026-06-17", "name": "Awal Muharram (Maal Hijrah)" },
+    { "date": "2026-08-25", "name": "Birthday of Prophet Muhammad S.A.W" },
+    { "date": "2026-08-31", "name": "National Day" },
+    { "date": "2026-09-16", "name": "Malaysia Day" },
+    { "date": "2026-11-08", "name": "Deepavali" },
+    { "date": "2026-11-09", "name": "Deepavali Holiday" },
+    { "date": "2026-12-24", "name": "Christmas Day Additional Holiday" },
+    { "date": "2026-12-25", "name": "Christmas Day" }
+  ]
+}
