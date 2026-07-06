@@ -24,7 +24,6 @@ const MY_WORKSPACE_PAGES = [
 
 // --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
-    { title: "Part 1 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
     { title: "Report Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-07-27", type: "Assignment" },
@@ -475,11 +474,11 @@ async function loadTimetable() {
             if (greetingBanner) greetingBanner.textContent = `You are currently in ${activeClassObj.moduleName} (${activeClassObj.classType || 'Class'}). Ends in ${remainingMinutes} minutes.`;
         } else if (nextUpcomingClassObj) {
             const minutesLeft = Math.ceil(minUpcomingTimeDiff);
-            const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}m`;
-            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ NEXT CLASS in ${timeLabel}</span>`;
+            const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}mins`;
+            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ YOUR NEXT CLASS IS in ${timeLabel}</span>`;
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         } else {
-            if (headerNextDisplay) headerNextDisplay.innerHTML = '<span class="highlight-countdown">✨ NO MORE CLASSES TODAY</span>';
+            if (headerNextDisplay) headerNextDisplay.innerHTML = '<span class="highlight-countdown">✨ THRER IS NO MORE CLASSES FOR TODAY</span>';
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         }
 
