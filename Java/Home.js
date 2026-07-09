@@ -344,11 +344,18 @@ async function loadTimetable() {
     }
 
     // --- 2. STANDARD LECTURE ROUTINE PROCESSING ---
-    const targetFileName = getCurrentWeeklyFileName(); 
+    const targetFileName = getCurrentWeeklyFileName(); // e.g., "2026-07-05.json"
     try {
-        const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/timetable/${targetFileName}`);
+        // Determine path based on whether the open HTML is inside the /pages/ folder or at root
+        const isInPagesFolder = window.location.pathname.includes('/pages/');
+        const relativePath = isInPagesFolder 
+            ? `../timetable/${targetFileName}`  // If inside /pages/, go up one level then into timetable
+            : `timetable/${targetFileName}`;    // If running from home.html at root
+
+        const response = await fetch(relativePath);
+    
         if (!response.ok) {
-            container.innerHTML = `<div class="empty-state">No timetable found for this week.</div>`;
+            container.innerHTML = `<div class="empty-state">No timetable found for this week locally.</div>`;
             if (headerNextDisplay) headerNextDisplay.textContent = 'No schedule found';
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
             return;
@@ -365,15 +372,13 @@ async function loadTimetable() {
         container.innerHTML = '';
         const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
         const currentDayIndex = now.getDay();
-        
+    
         let activeClassObj = null;
         let nextUpcomingClassObj = null;
         let minUpcomingTimeDiff = Infinity;
         let visibleCardsInjected = false;
-
         let totalClassesToday = 0;
         let conductedClassesToday = 0;
-
         data.days.forEach((dayGroup) => {
             if (dayGroup.classes && dayGroup.classes.length > 0) {
                 const targetDayPrefix = dayGroup.date.split(',')[0].trim();
