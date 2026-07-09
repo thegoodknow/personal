@@ -131,6 +131,7 @@ function loadRepositoryPages() {
             if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') colorClass = 'test-tag'; 
             if (tag === 'System') colorClass = 'online-tag'; 
             if (tag === 'Utility') colorClass = 'replacement-tag'; 
+            if (tag === 'SEM 1','SEM 2','SEM 3','SEM 4','SEM 5') colorClass = 'open-tag';
             
             tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
         });
