@@ -10,16 +10,20 @@
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
+const UNI_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/UNI/`;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
-    { fileName: "CA_Quiz.html", tags: ["Academic", "Quiz"] },
     { fileName: "convert.html", tags: ["Utility"] },
-    { fileName: "DBM LAB7.html", tags: ["Academic", "Quiz"] },
     { fileName: "department.html", tags: ["Academic"] },
     { fileName: "gdp.html", tags: ["Economics", "Data"] },
     { fileName: "timetable test.html", tags: ["System Testing"] },
     { fileName: "timetable.html", tags: ["Utility"] }
+];
+
+const MY_UNI_PAGES = [
+    { fileName: "CA_Quiz.html", tags: ["SEM 1", "Quiz"] },
+    { fileName: "DBM LAB7.html", tags: ["SEM 2", "Quiz"] }
 ];
 
 // --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
