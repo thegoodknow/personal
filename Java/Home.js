@@ -119,6 +119,7 @@ function getCurrentWeeklyFileName() {
 }
 
 // Render Workspace Pages Links with Subject Category Tags
+// Render Workspace Pages Links with Subject Category Tags
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
     container.innerHTML = '';
@@ -128,11 +129,9 @@ function loadRepositoryPages() {
         
         let tagsMarkup = '';
         pageObj.tags.forEach(tag => {
-            // Default fallback color class
+            // 1. Assign semantic classes for style hierarchies
             let colorClass = 'open-tag'; 
-
-            // Specific conditional mappings
-            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') {
+            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest' || tag === 'Quiz') {
                 colorClass = 'test-tag'; 
             } else if (tag === 'Timeable') {
                 colorClass = 'online-tag'; 
@@ -141,8 +140,18 @@ function loadRepositoryPages() {
             } else if (['SEM 1', 'SEM 2', 'SEM 3', 'SEM 4', 'SEM 5'].includes(tag)) {
                 colorClass = 'open-tag';
             }
+
+            // 2. Define hex fallbacks if your root CSS variables aren't loading properly
+            let bgStyle = 'background-color: #2e7d32; color: #fff;'; // Default Green (open-tag)
+            if (colorClass === 'test-tag') {
+                bgStyle = 'background-color: #c62828; color: #fff;'; // Red / Crimson
+            } else if (colorClass === 'online-tag') {
+                bgStyle = 'background-color: #1565c0; color: #fff;'; // Blue
+            } else if (colorClass === 'replacement-tag') {
+                bgStyle = 'background-color: #ef6c00; color: #fff;'; // Amber / Orange
+            }
             
-            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
+            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 8px; margin-left: 5px; font-weight:600; border-radius: 4px; ${bgStyle}">${tag}</span>`;
         });
 
         // Strip out the .html extension for GitHub Pages clean URL routing
