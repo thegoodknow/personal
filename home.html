@@ -17,11 +17,14 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            box-sizing: border-box;
         }
 
         @media (max-width: 850px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
+                padding: 12px;
+                gap: 16px;
             }
         }
 
@@ -29,6 +32,12 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+        
+        @media (max-width: 850px) {
+            .right-column-group {
+                gap: 16px;
+            }
         }
 
         .list-container {
@@ -48,6 +57,7 @@
             font-style: italic;
             text-align: center;
             padding: 20px 0;
+            font-size: 0.9rem;
         }
 
         /* --- Liquid Glass UI Panel Styles --- */
@@ -55,7 +65,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 30px;
+            gap: 20px;
             padding: 12px 24px;
             background-color: rgba(30, 30, 30, 0.65) !important;
             backdrop-filter: blur(14px) saturate(160%);
@@ -63,12 +73,34 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
             transition: all 0.4s ease;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 16px;
+            }
+            .header-summary-bar {
+                width: 100%;
+            }
         }
 
         .logo-group {
             display: flex;
             align-items: center;
             gap: 15px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        @media (min-width: 601px) {
+            .logo-group {
+                width: auto;
+                justify-content: flex-start;
+            }
         }
 
         .clock-display {
@@ -107,6 +139,15 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 850px) {
+            .greeting-container {
+                margin: 16px 12px 0 12px;
+                font-size: 1.1rem;
+                padding: 12px 16px;
+            }
         }
 
         .dashboard-section {
@@ -118,6 +159,14 @@
             padding: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-section {
+                padding: 16px;
+            }
         }
 
         .section-header {
@@ -127,7 +176,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: var(--color-primary);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 12px;
             margin-bottom: 15px;
         }
@@ -166,6 +215,7 @@
             position: relative;
             overflow: hidden;
             transition: cubic-bezier(0.25, 0.8, 0.25, 1) 0.35s !important;
+            box-sizing: border-box;
         }
 
         .page-item-link::before {
@@ -193,9 +243,14 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
+            width: 100%;
         }
 
-        @media (max-width: 500px) { .portal-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 550px) { 
+            .portal-grid { 
+                grid-template-columns: 1fr; 
+            } 
+        }
         .portal-card { height: 100%; box-sizing: border-box; }
         .link-arrow { font-size: 1rem !important; color: var(--text-subtle); }
 
@@ -207,6 +262,15 @@
             padding-bottom: 10px;
             margin-bottom: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .module-selector-tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+        .module-selector-tabs::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
         }
         
         .module-tab-btn {
@@ -228,8 +292,8 @@
         }
         
         .module-tab-btn.active-tab {
-            background: var(--color-primary);
-            border-color: var(--color-primary);
+            background: var(--color-primary, #007BFF);
+            border-color: var(--color-primary, #007BFF);
             color: #ffffff;
             box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
         }
@@ -240,6 +304,7 @@
             border-radius: 8px;
             padding: 12px;
             min-height: 60px;
+            box-sizing: border-box;
         }
 
         /* --- Turnitin API Integration Form Styling --- */
@@ -247,6 +312,15 @@
             display: flex;
             gap: 10px;
             width: 100%;
+        }
+
+        @media (max-width: 400px) {
+            .turnitin-input-group {
+                flex-direction: column;
+            }
+            .turnitin-submit-btn {
+                padding: 12px !important;
+            }
         }
 
         .turnitin-input-field {
@@ -259,6 +333,7 @@
             font-size: 0.85rem;
             outline: none;
             transition: all 0.25s ease;
+            min-width: 0;
         }
 
         .turnitin-input-field:focus {
@@ -295,13 +370,14 @@
             border-left: 3px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 8px;
             animation: slideUpFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+            box-sizing: border-box;
+            gap: 10px;
         }
         
         .deadline-task-item:last-child {
             margin-bottom: 0;
         }
 
-        /* Stagger animation delivery if a module has multiple items */
         .deadline-task-item:nth-child(1) { animation-delay: 0.05s; }
         .deadline-task-item:nth-child(2) { animation-delay: 0.1s; }
         .deadline-task-item:nth-child(3) { animation-delay: 0.15s; }
@@ -311,12 +387,14 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+            min-width: 0;
         }
 
         .deadline-title {
             font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-light);
+            word-break: break-word;
         }
 
         .deadline-date-sub {
@@ -331,6 +409,7 @@
             border-radius: 10px !important;
             backdrop-filter: blur(4px);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-sizing: border-box;
         }
 
         .class-card:hover {
@@ -339,7 +418,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Unique animated badge for the class happening right now */
         .pill.active-now-tag {
             background-color: var(--color-current) !important; 
             color: #121212 !important; 
@@ -368,7 +446,7 @@
 
     <header class="header">
         <div class="logo-group">
-            <img src="img/apspace-white.svg" alt="APSpace" id="logo-icon" style="height: 24px; width: auto;">
+            <img src="img/apspace-white.svg" alt="APSpace" id="logo-icon" style="height: 36px; width: auto;">
             <span id="live-clock" class="clock-display" style="font-size: 1.1rem; margin-left: 5px;">00:00:00</span>
         </div>
         
@@ -386,20 +464,45 @@
 
     <main class="dashboard-grid">
         
-        <section class="dashboard-section">
-            <div class="section-header">
-                <span class="material-icons">auto_stories</span>
-                <span>Upcoming Schedule</span>
-            </div>
-            
-            <div class="progress-bar-container" id="daily-progress-container">
-                <div class="progress-bar-fill" id="daily-progress-fill"></div>
-            </div>
+        <div class="right-column-group">
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <span class="material-icons">auto_stories</span>
+                    <span>Upcoming Schedule</span>
+                </div>
+                
+                <div class="progress-bar-container" id="daily-progress-container">
+                    <div class="progress-bar-fill" id="daily-progress-fill"></div>
+                </div>
 
-            <div id="timetable-container" class="list-container">
-                <div class="empty-state">Loading timetable schedules...</div>
-            </div>
-        </section>
+                <div id="timetable-container" class="list-container">
+                    <div class="empty-state">Loading timetable schedules...</div>
+                </div>
+            </section>
+            
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <span class="material-icons">school</span>
+                    <span>Student's Webpages</span>
+                </div>
+                <div class="portal-grid">
+                    <a href="https://apspace.apu.edu.my" target="_blank" class="page-item-link portal-card">
+                        <div class="page-title-group">
+                            <span class="material-icons">dashboard</span>
+                            <span>APSpace</span>
+                        </div>
+                        <span class="material-icons link-arrow">launch</span>
+                    </a>
+                    <a href="https://lms2.apiit.edu.my/my/" target="_blank" class="page-item-link portal-card">
+                        <div class="page-title-group">
+                            <span class="material-icons">local_library</span>
+                            <span>MOODLE</span>
+                        </div>
+                        <span class="material-icons link-arrow">launch</span>
+                    </a>
+                </div>
+            </section>
+        </div>
 
         <div class="right-column-group">
             
@@ -428,35 +531,12 @@
 
             <section class="dashboard-section">
                 <div class="section-header">
-                    <span class="material-icons">school</span>
-                    <span>Student's Webpages</span>
-                </div>
-                <div class="portal-grid">
-                    <a href="https://apspace.apu.edu.my" target="_blank" class="page-item-link portal-card">
-                        <div class="page-title-group">
-                            <span class="material-icons">dashboard</span>
-                            <span>APSpace</span>
-                        </div>
-                        <span class="material-icons link-arrow">launch</span>
-                    </a>
-                    <a href="https://lms2.apiit.edu.my/my/" target="_blank" class="page-item-link portal-card">
-                        <div class="page-title-group">
-                            <span class="material-icons">local_library</span>
-                            <span>MOODLE</span>
-                        </div>
-                        <span class="material-icons link-arrow">launch</span>
-                    </a>
-                </div>
-            </section>
-
-            <section class="dashboard-section">
-                <div class="section-header">
                     <span class="material-icons">assignment_late</span>
                     <span>Assignments & Deadlines</span>
                 </div>
                 <div class="module-selector-tabs" id="module-tabs-row"></div>
                 <div class="module-display-box" id="deadlines-container">
-                    <div class="empty-state">Select a module above to view tasks.</div>
+                    <div class="empty-state" id="initial-assignment-state">Please select a specific module framework above to see active deadlines.</div>
                 </div>
             </section>
         </div>
@@ -464,5 +544,21 @@
     </main>
 
     <script src="Java/Home.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tabsRow = document.getElementById('module-tabs-row');
+            const observer = new MutationObserver(() => {
+                const tabs = tabsRow.querySelectorAll('.module-tab-btn');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active-tab'));
+                        tab.classList.add('active-tab');
+                    });
+                });
+            });
+            observer.observe(tabsRow, { childList: true });
+        });
+    </script>
 </body>
 </html>

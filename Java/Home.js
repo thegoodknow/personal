@@ -10,21 +10,21 @@
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
-const BASE_UNI_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/UNI/`;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
-    { fileName: "convert.html", tags: ["Utility","Timeable"] },
+    { fileName: "CA_Quiz.html", tags: ["Academic", "Quiz"] },
+    { fileName: "convert.html", tags: ["Utility"] },
+    { fileName: "DBM LAB7.html", tags: ["Academic", "Quiz"] },
     { fileName: "department.html", tags: ["Academic"] },
     { fileName: "gdp.html", tags: ["Economics", "Data"] },
-    { fileName: "timetable test.html", tags: ["Timeable","System Testing"] },
-    { fileName: "timetable.html", tags: ["Utility","Timeable"] },
-    { fileName: "CA_Quiz.html", tags: ["SEM 1", "Quiz"] },
-    { fileName: "DBM LAB7.html", tags: ["SEM 2", "Quiz"] }
+    { fileName: "timetable test.html", tags: ["System Testing"] },
+    { fileName: "timetable.html", tags: ["Utility"] }
 ];
 
 // --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
+    { title: "Part 1 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
     { title: "Report Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-07-27", type: "Assignment" },
@@ -101,7 +101,6 @@ function getRandomizedGreeting() {
         "🖥️ Evening workspace active. Let's review the academic timeline metrics."
     ];
 
-    // Compute a clean random selection inside function scope on every invocation
     const randomIndex = Math.floor(Math.random() * 3);
 
     if (hours >= 5 && hours < 12) return morningPhrases[randomIndex];
@@ -119,9 +118,9 @@ function getCurrentWeeklyFileName() {
 }
 
 // Render Workspace Pages Links with Subject Category Tags
-// Render Workspace Pages Links with Subject Category Tags
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
+    if (!container) return;
     container.innerHTML = '';
     
     MY_WORKSPACE_PAGES.forEach(pageObj => {
@@ -129,45 +128,17 @@ function loadRepositoryPages() {
         
         let tagsMarkup = '';
         pageObj.tags.forEach(tag => {
-            // 1. Assign semantic classes for style hierarchies
             let colorClass = 'open-tag'; 
-            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest' || tag === 'Quiz') {
-                colorClass = 'test-tag'; 
-            } else if (tag === 'Timeable') {
-                colorClass = 'online-tag'; 
-            } else if (tag === 'Utility') {
-                colorClass = 'replacement-tag'; 
-            } else if (['SEM 1', 'SEM 2', 'SEM 3', 'SEM 4', 'SEM 5'].includes(tag)) {
-                colorClass = 'open-tag';
-            }
-
-            // 2. Define hex fallbacks if your root CSS variables aren't loading properly
-            let bgStyle = 'background-color: #2e7d32; color: #fff;'; // Default Green (open-tag)
-            if (colorClass === 'test-tag') {
-                bgStyle = 'background-color: #c62828; color: #fff;'; // Red / Crimson
-            } else if (colorClass === 'online-tag') {
-                bgStyle = 'background-color: #1565c0; color: #fff;'; // Blue
-            } else if (colorClass === 'replacement-tag') {
-                bgStyle = 'background-color: #ef6c00; color: #fff;'; // Amber / Orange
-            }
+            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') colorClass = 'test-tag'; 
+            if (tag === 'System') colorClass = 'online-tag'; 
+            if (tag === 'Utility') colorClass = 'replacement-tag'; 
             
-            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 8px; margin-left: 5px; font-weight:600; border-radius: 4px; ${bgStyle}">${tag}</span>`;
+            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
         });
-
-        // Strip out the .html extension for GitHub Pages clean URL routing
-        const cleanFileName = pageObj.fileName.replace('.html', '');
-
-        // Determine base path depending on whether it's a general page or an academic quiz/lab task
-        let selectedBaseUrl = BASE_PAGES_URL;
-        if (pageObj.fileName === "CA_Quiz.html" || pageObj.fileName === "DBM LAB7.html") {
-            selectedBaseUrl = BASE_UNI_URL;
-        }
 
         const linkElement = document.createElement('a');
         linkElement.className = 'page-item-link';
-        linkElement.href = `${selectedBaseUrl}${cleanFileName}`;
-        linkElement.target = '_blank'; 
-        linkElement.rel = 'noopener noreferrer'; 
+        linkElement.href = `${BASE_PAGES_URL}${pageObj.fileName}`;
         linkElement.innerHTML = `
             <div class="page-title-group">
                 <span class="material-icons">construction</span>
@@ -182,9 +153,10 @@ function loadRepositoryPages() {
     });
 }
 
-// INTERACTIVE ASSIGNMENTS PANEL
+// --- INTERACTIVE ASSIGNMENTS PANEL ---
 function buildModuleDeadlinesSelector() {
     const tabsRow = document.getElementById('module-tabs-row');
+    if (!tabsRow) return;
     tabsRow.innerHTML = '';
 
     if (ACADEMIC_DEADLINES.length === 0) {
@@ -194,14 +166,9 @@ function buildModuleDeadlinesSelector() {
 
     const uniqueModules = [...new Set(ACADEMIC_DEADLINES.map(t => t.module))];
 
-    if (!selectedModuleCode && uniqueModules.length > 0) {
-        const randomIndex = Math.floor(Math.random() * uniqueModules.length);
-        selectedModuleCode = uniqueModules[randomIndex];
-    }
-
     uniqueModules.forEach(moduleCode => {
         const tabBtn = document.createElement('button');
-        tabBtn.className = (moduleCode === selectedModuleCode) ? 'module-tab-btn active-tab' : 'module-tab-btn';
+        tabBtn.className = 'module-tab-btn';
         tabBtn.textContent = moduleCode;
         
         tabBtn.addEventListener('click', () => {
@@ -214,13 +181,21 @@ function buildModuleDeadlinesSelector() {
         tabsRow.appendChild(tabBtn);
     });
 
-    renderSelectedModuleTasks();
+    // NOTE: Auto-execution logic for `renderSelectedModuleTasks()` is completely removed on initialization
+    // to preserve the instruction text until a module button is actively selected.
 }
 
 function renderSelectedModuleTasks() {
     const container = document.getElementById('deadlines-container');
-    container.innerHTML = '';
+    if (!container) return;
 
+    // Remove the descriptive placeholder prompt layout safely
+    const initialPrompt = document.getElementById('initial-assignment-state');
+    if (initialPrompt) {
+        initialPrompt.remove();
+    }
+
+    container.innerHTML = '';
     if (!selectedModuleCode) return;
 
     const filteredTasks = ACADEMIC_DEADLINES.filter(t => t.module === selectedModuleCode);
@@ -247,7 +222,7 @@ function renderSelectedModuleTasks() {
             leftBorderColor = "var(--color-test)";
         } else if (diffDays <= 3) {
             pillClass = "replacement-tag";
-            countdownLabel = "UPCOMING";
+            countdownLabel = "Urgent";
             leftBorderColor = "var(--color-replacement)";
         }
 
@@ -273,13 +248,14 @@ async function loadTimetable() {
     const progressBarContainer = document.getElementById('daily-progress-container');
     const progressBarFill = document.getElementById('daily-progress-fill');
     
+    if (!container) return;
+    
     const now = new Date();
     const currentFormattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const currentMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
 
     let configData = { announcements: { isExamWeek: false }, exams: [], holidays: [] };
 
-    // 1. Fetch Separated Configuration Overrides parameters
     try {
         const configRes = await fetch(`config.json`);
         if (configRes.ok) {
@@ -289,7 +265,6 @@ async function loadTimetable() {
         console.warn("Global config parameters offline, running standard cycle configurations.", e);
     }
 
-    // Evaluate holiday scheduling conditions
     const currentHoliday = configData.holidays ? configData.holidays.find(h => h.date === currentFormattedDate) : null;
 
     // --- INTERACTIVE EXAM PERIOD RENDERING MODULE ---
@@ -373,19 +348,12 @@ async function loadTimetable() {
         return;
     }
 
-    // --- 2. STANDARD LECTURE ROUTINE PROCESSING ---
-    const targetFileName = getCurrentWeeklyFileName(); // e.g., "2026-07-05.json"
+    // --- STANDARD LECTURE ROUTINE PROCESSING ---
+    const targetFileName = getCurrentWeeklyFileName(); 
     try {
-        // Determine path based on whether the open HTML is inside the /pages/ folder or at root
-        const isInPagesFolder = window.location.pathname.includes('/pages/');
-        const relativePath = isInPagesFolder 
-            ? `../timetable/${targetFileName}`  // If inside /pages/, go up one level then into timetable
-            : `timetable/${targetFileName}`;    // If running from home.html at root
-
-        const response = await fetch(relativePath);
-    
+        const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/timetable/${targetFileName}`);
         if (!response.ok) {
-            container.innerHTML = `<div class="empty-state">No timetable found for this week locally.</div>`;
+            container.innerHTML = `<div class="empty-state">No timetable found for this week.</div>`;
             if (headerNextDisplay) headerNextDisplay.textContent = 'No schedule found';
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
             return;
@@ -402,13 +370,15 @@ async function loadTimetable() {
         container.innerHTML = '';
         const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
         const currentDayIndex = now.getDay();
-    
+        
         let activeClassObj = null;
         let nextUpcomingClassObj = null;
         let minUpcomingTimeDiff = Infinity;
         let visibleCardsInjected = false;
+
         let totalClassesToday = 0;
         let conductedClassesToday = 0;
+
         data.days.forEach((dayGroup) => {
             if (dayGroup.classes && dayGroup.classes.length > 0) {
                 const targetDayPrefix = dayGroup.date.split(',')[0].trim();
@@ -509,11 +479,11 @@ async function loadTimetable() {
             if (greetingBanner) greetingBanner.textContent = `You are currently in ${activeClassObj.moduleName} (${activeClassObj.classType || 'Class'}). Ends in ${remainingMinutes} minutes.`;
         } else if (nextUpcomingClassObj) {
             const minutesLeft = Math.ceil(minUpcomingTimeDiff);
-            const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}mins`;
-            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ YOUR NEXT CLASS IS IN ${timeLabel}</span>`;
+            const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}m`;
+            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ NEXT CLASS in ${timeLabel}</span>`;
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         } else {
-            if (headerNextDisplay) headerNextDisplay.innerHTML = '<span class="highlight-countdown">✨ THRER IS NO MORE CLASSES FOR TODAY</span>';
+            if (headerNextDisplay) headerNextDisplay.innerHTML = '<span class="highlight-countdown">✨ NO MORE CLASSES TODAY</span>';
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         }
 
@@ -529,10 +499,12 @@ async function loadTimetable() {
     }
 }
 
-// Initialize Active Subsystems
-loadRepositoryPages();
-buildModuleDeadlinesSelector();
-loadTimetable();
+// --- INITIALIZE SUBSYSTEMS ON WEB CONTENT LOAD ---
+document.addEventListener("DOMContentLoaded", () => {
+    loadRepositoryPages();
+    buildModuleDeadlinesSelector();
+    loadTimetable();
 
-// Re-scan network and timeline arrays every 30 seconds to avoid GitHub rate-limiting
-setInterval(loadTimetable, 30000);
+    // Re-scan timetable metrics configuration parameters every 30 seconds
+    setInterval(loadTimetable, 30000);
+});
