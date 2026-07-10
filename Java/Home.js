@@ -10,6 +10,7 @@
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
+const BASE_UNI_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/UNI/`;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
@@ -18,7 +19,7 @@ const MY_WORKSPACE_PAGES = [
     { fileName: "gdp.html", tags: ["Economics", "Data"] },
     { fileName: "timetable test.html", tags: ["Timeable","System Testing"] },
     { fileName: "timetable.html", tags: ["Utility","Timeable"] },
-        { fileName: "CA_Quiz.html", tags: ["SEM 1", "Quiz"] },
+    { fileName: "CA_Quiz.html", tags: ["SEM 1", "Quiz"] },
     { fileName: "DBM LAB7.html", tags: ["SEM 2", "Quiz"] }
 ];
 
@@ -136,9 +137,20 @@ function loadRepositoryPages() {
             tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
         });
 
+        // Strip out the .html extension for GitHub Pages clean URL routing
+        const cleanFileName = pageObj.fileName.replace('.html', '');
+
+        // Determine base path depending on whether it's a general page or an academic quiz/lab task
+        let selectedBaseUrl = BASE_PAGES_URL;
+        if (pageObj.fileName === "CA_Quiz.html" || pageObj.fileName === "DBM LAB7.html") {
+            selectedBaseUrl = BASE_UNI_URL;
+        }
+
         const linkElement = document.createElement('a');
         linkElement.className = 'page-item-link';
-        linkElement.href = `${BASE_PAGES_URL}${pageObj.fileName}`;
+        linkElement.href = `${selectedBaseUrl}${cleanFileName}`;
+        linkElement.target = '_blank'; // Force the link to open in a new tab
+        linkElement.rel = 'noopener noreferrer'; // Security best practice for target="_blank"
         linkElement.innerHTML = `
             <div class="page-title-group">
                 <span class="material-icons">construction</span>
