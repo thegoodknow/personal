@@ -128,11 +128,19 @@ function loadRepositoryPages() {
         
         let tagsMarkup = '';
         pageObj.tags.forEach(tag => {
+            // Default fallback color class
             let colorClass = 'open-tag'; 
-            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') colorClass = 'test-tag'; 
-            if (tag === 'Timeable') colorClass = 'online-tag'; 
-            if (tag === 'Utility') colorClass = 'replacement-tag'; 
-            if (tag === 'SEM 1','SEM 2','SEM 3','SEM 4','SEM 5') colorClass = 'open-tag';
+
+            // Specific conditional mappings
+            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') {
+                colorClass = 'test-tag'; 
+            } else if (tag === 'Timeable') {
+                colorClass = 'online-tag'; 
+            } else if (tag === 'Utility') {
+                colorClass = 'replacement-tag'; 
+            } else if (['SEM 1', 'SEM 2', 'SEM 3', 'SEM 4', 'SEM 5'].includes(tag)) {
+                colorClass = 'open-tag';
+            }
             
             tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
         });
@@ -149,8 +157,8 @@ function loadRepositoryPages() {
         const linkElement = document.createElement('a');
         linkElement.className = 'page-item-link';
         linkElement.href = `${selectedBaseUrl}${cleanFileName}`;
-        linkElement.target = '_blank'; // Force the link to open in a new tab
-        linkElement.rel = 'noopener noreferrer'; // Security best practice for target="_blank"
+        linkElement.target = '_blank'; 
+        linkElement.rel = 'noopener noreferrer'; 
         linkElement.innerHTML = `
             <div class="page-title-group">
                 <span class="material-icons">construction</span>
