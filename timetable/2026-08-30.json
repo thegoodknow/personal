@@ -1,0 +1,40 @@
+{
+  "weekStartDate": "2026-08-30",
+  "days": [
+    {
+      "date": "Mon, 04-May-2026",
+      "classes": []
+    },
+    {
+      "date": "Tue, 05-May-2026",
+      "classes": []
+    },
+    {
+      "date": "Wed, 06-May-2026",
+      "classes": [
+        {
+          "moduleCode": "AAPP015-4-1-PWP-L-6",
+          "moduleName": "PROGRAMNG WITH PYTHON",
+          "time": "10:00 - 12:00",
+          "location": "Exam Hall",
+          "campus": "APU CAMPUS",
+          "lecturer": "AMARDEEP SINGH UTTAM SINGH",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": true,
+          "testType": "Final Exam"
+        }
+      ]
+    },
+    {
+      "date": "Thu, 07-May-2026",
+      "classes": []
+    },
+    {
+      "date": "Fri, 08-May-2026",
+      "classes": []
+    }
+  ]
+}

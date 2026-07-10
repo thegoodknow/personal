@@ -10,19 +10,15 @@
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
-const UNI_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/UNI/`;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
-    { fileName: "convert.html", tags: ["Utility"] },
+    { fileName: "convert.html", tags: ["Utility","Timeable"] },
     { fileName: "department.html", tags: ["Academic"] },
     { fileName: "gdp.html", tags: ["Economics", "Data"] },
-    { fileName: "timetable test.html", tags: ["System Testing"] },
-    { fileName: "timetable.html", tags: ["Utility"] }
-];
-
-const MY_UNI_PAGES = [
-    { fileName: "CA_Quiz.html", tags: ["SEM 1", "Quiz"] },
+    { fileName: "timetable test.html", tags: ["Timeable","System Testing"] },
+    { fileName: "timetable.html", tags: ["Utility","Timeable"] },
+        { fileName: "CA_Quiz.html", tags: ["SEM 1", "Quiz"] },
     { fileName: "DBM LAB7.html", tags: ["SEM 2", "Quiz"] }
 ];
 
@@ -133,7 +129,7 @@ function loadRepositoryPages() {
         pageObj.tags.forEach(tag => {
             let colorClass = 'open-tag'; 
             if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') colorClass = 'test-tag'; 
-            if (tag === 'System') colorClass = 'online-tag'; 
+            if (tag === 'Timeable') colorClass = 'online-tag'; 
             if (tag === 'Utility') colorClass = 'replacement-tag'; 
             if (tag === 'SEM 1','SEM 2','SEM 3','SEM 4','SEM 5') colorClass = 'open-tag';
             
@@ -222,7 +218,7 @@ function renderSelectedModuleTasks() {
             leftBorderColor = "var(--color-test)";
         } else if (diffDays <= 3) {
             pillClass = "replacement-tag";
-            countdownLabel = "Urgent";
+            countdownLabel = "UPCOMING";
             leftBorderColor = "var(--color-replacement)";
         }
 
@@ -485,7 +481,7 @@ async function loadTimetable() {
         } else if (nextUpcomingClassObj) {
             const minutesLeft = Math.ceil(minUpcomingTimeDiff);
             const timeLabel = minutesLeft > 60 ? `${Math.floor(minutesLeft/60)}h ${minutesLeft%60}m` : `${minutesLeft}mins`;
-            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ YOUR NEXT CLASS IS in ${timeLabel}</span>`;
+            if (headerNextDisplay) headerNextDisplay.innerHTML = `<span class="highlight-countdown">⏰ YOUR NEXT CLASS IS IN ${timeLabel}</span>`;
             if (greetingBanner) greetingBanner.textContent = getRandomizedGreeting();
         } else {
             if (headerNextDisplay) headerNextDisplay.innerHTML = '<span class="highlight-countdown">✨ THRER IS NO MORE CLASSES FOR TODAY</span>';

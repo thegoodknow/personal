@@ -1,0 +1,70 @@
+{
+  "weekStartDate": "2026-08-23",
+  "days": [
+    {
+      "date": "Mon, 24-Aug-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT015-4-1-DBM-L-2",
+          "moduleName": "DATABASE MANAGEMENT",
+          "time": "10:00 - 12:30",
+          "location": "Exam Hall",
+          "campus": "APU CAMPUS",
+          "lecturer": "NUR SHAMEEN AINA BINTI ABDUL RAHIM",
+          "isOnline": false,
+          "classType": "Exam",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": true,
+          "testType": "Final Exam"
+        }
+      ]
+    },
+    {
+      "date": "Tue, 25-Aug-2026",
+      "classes": []
+    },
+    {
+      "date": "Wed, 26-Aug-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT021-4-1-OPS-T-4",
+          "moduleName": "OPERATING SYSTEMS",
+          "time": "10:00 - 12:30",
+          "location": "Exam Hall",
+          "campus": "APU CAMPUS",
+          "lecturer": "VIJAYALAXMI AMUTHAN",
+          "isOnline": false,
+          "classType": "Exam",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": true,
+          "testType": "Final Exam"
+        }
+      ]
+    },
+    {
+      "date": "Thu, 27-Aug-2026",
+      "classes": []
+    },
+    {
+      "date": "Fri, 28-Aug-2026",
+      "classes": [
+        {
+          "moduleCode": "AICT022-4-1-ISCC-L-2",
+          "moduleName": "INFORMATION SYSTEM WITH CLOUD CONCEPTS",
+          "time": "09:30 - 12:00",
+          "location": "Exam Hall",
+          "campus": "APU CAMPUS",
+          "lecturer": "ROZITA YATI BINTI MASRI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": true,
+          "testType": "Final Exam"
+        }
+      ]
+    }
+  ]
+}
