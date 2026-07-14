@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal HomePage</title>
+    <title>Workspace</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     
     <!-- Link to your original stylesheet -->
@@ -12,7 +12,7 @@
     <!-- Material Icons Link -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- Structural and Slidebar Layout Styles (Inherits design variables from style.css) -->
+    <!-- Structural Layout, Typography, & Advanced CSS Animations -->
     <style>
         /* Main Workspace Two-Column Grid Layout */
         .main-container {
@@ -23,12 +23,58 @@
             max-width: 1450px;
             margin: 0 auto;
             box-sizing: border-box;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         @media (max-width: 950px) {
             .main-container {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* -------------------------------------------------- */
+        /* SMOOTH TRANSITIONS & INTERACTIVE ANIMATIONS        */
+        /* -------------------------------------------------- */
+        
+        /* Entrance animation for main containers */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Pulse animation for high priority highlights */
+        @keyframes subtlePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.015); }
+            100% { transform: scale(1); }
+        }
+
+        /* Card Hover Lift Effect */
+        .class-card {
+            transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+        }
+        .class-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+            border-color: var(--color-primary) !important;
+        }
+
+        /* Facility Block Card Specific Hover Effect */
+        .facility-block-card {
+            margin-bottom: 0px;
+            border: 1px solid var(--border-color);
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .facility-block-card:hover {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
         }
 
         /* Sidebar Container on the Left */
@@ -41,7 +87,7 @@
             background-color: var(--bg-dark); 
             border-right: 1px solid var(--border-color);
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-            transition: left 0.3s ease; 
+            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -65,6 +111,10 @@
             color: var(--text-light);
             cursor: pointer;
             outline: none;
+            transition: transform 0.2s ease;
+        }
+        .sidebar-header button:hover {
+            transform: rotate(90deg);
         }
 
         .sidebar-content {
@@ -90,18 +140,19 @@
         .sidebar-link {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             color: var(--text-subtle);
             text-decoration: none;
             font-size: 0.95rem;
             padding: 10px;
             border-radius: 6px;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .sidebar-link:hover {
             background-color: var(--bg-card);
             color: var(--text-light);
+            transform: translateX(5px);
         }
 
         /* Interactive Map Modal Overlay */
@@ -116,6 +167,8 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease;
         }
 
         #map-modal.open {
@@ -134,6 +187,12 @@
             align-items: center;
             border: 1px solid var(--border-color);
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .modal-content img {
@@ -152,11 +211,11 @@
             border: none;
             color: var(--text-subtle);
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.2s, transform 0.2s;
         }
-
         .close-modal-btn:hover {
             color: var(--text-light);
+            transform: scale(1.1);
         }
 
         /* Overriding sidebar-toggle layout slightly for clean alignment */
@@ -169,41 +228,58 @@
             align-items: center;
             padding: 0;
             margin-right: -10px;
+            transition: transform 0.2s ease;
+        }
+        #sidebar-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Smooth Scale Transition on Selection Control */
+        .select-control {
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .select-control:hover {
+            border-color: var(--color-primary);
+        }
+        .select-control:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
         }
     </style>
 </head>
 <body>
 
-    <!-- Header containing logo, clock, and next class info -->
-    <header class="header">
-        <div class="logo-group">
-            <!-- Left-hand sidebar toggle button integrated seamlessly -->
+    <!-- Header containing logo, clock, and next class info with ENHANCED sizes -->
+    <header class="header" style="padding: 12px 24px; min-height: 64px;">
+        <div class="logo-group" style="gap: 20px;">
             <button id="sidebar-toggle">
-                <span class="material-icons">menu</span>
+                <span class="material-icons" style="font-size: 2.1rem;">menu</span>
             </button>
-            <!-- Original APSpace logo -->
-            <img id="logo-icon" src="img/apspace-logo.png" alt="APSpace Logo" onerror="this.style.display='none';">
+            <img id="logo-icon" src="img/apspace-logo.png" alt="APSpace Logo" style="height: 34px;" onerror="this.style.display='none';">
         </div>
 
-        <div class="header-summary-bar">
-            <!-- Inline live clock -->
+        <div class="header-summary-bar" style="gap: 25px;">
+            <!-- Inline live clock with icon -->
             <div class="summary-item">
-                <span id="live-clock" class="clock-display">00:00:00 AM</span>
+                <span class="material-icons" style="font-size: 1.45rem; margin-right: 6px; color: var(--color-primary);">watch_later</span>
+                <span id="live-clock" class="clock-display" style="font-size: 1.35rem; font-weight: 700; letter-spacing: 0.5px;">00:00:00 AM</span>
             </div>
-            <!-- Dynamic schedule banner (Populated by personal.js) -->
-            <div class="summary-item next-class-display">
-                <span id="next-class-text" style="display: flex; align-items: center; gap: 5px;">
-                    <span class="material-icons online-icon">play_arrow</span>
+            <!-- Dynamic schedule banner -->
+            <div class="summary-item next-class-display" style="font-size: 1.15rem;">
+                <span id="next-class-text" style="display: flex; align-items: center; gap: 6px;">
+                    <span class="material-icons online-icon" style="font-size: 1.35rem;">play_arrow</span>
                     <span style="color: var(--color-current); font-weight: bold;">TIME UNTIL CLASS END: (0m 0s)</span>
-                    <span style="color: var(--text-light);">| Loading today's schedule...</span>
+                    <span style="color: var(--text-light); font-weight: 500;">| Loading today's schedule...</span>
                 </span>
             </div>
         </div>
 
         <!-- Right Side View Dropdown Selector -->
-        <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
-            <span style="color: var(--text-subtle); font-size: 0.9rem;">Viewing:</span>
-            <select id="week-selector" class="select-control">
+        <div style="display: flex; align-items: center; gap: 12px; white-space: nowrap;">
+            <span class="material-icons" style="font-size: 1.35rem; color: var(--text-subtle);">visibility</span>
+            <span style="color: var(--text-subtle); font-size: 1.05rem; font-weight: 500;">Viewing:</span>
+            <select id="week-selector" class="select-control" style="font-size: 1rem; height: 40px; padding: 6px 16px;">
                 <option value="current">Today</option>
                 <option value="next">Next Week Preview</option>
                 <option value="exams">All Scheduled Exams</option>
@@ -215,43 +291,46 @@
     <div id="slidebar">
         <div class="sidebar-header">
             <button id="sidebar-close">
-                <span class="material-icons">close</span>
+                <span class="material-icons" style="font-size: 1.8rem;">close</span>
             </button>
         </div>
         <div class="sidebar-content">
             
-            <!-- Daily Section -->
-            <div class="sidebar-section-title">Daily Navigation</div>
+            <!-- SECTION 1: Maps & Navigation (Map FIRST) -->
+            <div class="sidebar-section-title">Navigation</div>
             <a href="#" id="open-map-btn" class="sidebar-link">
                 <span class="material-icons">map</span>
                 <span>Campus Map</span>
             </a>
 
-            <!-- Uni Section -->
+            <!-- SECTION 2: Home Page (Data Converter SECOND) -->
+            <div class="sidebar-section-title">Home</div>
+            <a href="https://thegoodknow.github.io/personal/pages/convert.html" target="_blank" class="sidebar-link">
+                <span class="material-icons">transform</span>
+                <span>Data Converter</span>
+            </a>
+
+            <!-- SECTION 3: APSpace & Moodle (THIRD) -->
             <div class="sidebar-section-title">University</div>
             <a href="https://apspace.apu.edu.my" target="_blank" class="sidebar-link">
                 <span class="material-icons">school</span>
                 <span>APSpace Portal</span>
             </a>
-
-            <!-- Personal Section -->
-            <div class="sidebar-section-title">Personal Web Utilities</div>
-            <a href="https://thegoodknow.github.io/personal/pages/convert.html" target="_blank" class="sidebar-link">
-                <span class="material-icons">transform</span>
-                <span>Data Converter</span>
+            <a href="https://moodle.apu.edu.my" target="_blank" class="sidebar-link">
+                <span class="material-icons">description</span>
+                <span>APU Moodle</span>
             </a>
             
         </div>
     </div>
 
-    <!-- Campus Map Overlay Modal (Fixed Image Directory Path) -->
+    <!-- Campus Map Overlay Modal -->
     <div id="map-modal">
         <div class="modal-content">
             <button id="close-map-btn" class="close-modal-btn">
                 <span class="material-icons" style="font-size: 2.2rem;">cancel</span>
             </button>
             <h3 style="color: var(--text-light); margin-top: 0; margin-bottom: 15px; font-size: 1.25rem;">APU Campus Map</h3>
-            <!-- Pointing directly to img/ folder with URL spaces safely encoded as %20 -->
             <img src="img/APU%20MAP.jpeg" alt="APU Campus Map">
         </div>
     </div>
@@ -268,24 +347,29 @@
 
         <!-- Right Side: Sidebar Widgets -->
         <aside style="display: flex; flex-direction: column; gap: 24px;">
-            <!-- Urgent Deadline Panel -->
-            <div class="class-card" style="padding: 16px;">
-                <h4 style="margin: 0 0 12px 0; color: var(--text-subtle); display: flex; align-items: center; gap: 8px;">
-                    <span class="material-icons" style="font-size: 1.2rem;">event</span>
-                    <span>Urgent Deadline</span>
-                </h4>
-                <div id="assignment-target">
-                    <!-- Target for deadline cards -->
+            <!-- Urgent Deadline Panel with dynamic pulse effect -->
+            <div class="class-card" style="padding: 18px; border-left: 5px solid var(--color-test); position: relative; display: flex; flex-direction: column; gap: 12px; min-height: 165px; box-sizing: border-box; animation: subtlePulse 3s infinite ease-in-out;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <h4 style="margin: 0; color: var(--text-light); display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600;">
+                        <span class="material-icons" style="color: var(--color-test); font-size: 1.25rem;">alarm</span>
+                        <span>Urgent Deadline</span>
+                    </h4>
+                    <span id="deadline-urgency-pill" class="pill" style="background-color: var(--color-test-bg); color: #fff; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;">
+                        Loading...
+                    </span>
+                </div>
+                <div id="assignment-target" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                    <!-- Rendered dynamically by personal.js -->
                 </div>
             </div>
 
             <!-- Campus Block & Room Finder Directory -->
-            <div class="class-card" style="padding: 16px;">
-                <h4 style="margin: 0 0 12px 0; color: var(--color-primary); display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <h4 style="margin: 0; color: var(--color-primary); display: flex; align-items: center; gap: 8px; padding-left: 5px;">
                     <span class="material-icons">business</span>
                     <span>Campus Directory</span>
                 </h4>
-                <div id="facilities-target">
+                <div id="facilities-target" style="display: flex; flex-direction: column; gap: 12px;">
                     <!-- Target for room and floor facilities lists -->
                 </div>
             </div>
