@@ -6,6 +6,64 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+// Slidebar Toggle Mechanics
+const slidebar = document.getElementById('slidebar');
+const toggleBtn = document.getElementById('sidebar-toggle');
+const closeBtn = document.getElementById('sidebar-close');
+
+toggleBtn.addEventListener('click', () => slidebar.classList.add('open'));
+closeBtn.addEventListener('click', () => slidebar.classList.remove('open'));
+
+// Map Modal Mechanics
+const mapModal = document.getElementById('map-modal');
+const openMapBtn = document.getElementById('open-map-btn');
+const closeMapBtn = document.getElementById('close-map-btn');
+
+openMapBtn.addEventListener('click', () => {
+    mapModal.classList.add('open');
+    slidebar.classList.remove('open'); // Close slidebar to avoid overlap clutter
+});
+
+closeMapBtn.addEventListener('click', () => {
+    mapModal.classList.remove('open');
+});
+
+mapModal.addEventListener('click', (e) => {
+    if (e.target === mapModal) {
+        mapModal.classList.remove('open');
+    }
+});
+
+// Parse APU room formats (e.g., "B-03-05", "C-05-12", "Block D - Level 2")
+function parseLocationDetails(roomString) {
+    if (!roomString || roomString === "N/A" || roomString.toLowerCase() === "online") {
+        return "";
+    }
+
+    const dashPattern = /^([A-Ea-e])[- ](\d{1,2})[- ](\d{1,2})$/;
+    const shortDashPattern = /^([A-Ea-e])[- ](\d{1,2})$/;
+    
+    let match = roomString.trim().match(dashPattern);
+    if (match) {
+        const block = match[1].toUpperCase();
+        const level = parseInt(match[2], 10);
+        return `<span class="location-highlight"><span class="material-icons" style="font-size:0.9rem;">layers</span> Block ${block}, Level ${level}</span>`;
+    }
+
+    match = roomString.trim().match(shortDashPattern);
+    if (match) {
+        const block = match[1].toUpperCase();
+        const level = parseInt(match[2], 10);
+        return `<span class="location-highlight"><span class="material-icons" style="font-size:0.9rem;">layers</span> Block ${block}, Level ${level}</span>`;
+    }
+
+    if (roomString.toLowerCase().includes('block')) {
+        return `<span class="location-highlight"><span class="material-icons" style="font-size:0.9rem;">layers</span> ${roomString}</span>`;
+    }
+
+    return "";
+}
+
 // Helper function to get the YYYY-MM-DD string for a given Sunday
 function getSundayDateString(offsetWeeks = 0) {
     const d = new Date();
@@ -20,7 +78,143 @@ function getSundayDateString(offsetWeeks = 0) {
     return `${year}-${month}-${date}`;
 }
 
-// Main logic to fetch and render dynamic timetable states
+// Fetch and display closest assignment deadline
+async function loadDeadlines() {
+    const container = document.getElementById('assignment-target');
+    try {
+        const response = await fetch('Data/deadline.json');
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) return;
+
+        const now = new Date();
+        const assignments = data.map(task => {
+            return {
+                ...task,
+                parsedDate: new Date(`${task.dueDate}T${task.dueTime || '23:59:00'}`)
+            };
+        });
+
+        const overdueTasks = assignments
+            .filter(task => task.parsedDate < now)
+            .sort((a, b) => b.parsedDate - a.parsedDate);
+
+        const activeTasks = assignments
+            .filter(task => task.parsedDate >= now)
+            .sort((a, b) => a.parsedDate - b.parsedDate);
+
+        let selectedTask = null;
+        let urgencyState = ""; 
+        let urgencyLabel = "";
+        let urgencyIcon = "event_busy";
+
+        if (overdueTasks.length > 0) {
+            selectedTask = overdueTasks[0];
+            urgencyState = "overdue";
+            urgencyLabel = "Overdue";
+            urgencyIcon = "gavel";
+        } else if (activeTasks.length > 0) {
+            selectedTask = activeTasks[0];
+            
+            const isToday = selectedTask.parsedDate.toDateString() === now.toDateString();
+            if (isToday) {
+                urgencyState = "today";
+                urgencyLabel = "Due Today";
+                urgencyIcon = "notification_important";
+            } else {
+                urgencyState = "upcoming";
+                const daysLeft = Math.ceil((selectedTask.parsedDate - now) / (1000 * 60 * 60 * 24));
+                urgencyLabel = `${daysLeft} Day${daysLeft > 1 ? 's' : ''} Left`;
+                urgencyIcon = "event";
+            }
+        }
+
+        if (!selectedTask) return;
+
+        container.innerHTML = `
+            <div class="assignment-card ${urgencyState}">
+                <div class="assignment-details">
+                    <div class="assignment-urgency">
+                        <span class="material-icons" style="font-size: 1rem;">${urgencyIcon}</span>
+                        <span>${urgencyLabel}</span>
+                    </div>
+                    <strong style="margin-top: 6px; font-size: 1.1rem; color: #fff;">${selectedTask.assignmentName}</strong>
+                    <span style="font-size: 0.85rem; opacity: 0.8;">${selectedTask.moduleName}</span>
+                </div>
+                <div style="text-align: right; font-size: 0.85rem; opacity: 0.9;">
+                    <div><b>Deadline:</b></div>
+                    <div>${selectedTask.dueDate}</div>
+                    <div style="color: #a5b4fc; margin-top: 2px;">@ ${selectedTask.dueTime || '23:59'}</div>
+                </div>
+            </div>
+        `;
+    } catch (e) {
+        console.warn("Could not retrieve or parse Data/deadline.json", e);
+    }
+}
+
+// Fetch and render APU facilities from JSON configuration
+async function loadFacilities() {
+    const target = document.getElementById('facilities-target');
+    try {
+        const response = await fetch('Data/facilities.json');
+        if (!response.ok) throw new Error("Could not load facilities JSON file.");
+
+        const facilities = await response.json();
+        if (!Array.isArray(facilities) || facilities.length === 0) {
+            target.innerHTML = `<div style="padding:10px;">No facilities loaded.</div>`;
+            return;
+        }
+
+        target.innerHTML = ''; // Clear loader
+        facilities.forEach(item => {
+            const blockEl = document.createElement('div');
+            blockEl.className = 'directory-block';
+
+            // Use item.faclities or item.hasToilet / item.hasLift
+            const toiletsIcon = item.hasToilet ? 'check_circle' : 'cancel';
+            const toiletsColor = item.hasToilet ? '#10b981' : '#ef4444';
+            const liftsIcon = item.hasLift ? 'check_circle' : 'cancel';
+            const liftsColor = item.hasLift ? '#10b981' : '#ef4444';
+
+            // Dynamic facilities info display (handles boolean or string values safely)
+            let facilitiesInfo = "";
+            if (typeof item.faclities === "string") {
+                facilitiesInfo = `<div><b>Facilities:</b> ${item.faclities}</div>`;
+            } else if (item.faclities === true) {
+                facilitiesInfo = `<div><b>Facilities:</b> Yes</div>`;
+            } else {
+                facilitiesInfo = `<div><b>Facilities:</b> None</div>`;
+            }
+
+            blockEl.innerHTML = `
+                <div class="directory-block-title">
+                    <span>Block ${item.block}</span>
+                </div>
+                <div class="directory-features">
+                    <span>
+                        <span class="material-icons" style="font-size:0.9rem;">wc</span> 
+                        Toilets <span class="material-icons" style="font-size:0.85rem; color:${toiletsColor};">${toiletsIcon}</span>
+                    </span>
+                    <span>
+                        <span class="material-icons" style="font-size:0.9rem;">elevator</span> 
+                        Lifts <span class="material-icons" style="font-size:0.85rem; color:${liftsColor};">${liftsIcon}</span>
+                    </span>
+                </div>
+                ${facilitiesInfo}
+                <div><b>Connects to:</b> ${Array.isArray(item.connectsTo) ? item.connectsTo.join(', ') : item.connectsTo}</div>
+                ${item.notes ? `<div><b>Notes:</b> <span style="color: #f59e0b;">${item.notes}</span></div>` : ''}
+            `;
+            target.appendChild(blockEl);
+        });
+    } catch (error) {
+        console.warn("Facilities configuration error: ", error);
+        target.innerHTML = `<div style="padding: 10px; color: #ef4444; font-size: 0.75rem;">Failed to load Data/facilities.json details.</div>`;
+    }
+}
+
+// Main logic to fetch, normalize, filter and render weekly timetables
 async function loadTimetable() {
     const container = document.getElementById('timetable-target');
     const weekSelector = document.getElementById('week-selector');
@@ -28,8 +222,9 @@ async function loadTimetable() {
     const selectedValue = weekSelector.value;
     const offset = selectedValue === 'next' ? 1 : 0;
     const targetSundayStr = getSundayDateString(offset);
-    
     const isExamOnlyMode = selectedValue === 'exams';
+
+    slidebar.classList.remove('open');
 
     try {
         container.innerHTML = `<div class="message-box success">Loading timetable data...</div>`;
@@ -37,67 +232,58 @@ async function loadTimetable() {
         if (isExamOnlyMode) {
             document.getElementById('next-class-text').textContent = `All Scheduled Exams`;
             
-            // 1. DEFINE ALL YOUR SEMESTER/EXAM WEEKS HERE
-            // Add the Sunday dates of any weeks you want the system to scan for exams.
             const examWeeksToScan = [
-                "2026-08-23",
-                "2026-08-30"
+                "2026-07-12", "2026-07-19", "2026-07-26", "2026-08-02",
+                "2026-08-09", "2026-08-16", "2026-08-23", "2026-08-30"
             ];
 
             let allExams = [];
 
-            // 2. Fetch from all JSON files in parallel
             const fetchPromises = examWeeksToScan.map(async (sundayStr) => {
                 try {
                     const res = await fetch(`./timetable/${sundayStr}.json`);
-                    if (!res.ok) return null; // Skip files that don't exist yet
+                    if (!res.ok) return;
                     
                     const data = await res.json();
                     
-                    // Normalize the data format dynamically
                     let normalizedDays = [];
                     if (data.days && Array.isArray(data.days)) {
-                        normalizedDays = data.days; // New format[cite: 3]
+                        normalizedDays = data.days;
                     } else {
                         normalizedDays = Object.entries(data).map(([dayName, classesList]) => {
-                            return {
-                                date: dayName,
-                                classes: Array.isArray(classesList) ? classesList : []
-                            };
-                        }); // Old format
+                            return { date: dayName, classes: Array.isArray(classesList) ? classesList : [] };
+                        });
                     }
 
-                    // Extract exams from this week
                     normalizedDays.forEach(dayEntry => {
                         const classes = dayEntry.classes || [];
                         const examClasses = classes.filter(cls => 
-                            cls.isTest === true || 
-                            cls.classType === 'Exam' || 
-                            cls.classType === 'Test' || 
-                            cls.type === 'Test' || 
+                            cls.isTest === true ||
+                            cls.classType === 'Exam' ||
+                            cls.classType === 'Test' ||
+                            cls.type === 'Test' ||
                             cls.type === 'Exam'
                         );
 
                         if (examClasses.length > 0) {
                             allExams.push({
-                                rawDateStr: dayEntry.date, // e.g., "Mon, 24-Aug-2026"[cite: 3]
+                                rawDateStr: dayEntry.date,
                                 weekOf: sundayStr,
                                 classes: examClasses
                             });
                         }
                     });
                 } catch (e) {
-                    // Fail silently on individual network/format issues so other files still load
-                    console.warn(`Could not parse or find file: ${sundayStr}.json`, e);
+                    console.warn(`Could not load or parse: ${sundayStr}.json`, e);
                 }
             });
 
             await Promise.all(fetchPromises);
-            container.innerHTML = ''; // Clear loading message
+            container.innerHTML = '';
 
             if (allExams.length === 0) {
                 container.innerHTML = `
-                    <div class="message-box success" style="text-align: center; padding: 30px;">
+                    <div class="message-box success" style="text-align: center; padding: 30px; animation: fadeInUp 0.4s both;">
                         <span class="material-icons" style="font-size: 3rem; margin-bottom: 10px; color: #4ade80;">task_alt</span>
                         <h3>No Exams Found</h3>
                         <p style="margin: 0; opacity: 0.8;">No tests or exams were detected across your scheduled weeks.</p>
@@ -105,15 +291,13 @@ async function loadTimetable() {
                 return;
             }
 
-            // 3. Sort chronologically by date if possible
             allExams.sort((a, b) => {
                 const dateA = new Date(a.rawDateStr.includes(',') ? a.rawDateStr.split(',')[1] : a.rawDateStr);
                 const dateB = new Date(b.rawDateStr.includes(',') ? b.rawDateStr.split(',')[1] : b.rawDateStr);
                 return dateA - dateB;
             });
 
-            // 4. Render all discovered exams
-            allExams.forEach(examDay => {
+            allExams.forEach((examDay, index) => {
                 const rawDateStr = examDay.rawDateStr;
                 const dayShortName = rawDateStr.split(',')[0].trim();
                 const shortToFullDays = {
@@ -123,11 +307,11 @@ async function loadTimetable() {
                 const fullDayName = shortToFullDays[dayShortName] || rawDateStr;
                 const dateLabel = rawDateStr.includes(',') ? rawDateStr.split(',')[1].trim() : '';
 
-                // Header showing day, date, and which JSON file it came from
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'day-header';
                 dayHeader.style.display = 'flex';
                 dayHeader.style.justifyContent = 'space-between';
+                dayHeader.style.animation = `fadeInUp 0.3s ease-out ${index * 0.05}s both`;
                 dayHeader.innerHTML = `
                     <span>${fullDayName} ${dateLabel ? `(${dateLabel})` : ''}</span>
                     <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.7;">Week: ${examDay.weekOf}</span>
@@ -136,13 +320,15 @@ async function loadTimetable() {
 
                 examDay.classes.forEach(cls => {
                     const card = document.createElement('div');
-                    card.className = `class-card today`; // Highlight exam cards beautifully
+                    card.className = `class-card today`;
+                    card.style.animation = `fadeInUp 0.3s ease-out ${index * 0.05}s both`;
                     
                     const subject = cls.moduleName || cls.subject || cls.moduleCode || "No Subject Name";
                     const type = cls.classType || cls.type || "Exam";
                     const time = cls.time || "No Time Specified";
                     const room = cls.location || cls.room || "N/A";
                     const instructor = cls.lecturer || cls.instructor || "N/A";
+                    const detailedLocation = parseLocationDetails(room);
 
                     card.innerHTML = `
                         <div class="card-title">
@@ -152,7 +338,7 @@ async function loadTimetable() {
                         </div>
                         <div class="card-subtitle">${time}</div>
                         <div class="card-details">
-                            <span><b>Room:</b> ${room}</span>
+                            <span><b>Room:</b> ${room} ${detailedLocation}</span>
                             <span><b>Lecturer:</b> ${instructor}</span>
                         </div>
                     `;
@@ -167,7 +353,7 @@ async function loadTimetable() {
             if (!response.ok) throw new Error(`Could not find timetable file: ${targetSundayStr}.json`);
             
             const data = await response.json();
-            container.innerHTML = ''; // Clear loading message
+            container.innerHTML = '';
 
             const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const currentDayName = daysOfWeek[new Date().getDay()];
@@ -177,17 +363,14 @@ async function loadTimetable() {
 
             let normalizedDays = [];
             if (data.days && Array.isArray(data.days)) {
-                normalizedDays = data.days; // New format[cite: 3]
+                normalizedDays = data.days;
             } else {
                 normalizedDays = Object.entries(data).map(([dayName, classesList]) => {
-                    return {
-                        date: dayName,
-                        classes: Array.isArray(classesList) ? classesList : []
-                    };
-                }); // Old format[cite: 1]
+                    return { date: dayName, classes: Array.isArray(classesList) ? classesList : [] };
+                });
             }
 
-            normalizedDays.forEach(dayEntry => {
+            normalizedDays.forEach((dayEntry, dayIndex) => {
                 const rawDateStr = dayEntry.date || "";
                 const dayShortName = rawDateStr.split(',')[0].trim(); 
                 const shortToFullDays = {
@@ -200,6 +383,7 @@ async function loadTimetable() {
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'day-header';
                 dayHeader.textContent = isToday ? `${fullDayName} (Today)` : fullDayName;
+                dayHeader.style.animation = `fadeInUp 0.3s ease-out ${dayIndex * 0.05}s both`;
                 container.appendChild(dayHeader);
 
                 const classesToRender = dayEntry.classes || [];
@@ -207,12 +391,14 @@ async function loadTimetable() {
                     classesToRender.forEach(cls => {
                         const card = document.createElement('div');
                         card.className = `class-card ${isToday ? 'today' : ''}`;
+                        card.style.animation = `fadeInUp 0.3s ease-out ${dayIndex * 0.05}s both`;
                         
                         const subject = cls.moduleName || cls.subject || cls.moduleCode || "No Subject Name";
                         const type = cls.classType || cls.type || "Class";
                         const time = cls.time || "No Time Specified";
                         const room = cls.location || cls.room || "N/A";
                         const instructor = cls.lecturer || cls.instructor || "N/A";
+                        const detailedLocation = parseLocationDetails(room);
 
                         let tagClass = 'online-tag';
                         let iconClass = 'online-icon';
@@ -240,7 +426,7 @@ async function loadTimetable() {
                             </div>
                             <div class="card-subtitle">${time}</div>
                             <div class="card-details">
-                                <span><b>Room:</b> ${room}</span>
+                                <span><b>Room:</b> ${room} ${detailedLocation}</span>
                                 <span><b>Lecturer:</b> ${instructor}</span>
                             </div>
                         `;
@@ -249,6 +435,7 @@ async function loadTimetable() {
                 } else {
                     const emptyCard = document.createElement('div');
                     emptyCard.className = 'class-card';
+                    emptyCard.style.animation = `fadeInUp 0.3s ease-out ${dayIndex * 0.05}s both`;
                     emptyCard.innerHTML = `<div class="card-subtitle" style="margin: 0;">No sessions scheduled.</div>`;
                     container.appendChild(emptyCard);
                 }
@@ -266,8 +453,12 @@ async function loadTimetable() {
     }
 }
 
-// Listen for dropdown changes to swap between weeks instantly
+// Bind Select changes to swap view configurations instantly
 document.getElementById('week-selector').addEventListener('change', loadTimetable);
 
-// Initialize on page load
-window.addEventListener('DOMContentLoaded', loadTimetable);
+// Initialize everything on page load
+window.addEventListener('DOMContentLoaded', () => {
+    loadDeadlines();
+    loadFacilities();
+    loadTimetable();
+});

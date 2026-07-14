@@ -1,0 +1,50 @@
+[
+  {
+    "block": "A",
+    "faclities": ["Auditorium 7"],
+    "hasToilet": false,
+    "hasLift": false,
+    "connectsTo": ["Block B"],
+    "notes": "Accessible from level 3 to level 8. Connected via internal corridors. Requires student card access."
+  },
+  {
+    "block": "B",
+    "faclities": ["Library", "Discussion Rooms"],
+    "hasToilet": true,
+    "hasLift": true,
+    "connectsTo": ["Block A", "Block C", "Block D", "Block E"],
+    "notes": "Accessible from level 3 to level 8. Library & Discussion Rooms are on Level 4. Walk through here to access Block D/E."
+  },
+  {
+    "block": "C",
+    "faclities": ["Main Lobby", "Admin", "Finances", "Student Visa", "Auditorium 3"],
+    "hasToilet": true,
+    "hasLift": true,
+    "connectsTo": ["Block B"],
+    "notes": "Accessible from level 3 to level 8. Main Lobby on Level 3. Only level 9 is classroom and Auditorium 3."
+  },
+  {
+    "block": "D",
+    "faclities": false,
+    "hasToilet": false,
+    "hasLift": false,
+    "connectsTo": ["Block E", "Block B"],
+    "notes": "Typically levels 6-9. Open area between D & E (not a bridge). Connectable from level 3 to level 8."
+  },
+  {
+    "block": "E",
+    "faclities": false,
+    "hasToilet": true,
+    "hasLift": true,
+    "connectsTo": ["Block D", "Block B"],
+    "notes": "Typically levels 6-9. Open area between D & E (not a bridge). Connectable from level 3 to level 8."
+  },
+  {
+    "block": "Spine",
+    "faclities": ["Exam Hall", "Cafeteria (Atrium)", "Auditorium 4", "Auditorium 5", "Subway", "AiCha", "Bobarika"],
+    "hasToilet": false,
+    "hasLift": false,
+    "connectsTo": ["All Blocks"],
+    "notes": "Connectable from level 3 to level 7. Level 3 features Atrium cafeteria & food stalls. Level 5 features Centrepoint platform with Subway & AiCha."
+  }
+]

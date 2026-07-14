@@ -1,0 +1,37 @@
+[
+  {
+    "moduleCode": "AICT021-4-1-OPS",
+    "moduleName": "OPERATING SYSTEMS",
+    "assignmentName": "Part 1 Report",
+    "dueDate": "2026-07-27",
+    "dueTime": "23:59"
+  },
+  {
+    "moduleCode": "AICT021-4-1-OPS",
+    "moduleName": "OPERATING SYSTEMS",
+    "assignmentName": "Part 2 OS Installment",
+    "dueDate": "2026-08-10",
+    "dueTime": "23:59"
+  },
+  {
+    "moduleCode": "AAPP015-4-1-PWP",
+    "moduleName": "PROGRAMMING WITH PYTHON",
+    "assignmentName": "Coding Assignment",
+    "dueDate": "2026-08-14",
+    "dueTime": "23:59"
+  },
+  {
+    "moduleCode": "AICT022-4-1-ISCC",
+    "moduleName": "INFORMATION SYSTEM WITH CLOUD CONCEPTS",
+    "assignmentName": "Part 2 Report",
+    "dueDate": "2026-07-27",
+    "dueTime": "23:59"
+  },
+  {
+    "moduleCode": "AICT015-4-1-DBM",
+    "moduleName": "DATABASE MANAGEMENT",
+    "assignmentName": "Part 2 Report",
+    "dueDate": "2026-07-27",
+    "dueTime": "23:59"
+  }
+]
