@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workspace</title>
     
-    <!-- Link to your original stylesheet -->
+    <!-- Link to your original stylesheet (handles your themes, custom cards, colors) -->
     <link rel="stylesheet" href="styles.css">
     
     <!-- Material Icons Link -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- ONLY the styles needed for the new Left Sidebar & Map Modal -->
+    <!-- ONLY structural and layout styles (does not override your style.css designs) -->
+<!-- Add this updated <style> block inside the <head> of your index.html -->
     <style>
         /* Sidebar Container on the Left */
         #slidebar {
             position: fixed;
             top: 0;
-            left: -280px; /* Hidden offscreen to the left */
+            left: -280px; /* Hidden offscreen */
             width: 280px;
             height: 100%;
             background-color: #111827; 
@@ -55,16 +56,29 @@
             gap: 15px;
         }
 
+        /* Sidebar Section Headings */
+        .sidebar-section-title {
+            color: #4b5563;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #1f2937;
+            padding-bottom: 5px;
+        }
+
         .sidebar-link {
             display: flex;
             align-items: center;
             gap: 10px;
             color: #94a3b8;
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 0.95rem;
             padding: 10px;
             border-radius: 6px;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s;
         }
 
         .sidebar-link:hover {
@@ -125,6 +139,80 @@
         .close-modal-btn:hover {
             color: #fff;
         }
+
+        /* -------------------------------------------------- */
+        /* RESTORING DOCKED LAYOUT FALLBACKS                  */
+        /* (In case classes in style.css do not match HTML)   */
+        /* -------------------------------------------------- */
+
+        /* Main app side-by-side split layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* Card background panel shapes */
+        .content-section {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Campus Directory Blocks */
+        .directory-block {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            box-sizing: border-box;
+        }
+
+        .directory-block-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #38bdf8;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        /* General layout structural alignments */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 24px;
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .clock-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #38bdf8;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -143,7 +231,7 @@
         </div>
     </header>
 
-    <!-- Sidebar HTML Structure on Left -->
+    <!-- Sidebar HTML Structure on Left with Section Categories -->
     <div id="slidebar">
         <div class="sidebar-header">
             <button id="sidebar-close">
@@ -151,24 +239,40 @@
             </button>
         </div>
         <div class="sidebar-content">
+            
+            <!-- Daily Section -->
+            <div class="sidebar-section-title">Daily Navigation</div>
             <a href="#" id="open-map-btn" class="sidebar-link">
                 <span class="material-icons">map</span>
                 <span>Campus Map</span>
             </a>
+
+            <!-- Uni Section -->
+            <div class="sidebar-section-title">University</div>
+            <a href="https://apspace.apu.edu.my" target="_blank" class="sidebar-link">
+                <span class="material-icons">school</span>
+                <span>APSpace Portal</span>
+            </a>
+
+            <!-- Personal Section -->
+            <div class="sidebar-section-title">Personal Web Utilities</div>
+            <a href="https://thegoodknow.github.io/personal/pages/convert.html" target="_blank" class="sidebar-link">
+                <span class="material-icons">transform</span>
+                <span>Data Converter</span>
+            </a>
+            
         </div>
     </div>
 
-    <!-- Map Modal containing APU MAP.jpeg inside the img/ folder -->
+    <!-- Map Modal containing APU MAP.jpeg inside 'img/' directory -->
     <div id="map-modal">
         <div class="modal-content">
             <button id="close-map-btn" class="close-modal-btn">
                 <span class="material-icons" style="font-size: 2.2rem;">cancel</span>
             </button>
             <h3 style="color: #fff; margin-top: 0; margin-bottom: 15px; font-size: 1.25rem;">APU Campus Map</h3>
-        
-            <!-- FIX: Add the 'img/' folder prefix here -->
+            <!-- Pointing correctly to img/ directory with encoded space -->
             <img src="img/APU%20MAP.jpeg" alt="APU Campus Map">
-        
         </div>
     </div>
 
@@ -208,7 +312,7 @@
                     <span>Campus Directory</span>
                 </h4>
                 <div id="facilities-target">
-                    <!-- Dynamic facilities lists from facilities.json render here -->
+                    <!-- Dynamic facilities lists render here -->
                 </div>
             </div>
         </aside>
