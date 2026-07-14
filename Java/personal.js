@@ -166,7 +166,7 @@ async function loadDeadlines() {
 async function loadFacilities() {
     const target = document.getElementById('facilities-target');
     try {
-        const response = await fetch('Data/facilities.json');
+        const response = await fetch('./Data/facilities.json');
         if (!response.ok) throw new Error("Could not load facilities JSON file.");
 
         const facilities = await response.json();

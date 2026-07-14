@@ -5,49 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workspace</title>
     
+    <!-- Link to your original stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
     <!-- Material Icons Link -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!-- ONLY the styles needed for the new Left Sidebar & Map Modal -->
     <style>
-        /* Base Page Setup */
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f1f5f9;
-        }
-
-        /* Top Header Bar */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 25px;
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
-        }
-
-        .header-title-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        .clock-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: monospace;
-            font-size: 1.1rem;
-            color: #38bdf8;
-        }
-
         /* Sidebar Container on the Left */
         #slidebar {
             position: fixed;
@@ -107,137 +72,6 @@
             color: #ffffff;
         }
 
-        /* Main App Grid Layout */
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 25px;
-            padding: 25px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 900px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Content Sections */
-        .content-section {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        /* Select Week Dropdown */
-        .selector-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        select {
-            background-color: #0f172a;
-            color: #fff;
-            border: 1px solid #475569;
-            padding: 8px 12px;
-            border-radius: 6px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* Timetable Day Headers & Cards */
-        .day-header {
-            background-color: #1d4ed8;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .class-card {
-            background-color: #0f172a;
-            border-left: 4px solid #3b82f6;
-            padding: 15px;
-            border-radius: 0 6px 6px 0;
-            margin-top: 10px;
-        }
-
-        .class-card.today {
-            border-left-color: #10b981;
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.05rem;
-        }
-
-        .pill {
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .online-tag { background-color: #1e40af; color: #93c5fd; }
-        .open-tag { background-color: #065f46; color: #6ee7b7; }
-        .replacement-tag { background-color: #854d0e; color: #fde047; }
-        .test-tag { background-color: #991b1b; color: #fca5a5; }
-
-        .card-subtitle {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin: 5px 0 10px 0;
-        }
-
-        .card-details {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-        }
-
-        /* Facilities Directory */
-        .directory-block {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .directory-block-title {
-            font-size: 1rem;
-            font-weight: bold;
-            color: #38bdf8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 5px;
-        }
-
-        .directory-features {
-            display: flex;
-            gap: 15px;
-            margin-top: 5px;
-        }
-
-        .directory-features span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
         /* Map Modal Styles */
         #map-modal {
             position: fixed;
@@ -291,18 +125,6 @@
         .close-modal-btn:hover {
             color: #fff;
         }
-
-        /* Simple Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body>
@@ -333,19 +155,18 @@
                 <span class="material-icons">map</span>
                 <span>Campus Map</span>
             </a>
-            <!-- Keep adding extra links here! -->
         </div>
     </div>
 
-    <!-- Map Modal containing your APU MAP.jpeg -->
+    <!-- Map Modal containing APU MAP.jpeg inside the img/ folder -->
     <div id="map-modal">
         <div class="modal-content">
             <button id="close-map-btn" class="close-modal-btn">
                 <span class="material-icons" style="font-size: 2.2rem;">cancel</span>
             </button>
             <h3 style="color: #fff; margin-top: 0; margin-bottom: 15px; font-size: 1.25rem;">APU Campus Map</h3>
-            <!-- This image is dynamically populated -->
-            <img src="APU MAP.jpeg" alt="APU Campus Map">
+            <!-- Pointed to the corrected path -->
+            <img src="img/APU MAP.jpeg" alt="APU Campus Map">
         </div>
     </div>
 
@@ -364,7 +185,7 @@
             </div>
             
             <div id="timetable-target">
-                <!-- Javascript will render timetable days and cards here -->
+                <!-- Days and cards render here -->
             </div>
         </section>
 
@@ -392,7 +213,7 @@
 
     </main>
 
-    <!-- Connect your external script file containing your cleaned JavaScript mechanics -->
+    <!-- Connect your external script file -->
     <script src="Java/personal.js"></script>
 </body>
 </html>
