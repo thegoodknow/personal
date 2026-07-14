@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Dashboard</title>
-    <!-- Material Icons Link required by your CSS -->
+    <!-- Material Icons Link -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Links to your styles.css in the same directory -->
+    <!-- Links to your styles.css -->
     <link rel="stylesheet" href="styles.css">
     <style>
         /* Supplementary layout adjustment to split the page into Timetable & Links side-by-side */
@@ -23,30 +23,67 @@
                 grid-template-columns: 2.5fr 1fr;
             }
         }
+        
+        /* Links Card Style Updates */
         .links-card {
             background-color: var(--bg-card);
             border-radius: 8px;
-            padding: 16px;
+            padding: 20px;
             border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 20px;
             height: fit-content;
         }
-        .quick-links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        
+        .link-section {
+            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
+
+        .link-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin: 0;
+        }
+
+        .link-section-title .material-icons {
+            font-size: 1.2rem;
+            color: #38bdf8; /* Accent color */
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
         .quick-links-grid a {
             text-decoration: none;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            padding: 10px 0;
+            border-radius: 6px;
+            transition: opacity 0.2s ease;
+        }
+
+        .quick-links-grid a:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Section matching your CSS selectors -->
+    <!-- Header Section -->
     <header class="header">
         <div class="logo-group">
             <span class="material-icons" style="font-size: 2rem;">dashboard</span>
@@ -64,9 +101,11 @@
             </div>
         </div>
 
+        <!-- Dropdown supporting Current, Next, and Exam Weeks -->
         <select class="select-control" id="week-selector">
             <option value="current">Current Week</option>
             <option value="next">Next Week</option>
+            <option value="exams">Exam Week Timetable</option>
         </select>
     </header>
 
@@ -75,25 +114,53 @@
         
         <!-- Left Column: Timetable rendering via JS -->
         <section class="timetable-content" id="timetable-target">
-            <!-- Dynamic day headers and class cards inject here -->
             <div class="message-box success">Loading your timetable data...</div>
         </section>
 
-        <!-- Right Column: Navigation & Quick Links -->
+        <!-- Right Column: Navigation & Structured Quick Links -->
         <aside class="links-card">
-            <h3 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-                Quick Links
-            </h3>
-            <div class="quick-links-grid">
-                <a href="https://lms2.apiit.edu.my/" target="_blank" class="btn-apspace" style="font-size: 0.85rem; padding: 10px 0;">MOODLE [LMS]</a>
-                <a href="https://github.com" target="_blank" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; text-decoration: none;">GitHub</a>
-                <a href="https:/home" class="btn-totimetable" style="text-decoration: none; text-align: center; font-size: 0.85rem;">Portal Home</a>
+            
+            <!-- DAILY LINKS -->
+            <div class="link-section">
+                <h4 class="link-section-title">
+                    <span class="material-icons">today</span>
+                    Daily Tools
+                </h4>
+                <div class="quick-links-grid">
+                    <a href="https://lms2.apiit.edu.my/" target="_blank" class="btn-apspace">MOODLE [LMS]</a>
+                </div>
             </div>
+
+            <!-- PERSONAL PAGE -->
+            <div class="link-section">
+                <h4 class="link-section-title">
+                    <span class="material-icons">person</span>
+                    Personal Page
+                </h4>
+                <div class="quick-links-grid">
+                    <a href="https://github.com" target="_blank" class="btn-secondary">GitHub Profile</a>
+                    <a href="/personal" class="btn-totimetable">My Workspace</a>
+                </div>
+            </div>
+
+            <!-- UNIVERSITY PAGE -->
+            <div class="link-section">
+                <h4 class="link-section-title">
+                    <span class="material-icons">school</span>
+                    Uni Page
+                </h4>
+                <div class="quick-links-grid">
+                    <!-- Pointing back to your local Portal Home -->
+                    <a href="/home" class="btn-secondary">Portal Home</a>
+                    <a href="https://apspace.apu.edu.my" target="_blank" class="btn-apspace">APSpace</a>
+                </div>
+            </div>
+
         </aside>
 
     </main>
 
     <!-- App Logic Execution -->
-    <script src='Java/personal.js'></script>
+    <script src="Java/personal.js"></script>
 </body>
 </html>

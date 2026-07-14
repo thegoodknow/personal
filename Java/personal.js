@@ -24,15 +24,20 @@ function getSundayDateString(offsetWeeks = 0) {
     return `${year}-${month}-${date}`;
 }
 
-// Target implementation for rendering schedule
+// Main logic to fetch and render dynamic timetable states
 async function loadTimetable() {
     const container = document.getElementById('timetable-target');
     const weekSelector = document.getElementById('week-selector');
     
-    // Determine target file based on selection (0 for current week, 1 for next week)
-    const offset = weekSelector.value === 'next' ? 1 : 0;
+    const selectedValue = weekSelector.value;
+    
+    // Determine target file based on selection (0 for current/exam weeks, 1 for next week)
+    const offset = selectedValue === 'next' ? 1 : 0;
     const targetSundayStr = getSundayDateString(offset);
     const fileName = `./timetable/${targetSundayStr}.json`;
+
+    // Flag to determine whether to filter ONLY exams (istest === true)
+    const isExamOnlyMode = selectedValue === 'exams';
 
     try {
         container.innerHTML = `<div class="message-box success">Loading week of ${targetSundayStr}...</div>`;
@@ -46,39 +51,74 @@ async function loadTimetable() {
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDayName = daysOfWeek[new Date().getDay()];
 
-        // If displaying next week, we aren't highlighting "today"
+        // Configure UI sub-header details
         const displayDayContext = offset === 0 ? currentDayName : null;
-        document.getElementById('next-class-text').textContent = offset === 0 ? `Active Week (${targetSundayStr})` : `Next Week Preview (${targetSundayStr})`;
+        if (isExamOnlyMode) {
+            document.getElementById('next-class-text').textContent = `Exam Week Timetable (${targetSundayStr})`;
+        } else {
+            document.getElementById('next-class-text').textContent = offset === 0 ? `Active Week (${targetSundayStr})` : `Next Week Preview (${targetSundayStr})`;
+        }
 
-        // Iterate through days in JSON layout
-        for (const [day, classes] of Object.entries(data)) {
-            const isToday = day.toLowerCase() === (displayDayContext ? displayDayContext.toLowerCase() : '');
+        // Validate API/JSON array structural health
+        if (!data.days || !Array.isArray(data.days)) {
+            throw new Error("JSON payload is missing standard 'days' entry array.");
+        }
 
-            // Generate Day Banner Section
-            const dayHeader = document.createElement('div');
-            dayHeader.className = 'day-header';
-            dayHeader.textContent = isToday ? `${day} (Today)` : day;
-            container.appendChild(dayHeader);
+        let displayedAnyClassAtAll = false;
 
-            // Generate Class Rows
-            if (classes && classes.length > 0) {
-                classes.forEach(cls => {
+        // Iterate through days dynamically
+        data.days.forEach(dayEntry => {
+            const rawDateStr = dayEntry.date || "";
+            const dayShortName = rawDateStr.split(',')[0].trim(); // "Mon", "Tue" etc
+            
+            const shortToFullDays = {
+                "Sun": "Sunday", "Mon": "Monday", "Tue": "Tuesday", 
+                "Wed": "Wednesday", "Thu": "Thursday", "Fri": "Friday", "Sat": "Saturday"
+            };
+            const fullDayName = shortToFullDays[dayShortName] || rawDateStr;
+            const isToday = fullDayName.toLowerCase() === (displayDayContext ? displayDayContext.toLowerCase() : '');
+
+            // Filter classes depending on whether Exam Mode is requested (isTest === true)
+            let classesToRender = dayEntry.classes || [];
+            if (isExamOnlyMode) {
+                classesToRender = classesToRender.filter(cls => cls.isTest === true);
+            }
+
+            // Generate Day Banner Section (only if we are rendering all classes OR if there are exams to show on this day)
+            if (!isExamOnlyMode || classesToRender.length > 0) {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = isToday ? `${fullDayName} (Today)` : fullDayName;
+                container.appendChild(dayHeader);
+            }
+
+            // Generate Class Cards
+            if (classesToRender.length > 0) {
+                displayedAnyClassAtAll = true;
+                classesToRender.forEach(cls => {
                     const card = document.createElement('div');
                     card.className = `class-card ${isToday ? 'today' : ''}`;
                     
+                    // JSON Property Fallbacks 
+                    const subject = cls.moduleName || cls.moduleCode || "No Subject Name";
+                    const type = cls.classType || "Class";
+                    const time = cls.time || "No Time Specified";
+                    const room = cls.location || "N/A";
+                    const instructor = cls.lecturer || "N/A";
+
                     let tagClass = 'online-tag';
                     let iconClass = 'online-icon';
                     let iconType = 'computer';
 
-                    if (cls.type === 'Replacement') {
+                    if (cls.isReplacement) {
                         tagClass = 'replacement-tag';
                         iconClass = 'replacement-icon';
                         iconType = 'event_repeat';
-                    } else if (cls.type === 'Test' || cls.type === 'Exam') {
+                    } else if (type === 'Test' || type === 'Exam' || cls.isTest) {
                         tagClass = 'test-tag';
                         iconClass = 'test-icon';
                         iconType = 'assignment_late';
-                    } else if (cls.type === 'In-Person') {
+                    } else if (!cls.isOnline) {
                         tagClass = 'open-tag'; 
                         iconClass = 'material-icons';
                         iconType = 'groups';
@@ -87,23 +127,34 @@ async function loadTimetable() {
                     card.innerHTML = `
                         <div class="card-title">
                             <span class="material-icons ${iconClass}">${iconType}</span>
-                            <span>${cls.subject}</span>
-                            <span class="pill ${tagClass}">${cls.type || 'Class'}</span>
+                            <span>${subject}</span>
+                            <span class="pill ${tagClass}">${type}</span>
                         </div>
-                        <div class="card-subtitle">${cls.time}</div>
+                        <div class="card-subtitle">${time}</div>
                         <div class="card-details">
-                            <span><b>Room:</b> ${cls.room || 'N/A'}</span>
-                            <span><b>Lecturer:</b> ${cls.instructor || 'N/A'}</span>
+                            <span><b>Room:</b> ${room}</span>
+                            <span><b>Lecturer:</b> ${instructor}</span>
                         </div>
                     `;
                     container.appendChild(card);
                 });
-            } else {
+            } else if (!isExamOnlyMode) {
+                // In standard week views, explicitly declare days with empty schedules
                 const emptyCard = document.createElement('div');
                 emptyCard.className = 'class-card';
                 emptyCard.innerHTML = `<div class="card-subtitle" style="margin: 0;">No sessions scheduled.</div>`;
                 container.appendChild(emptyCard);
             }
+        });
+
+        // If in Exam mode and there are absolutely no exams all week, display clean fallback notice
+        if (isExamOnlyMode && !displayedAnyClassAtAll) {
+            container.innerHTML = `
+                <div class="message-box success" style="text-align: center; padding: 30px;">
+                    <span class="material-icons" style="font-size: 3rem; margin-bottom: 10px; color: #4ade80;">task_alt</span>
+                    <h3>No Exams Scheduled</h3>
+                    <p style="margin: 0; opacity: 0.8;">You have no scheduled tests or exams on file for this week.</p>
+                </div>`;
         }
 
     } catch (error) {
