@@ -6,7 +6,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Slidebar Toggle Mechanics
+// Slidebar Toggle Mechanics (Handles sliding in/out from the Left)
 const slidebar = document.getElementById('slidebar');
 const toggleBtn = document.getElementById('sidebar-toggle');
 const closeBtn = document.getElementById('sidebar-close');
@@ -14,14 +14,14 @@ const closeBtn = document.getElementById('sidebar-close');
 toggleBtn.addEventListener('click', () => slidebar.classList.add('open'));
 closeBtn.addEventListener('click', () => slidebar.classList.remove('open'));
 
-// Map Modal Mechanics
+// Map Modal Mechanics (Controls APU MAP.jpeg display)
 const mapModal = document.getElementById('map-modal');
 const openMapBtn = document.getElementById('open-map-btn');
 const closeMapBtn = document.getElementById('close-map-btn');
 
 openMapBtn.addEventListener('click', () => {
     mapModal.classList.add('open');
-    slidebar.classList.remove('open'); // Close slidebar to avoid overlap clutter
+    slidebar.classList.remove('open'); // Auto-close sidebar on left to prevent overlap
 });
 
 closeMapBtn.addEventListener('click', () => {
@@ -34,34 +34,42 @@ mapModal.addEventListener('click', (e) => {
     }
 });
 
-// Parse APU room formats (e.g., "B-03-05", "C-05-12", "Block D - Level 2")
+// Parse APU room formats (e.g., "B-03-05" -> "B-03-05 @ Block B, Level 3")
 function parseLocationDetails(roomString) {
     if (!roomString || roomString === "N/A" || roomString.toLowerCase() === "online") {
-        return "";
+        return "Online";
     }
 
-    const dashPattern = /^([A-Ea-e])[- ](\d{1,2})[- ](\d{1,2})$/;
-    const shortDashPattern = /^([A-Ea-e])[- ](\d{1,2})$/;
+    const trimmedRoom = roomString.trim();
+    const dashPattern = /^([A-Ea-eSs])[- ](\d{1,2})[- ](\d{1,2})$/;
+    const shortDashPattern = /^([A-Ea-eSs])[- ](\d{1,2})$/;
     
-    let match = roomString.trim().match(dashPattern);
+    const blockNames = {
+        'A': 'Block A',
+        'B': 'Block B',
+        'C': 'Block C',
+        'D': 'Block D',
+        'E': 'Block E',
+        'S': 'Block Spine'
+    };
+
+    let match = trimmedRoom.match(dashPattern);
     if (match) {
-        const block = match[1].toUpperCase();
+        const blockChar = match[1].toUpperCase();
         const level = parseInt(match[2], 10);
-        return `<span class="location-highlight"><span class="material-icons" style="font-size:0.9rem;">layers</span> Block ${block}, Level ${level}</span>`;
+        const blockName = blockNames[blockChar] || `Block ${blockChar}`;
+        return `${trimmedRoom} @ ${blockName}, Level ${level}`;
     }
 
-    match = roomString.trim().match(shortDashPattern);
+    match = trimmedRoom.match(shortDashPattern);
     if (match) {
-        const block = match[1].toUpperCase();
+        const blockChar = match[1].toUpperCase();
         const level = parseInt(match[2], 10);
-        return `<span class="location-highlight"><span class="material-icons" style="font-size:0.9rem;">layers</span> Block ${block}, Level ${level}</span>`;
+        const blockName = blockNames[blockChar] || `Block ${blockChar}`;
+        return `${trimmedRoom} @ ${blockName}, Level ${level}`;
     }
 
-    if (roomString.toLowerCase().includes('block')) {
-        return `<span class="location-highlight"><span class="material-icons" style="font-size:0.9rem;">layers</span> ${roomString}</span>`;
-    }
-
-    return "";
+    return trimmedRoom;
 }
 
 // Helper function to get the YYYY-MM-DD string for a given Sunday
@@ -172,20 +180,28 @@ async function loadFacilities() {
             const blockEl = document.createElement('div');
             blockEl.className = 'directory-block';
 
-            // Use item.faclities or item.hasToilet / item.hasLift
+            // Set up Toilet & Lift status indicators
             const toiletsIcon = item.hasToilet ? 'check_circle' : 'cancel';
             const toiletsColor = item.hasToilet ? '#10b981' : '#ef4444';
             const liftsIcon = item.hasLift ? 'check_circle' : 'cancel';
             const liftsColor = item.hasLift ? '#10b981' : '#ef4444';
 
-            // Dynamic facilities info display (handles boolean or string values safely)
+            // Clean formatting for facilities (handling arrays, strings, or false)
             let facilitiesInfo = "";
-            if (typeof item.faclities === "string") {
+            if (Array.isArray(item.faclities) && item.faclities.length > 0) {
+                facilitiesInfo = `<div><b>Facilities:</b> ${item.faclities.join(', ')}</div>`;
+            } else if (typeof item.faclities === "string" && item.faclities.trim() !== "") {
                 facilitiesInfo = `<div><b>Facilities:</b> ${item.faclities}</div>`;
-            } else if (item.faclities === true) {
-                facilitiesInfo = `<div><b>Facilities:</b> Yes</div>`;
             } else {
-                facilitiesInfo = `<div><b>Facilities:</b> None</div>`;
+                facilitiesInfo = `<div><b>Facilities:</b> <span style="opacity: 0.6;">None</span></div>`;
+            }
+
+            // Clean formatting for connections (handling arrays or false)
+            let connectionsInfo = "";
+            if (Array.isArray(item.connectsTo) && item.connectsTo.length > 0) {
+                connectionsInfo = `<div><b>Connects to:</b> ${item.connectsTo.join(', ')}</div>`;
+            } else {
+                connectionsInfo = `<div><b>Connects to:</b> <span style="opacity: 0.6;">None</span></div>`;
             }
 
             blockEl.innerHTML = `
@@ -203,7 +219,7 @@ async function loadFacilities() {
                     </span>
                 </div>
                 ${facilitiesInfo}
-                <div><b>Connects to:</b> ${Array.isArray(item.connectsTo) ? item.connectsTo.join(', ') : item.connectsTo}</div>
+                ${connectionsInfo}
                 ${item.notes ? `<div><b>Notes:</b> <span style="color: #f59e0b;">${item.notes}</span></div>` : ''}
             `;
             target.appendChild(blockEl);
@@ -338,7 +354,7 @@ async function loadTimetable() {
                         </div>
                         <div class="card-subtitle">${time}</div>
                         <div class="card-details">
-                            <span><b>Room:</b> ${room} ${detailedLocation}</span>
+                            <span><b>Room:</b> ${detailedLocation}</span>
                             <span><b>Lecturer:</b> ${instructor}</span>
                         </div>
                     `;
@@ -400,19 +416,32 @@ async function loadTimetable() {
                         const instructor = cls.lecturer || cls.instructor || "N/A";
                         const detailedLocation = parseLocationDetails(room);
 
+                        let displayType = type;
                         let tagClass = 'online-tag';
                         let iconClass = 'online-icon';
                         let iconType = 'computer';
 
-                        if (cls.isReplacement || type === 'Replacement') {
+                        // 1. Check if the class is online
+                        if (cls.isOnline === true || type.toLowerCase() === 'online') {
+                            displayType = 'MS Teams';
+                            tagClass = 'online-tag';
+                            iconClass = 'online-icon';
+                            iconType = 'groups';
+                        } 
+                        // 2. Check if replacement class
+                        else if (cls.isReplacement || type === 'Replacement') {
                             tagClass = 'replacement-tag';
                             iconClass = 'replacement-icon';
                             iconType = 'event_repeat';
-                        } else if (type === 'Test' || type === 'Exam' || cls.isTest) {
+                        } 
+                        // 3. Check if test/exam
+                        else if (type === 'Test' || type === 'Exam' || cls.isTest) {
                             tagClass = 'test-tag';
                             iconClass = 'test-icon';
                             iconType = 'assignment_late';
-                        } else if (cls.isOnline === false || type === 'In-Person') {
+                        } 
+                        // 4. Standard in-person classes
+                        else if (cls.isOnline === false || type === 'In-Person') {
                             tagClass = 'open-tag'; 
                             iconClass = 'material-icons';
                             iconType = 'groups';
@@ -422,11 +451,11 @@ async function loadTimetable() {
                             <div class="card-title">
                                 <span class="material-icons ${iconClass}">${iconType}</span>
                                 <span><b>${subject}</b></span>
-                                <span class="pill ${tagClass}">${type}</span>
+                                <span class="pill ${tagClass}">${displayType}</span>
                             </div>
                             <div class="card-subtitle">${time}</div>
                             <div class="card-details">
-                                <span><b>Room:</b> ${room} ${detailedLocation}</span>
+                                <span><b>Room:</b> ${detailedLocation}</span>
                                 <span><b>Lecturer:</b> ${instructor}</span>
                             </div>
                         `;
