@@ -58,7 +58,7 @@
           "campus": "APU CAMPUS",
           "lecturer": "ROZITA YATI BINTI MASRI",
           "isOnline": false,
-          "classType": "Lecture",
+          "classType": "Exam",
           "isReplacement": false,
           "replacementType": "",
           "isTest": true,

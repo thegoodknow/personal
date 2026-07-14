@@ -3,25 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workspace</title>
+    <title>Personal HomePage</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     
-    <!-- Link to your original stylesheet (handles your themes, custom cards, colors) -->
+    <!-- Link to your original stylesheet -->
     <link rel="stylesheet" href="styles.css">
     
     <!-- Material Icons Link -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- ONLY structural and layout styles (does not override your style.css designs) -->
-<!-- Add this updated <style> block inside the <head> of your index.html -->
+    <!-- Structural and Slidebar Layout Styles (Inherits design variables from style.css) -->
     <style>
+        /* Main Workspace Two-Column Grid Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1450px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 950px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Sidebar Container on the Left */
         #slidebar {
             position: fixed;
             top: 0;
-            left: -280px; /* Hidden offscreen */
+            left: -280px; /* Hidden offscreen by default */
             width: 280px;
             height: 100%;
-            background-color: #111827; 
+            background-color: var(--bg-dark); 
+            border-right: 1px solid var(--border-color);
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
             transition: left 0.3s ease; 
             z-index: 1000;
@@ -29,12 +47,12 @@
             flex-direction: column;
         }
 
-        /* Open State */
+        /* Slidebar Open State */
         #slidebar.open {
             left: 0; 
         }
 
-        /* Close Button Header (Shows only the Close Icon) */
+        /* Sidebar Close Button Header */
         .sidebar-header {
             display: flex;
             justify-content: flex-end;
@@ -44,7 +62,7 @@
         .sidebar-header button {
             background: none;
             border: none;
-            color: #ffffff;
+            color: var(--text-light);
             cursor: pointer;
             outline: none;
         }
@@ -56,16 +74,16 @@
             gap: 15px;
         }
 
-        /* Sidebar Section Headings */
+        /* Sidebar Category Headers */
         .sidebar-section-title {
-            color: #4b5563;
+            color: var(--text-subtle);
             font-size: 0.75rem;
             text-transform: uppercase;
             font-weight: bold;
             letter-spacing: 1px;
             margin-top: 15px;
             margin-bottom: 5px;
-            border-bottom: 1px solid #1f2937;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 5px;
         }
 
@@ -73,7 +91,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #94a3b8;
+            color: var(--text-subtle);
             text-decoration: none;
             font-size: 0.95rem;
             padding: 10px;
@@ -82,11 +100,11 @@
         }
 
         .sidebar-link:hover {
-            background-color: #1e293b;
-            color: #ffffff;
+            background-color: var(--bg-card);
+            color: var(--text-light);
         }
 
-        /* Map Modal Styles */
+        /* Interactive Map Modal Overlay */
         #map-modal {
             position: fixed;
             top: 0;
@@ -106,7 +124,7 @@
 
         .modal-content {
             position: relative;
-            background-color: #1e293b;
+            background-color: var(--bg-card);
             padding: 25px;
             border-radius: 12px;
             max-width: 90%;
@@ -114,6 +132,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            border: 1px solid var(--border-color);
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
@@ -122,7 +141,7 @@
             max-height: 75vh;
             border-radius: 6px;
             object-fit: contain;
-            border: 2px solid #334155;
+            border: 2px solid var(--border-color);
         }
 
         .close-modal-btn {
@@ -131,107 +150,68 @@
             right: 10px;
             background: none;
             border: none;
-            color: #94a3b8;
+            color: var(--text-subtle);
             cursor: pointer;
             transition: color 0.2s;
         }
 
         .close-modal-btn:hover {
-            color: #fff;
+            color: var(--text-light);
         }
 
-        /* -------------------------------------------------- */
-        /* RESTORING DOCKED LAYOUT FALLBACKS                  */
-        /* (In case classes in style.css do not match HTML)   */
-        /* -------------------------------------------------- */
-
-        /* Main app side-by-side split layout */
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 24px;
-            padding: 24px;
-            max-width: 1400px;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
-
-        /* Card background panel shapes */
-        .content-section {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-
-        /* Campus Directory Blocks */
-        .directory-block {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 15px;
-            margin-top: 15px;
-            box-sizing: border-box;
-        }
-
-        .directory-block-title {
-            font-size: 1rem;
-            font-weight: bold;
-            color: #38bdf8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 5px;
-            margin-bottom: 8px;
-        }
-
-        /* General layout structural alignments */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 24px;
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
-        }
-
-        .header-title-group {
+        /* Overriding sidebar-toggle layout slightly for clean alignment */
+        #sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-
-        .clock-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #38bdf8;
-        }
-
-        @media (max-width: 900px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
+            padding: 0;
+            margin-right: -10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header / Navigation Bar -->
-    <header>
-        <div class="header-title-group">
-            <button id="sidebar-toggle" style="background:none; border:none; color:#fff; cursor:pointer;">
-                <span class="material-icons" style="font-size: 1.8rem;">menu</span>
+    <!-- Header containing logo, clock, and next class info -->
+    <header class="header">
+        <div class="logo-group">
+            <!-- Left-hand sidebar toggle button integrated seamlessly -->
+            <button id="sidebar-toggle">
+                <span class="material-icons">menu</span>
             </button>
-            <span class="header-title">Workspace</span>
+            <!-- Original APSpace logo -->
+            <img id="logo-icon" src="img/apspace-logo.png" alt="APSpace Logo" onerror="this.style.display='none';">
         </div>
-        <div class="clock-container">
-            <span class="material-icons">schedule</span>
-            <span id="live-clock">00:00:00</span>
+
+        <div class="header-summary-bar">
+            <!-- Inline live clock -->
+            <div class="summary-item">
+                <span id="live-clock" class="clock-display">00:00:00 AM</span>
+            </div>
+            <!-- Dynamic schedule banner (Populated by personal.js) -->
+            <div class="summary-item next-class-display">
+                <span id="next-class-text" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="material-icons online-icon">play_arrow</span>
+                    <span style="color: var(--color-current); font-weight: bold;">TIME UNTIL CLASS END: (0m 0s)</span>
+                    <span style="color: var(--text-light);">| Loading today's schedule...</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Right Side View Dropdown Selector -->
+        <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
+            <span style="color: var(--text-subtle); font-size: 0.9rem;">Viewing:</span>
+            <select id="week-selector" class="select-control">
+                <option value="current">Today</option>
+                <option value="next">Next Week Preview</option>
+                <option value="exams">All Scheduled Exams</option>
+            </select>
         </div>
     </header>
 
-    <!-- Sidebar HTML Structure on Left with Section Categories -->
+    <!-- Slide-out Sidebar Quick Links -->
     <div id="slidebar">
         <div class="sidebar-header">
             <button id="sidebar-close">
@@ -264,55 +244,49 @@
         </div>
     </div>
 
-    <!-- Map Modal containing APU MAP.jpeg inside 'img/' directory -->
+    <!-- Campus Map Overlay Modal (Fixed Image Directory Path) -->
     <div id="map-modal">
         <div class="modal-content">
             <button id="close-map-btn" class="close-modal-btn">
                 <span class="material-icons" style="font-size: 2.2rem;">cancel</span>
             </button>
-            <h3 style="color: #fff; margin-top: 0; margin-bottom: 15px; font-size: 1.25rem;">APU Campus Map</h3>
-            <!-- Pointing correctly to img/ directory with encoded space -->
+            <h3 style="color: var(--text-light); margin-top: 0; margin-bottom: 15px; font-size: 1.25rem;">APU Campus Map</h3>
+            <!-- Pointing directly to img/ folder with URL spaces safely encoded as %20 -->
             <img src="img/APU%20MAP.jpeg" alt="APU Campus Map">
         </div>
     </div>
 
-    <!-- Main Workspace Container -->
+    <!-- Main Grid Dashboard Content -->
     <main class="main-container">
         
-        <!-- Left Side: Dynamic Timetables -->
-        <section class="content-section">
-            <div class="selector-group">
-                <span id="next-class-text" style="font-weight: bold; color: #38bdf8;">Loading Schedule...</span>
-                <select id="week-selector">
-                    <option value="current">Active Week</option>
-                    <option value="next">Next Week Preview</option>
-                    <option value="exams">All Scheduled Exams</option>
-                </select>
-            </div>
-            
+        <!-- Left Side: Timetable Display Section -->
+        <section class="timetable-content" style="padding: 0; margin: 0;">
             <div id="timetable-target">
-                <!-- Days and cards render here -->
+                <!-- Schedule card lists inject dynamically here from JS -->
             </div>
         </section>
 
-        <!-- Right Side: Deadlines and Facilities Directories -->
-        <aside style="display: flex; flex-direction: column; gap: 25px;">
-            <!-- Urgency/Deadline Target -->
-            <div class="content-section" style="padding: 15px;">
-                <h4 style="margin: 0 0 10px 0; color: #94a3b8;">Urgent Deadline</h4>
+        <!-- Right Side: Sidebar Widgets -->
+        <aside style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Urgent Deadline Panel -->
+            <div class="class-card" style="padding: 16px;">
+                <h4 style="margin: 0 0 12px 0; color: var(--text-subtle); display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons" style="font-size: 1.2rem;">event</span>
+                    <span>Urgent Deadline</span>
+                </h4>
                 <div id="assignment-target">
-                    <!-- Deadline card renders here -->
+                    <!-- Target for deadline cards -->
                 </div>
             </div>
 
-            <!-- Facilities/Block Directory Target -->
-            <div class="content-section">
-                <h4 style="margin: 0 0 15px 0; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+            <!-- Campus Block & Room Finder Directory -->
+            <div class="class-card" style="padding: 16px;">
+                <h4 style="margin: 0 0 12px 0; color: var(--color-primary); display: flex; align-items: center; gap: 8px;">
                     <span class="material-icons">business</span>
                     <span>Campus Directory</span>
                 </h4>
                 <div id="facilities-target">
-                    <!-- Dynamic facilities lists render here -->
+                    <!-- Target for room and floor facilities lists -->
                 </div>
             </div>
         </aside>

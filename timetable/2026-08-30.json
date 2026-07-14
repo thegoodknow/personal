@@ -20,7 +20,7 @@
           "campus": "APU CAMPUS",
           "lecturer": "AMARDEEP SINGH UTTAM SINGH",
           "isOnline": false,
-          "classType": "Lecture",
+          "classType": "Exam",
           "isReplacement": false,
           "replacementType": "",
           "isTest": true,
