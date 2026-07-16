@@ -17,20 +17,6 @@
           "replacementType": "",
           "isTest": false,
           "testType": ""
-        },
-        {
-          "moduleCode": "MPU2132-BMK1",
-          "moduleName": "UNKNOWN MODULE NAME",
-          "time": "18:45 - 20:45",
-          "location": "ONLMCO3-11",
-          "campus": "APU CAMPUS",
-          "lecturer": "WILLIAM ANTHONYSAMY",
-          "isOnline": true,
-          "classType": "Lecture",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
         }
       ]
     },
