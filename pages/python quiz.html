@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Programming &amp; Algorithms · APSpace Dark Edition</title>
+<style>
+  :root{
+    --bg:#0A0F1D;
+    --card:#131C31;
+    --card-tint:#182642;
+    --navy:#0B132B;
+    --line:#223455;
+    --deep:#0284C7;
+    --cyan:#38BDF8;
+    --sea:#0EA5E9;
+    --ink:#F1F5F9;
+    --mut:#94A3B8;
+    --codebg:#070B14;
+    --codetx:#E2E8F0;
+    --kw:#38BDF8;
+    --cm:#64748B;
+    --ok:#10B981;
+    --okbg:#064E3B;
+    --bad:#EF4444;
+    --badbg:#7F1D1D;
+    --gold:#F59E0B;
+    --shadow:0 8px 24px rgba(0,0,0,0.45);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Segoe UI',Calibri,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+  code,pre,.mono{font-family:'Consolas','Courier New',monospace}
+  a{color:var(--cyan)}
+  
+  header.top{background:var(--navy);color:#fff;padding:16px 24px 14px;position:sticky;top:0;z-index:50;box-shadow:0 4px 16px rgba(0,0,0,.5);border-bottom:1px solid var(--line)}
+  header.top .kick{color:var(--cyan);font-size:12px;font-weight:700;letter-spacing:2px}
+  header.top h1{margin:2px 0 0;font-size:21px;font-weight:700;color:var(--ink)}
+  .progwrap{height:6px;background:rgba(255,255,255,.1);border-radius:4px;margin-top:11px;overflow:hidden}
+  .progbar{height:100%;width:0;background:var(--cyan);border-radius:4px;transition:width .4s}
+  
+  nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+  nav.tabs button{background:rgba(255,255,255,.05);color:var(--mut);border:1px solid var(--line);
+    padding:7px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+  nav.tabs button:hover{background:rgba(255,255,255,.12);color:#fff}
+  nav.tabs button.active{background:var(--deep);color:#fff;border-color:var(--cyan)}
+  
+  main{max-width:1080px;margin:0 auto;padding:26px 20px 80px}
+  section.page{display:none;animation:fade .25s ease}
+  section.page.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  
+  .timebadge{display:inline-block;background:var(--card-tint);color:var(--cyan);font-size:12px;font-weight:700;border-radius:20px;padding:3px 12px;margin-bottom:6px;border:1px solid var(--line)}
+  h2.title{font-family:'Segoe UI',Georgia,sans-serif;color:var(--ink);font-size:28px;margin:4px 0 2px}
+  .lead{color:var(--mut);font-size:15px;margin:0 0 22px}
+  h3{font-family:'Segoe UI',Georgia,sans-serif;color:var(--cyan);font-size:20px;margin:26px 0 10px}
+  
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+  .card.tint{background:var(--card-tint);border-color:rgba(56,189,248,0.3)}
+  .card h4{margin:0 0 10px;color:var(--cyan);font-size:17px}
+  .card ul{margin:0;padding-left:20px}
+  .card li{margin:6px 0}
+  
+  pre.code{background:var(--codebg);color:var(--codetx);border-radius:10px;padding:14px 16px;overflow:auto;font-size:14px;margin:10px 0;border:1px solid var(--line);box-shadow:var(--shadow)}
+  pre.code .kw{color:var(--kw);font-weight:700}
+  pre.code .cm{color:var(--cm)}
+  
+  table.data{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table.data th{background:var(--card-tint);color:var(--cyan);text-align:left;padding:8px 10px;font-weight:700;border-bottom:1px solid var(--line)}
+  table.data td{padding:7px 10px;border-top:1px solid var(--line);color:var(--ink)}
+  table.data tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+  
+  .note{border-left:4px solid var(--cyan);background:var(--card-tint);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;font-size:14.5px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .warn{border-left:4px solid var(--gold);background:rgba(245,158,11,0.1);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;font-size:14.5px;border-top:1px solid rgba(245,158,11,0.2);border-right:1px solid rgba(245,158,11,0.2);border-bottom:1px solid rgba(245,158,11,0.2)}
+  
+  .quiz-q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0;box-shadow:var(--shadow)}
+  .quiz-q .qhead{font-weight:700;color:var(--ink);margin-bottom:12px}
+  .quiz-q .qhead .num{display:inline-block;background:var(--deep);color:#fff;border-radius:50%;width:26px;height:26px;line-height:26px;text-align:center;font-size:13px;margin-right:9px}
+  .quiz-q.theory .qhead .num{background:var(--sea)}
+  
+  .opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1.5px solid var(--line);border-radius:8px;padding:10px 14px;margin:7px 0;cursor:pointer;font-size:14.5px;color:var(--ink);transition:.12s}
+  .opt:hover{border-color:var(--cyan);background:rgba(56,189,248,0.08)}
+  .opt.correct{background:var(--okbg);border-color:var(--ok);color:#A7F3D0;font-weight:600}
+  .opt.wrong{background:var(--badbg);border-color:var(--bad);color:#FECACA}
+  .opt:disabled{cursor:default}
+  
+  .explain{margin-top:10px;font-size:13.5px;padding:10px 12px;border-radius:8px;background:var(--codebg);border:1px solid var(--line);color:var(--mut);display:none}
+  .explain.show{display:block}
+  
+  .scorebar{position:sticky;bottom:10px;background:var(--navy);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px 18px;margin-top:18px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow)}
+  .scorebar button{background:var(--deep);color:#fff;border:0;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer}
+  .scorebar button:hover{background:var(--cyan);color:var(--navy)}
+  
+  textarea.pycode{width:100%;border:0;font-family:Consolas,'Courier New',monospace;font-size:14px;padding:14px 16px;resize:vertical;min-height:100px;color:var(--codetx);background:var(--codebg);outline:none;border-bottom:1px solid var(--line)}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--card);border-top:1px solid var(--line)}
+  button.act{background:var(--deep);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer;transition:.15s}
+  button.act:hover{background:var(--sea)}
+  button.ghost{background:transparent;color:var(--cyan);border:1.5px solid var(--cyan)}
+  button.ghost:hover{background:rgba(56,189,248,0.1)}
+  button.sea{background:var(--cyan);color:var(--navy)}
+  button.sea:hover{background:#7dd3fc}
+  
+  .activity{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);margin:16px 0;overflow:hidden}
+  .activity.done{border-color:var(--ok);box-shadow:0 0 0 2px rgba(16,185,129,0.3)}
+  .activity .ahead{padding:14px 18px;background:var(--card-tint);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px}
+  .activity .ahead .num{display:inline-block;background:var(--deep);color:#fff;border-radius:50%;width:26px;height:26px;line-height:26px;text-align:center;font-size:13px;font-weight:700;flex:none}
+  .activity.done .ahead .num{background:var(--ok)}
+  .activity .ahead .qtext{font-weight:600;color:var(--ink)}
+  .activity .ahead .tick{margin-left:auto;color:var(--ok);font-weight:800;display:none}
+  .activity.done .ahead .tick{display:inline}
+  .activity .abody{padding:14px 18px}
+  .activity .hint{font-size:13px;color:var(--mut);margin:6px 0 0}
+  
+  .result{padding:0 14px 14px}
+  .result .msg{font-size:13.5px;padding:8px 12px;border-radius:8px;margin:10px 0}
+  .msg.okmsg{background:var(--okbg);color:#A7F3D0;border:1px solid var(--ok)}
+  .msg.errmsg{background:var(--badbg);color:#FECACA;border:1px solid var(--bad)}
+  
+  .stepflow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+  .step{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow)}
+  .step b{color:var(--cyan)}
+  
+  footer{max-width:1080px;margin:0 auto;padding:0 20px 50px;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="kick">APSPACE DARK EDITION · CS101 PYTHON PROGRAMMING</div>
+  <h1>Python Programming &amp; Algorithms Exam Prep</h1>
+  <div class="progwrap"><div class="progbar" id="progbar"></div></div>
+  <nav class="tabs" id="tabs">
+    <button data-go="intro" class="active">Start</button>
+    <button data-go="theory">Theory Recap</button>
+    <button data-go="pseudocode">Pseudocode</button>
+    <button data-go="python">Python Recap</button>
+    <button data-go="concept">Files &amp; Exceptions</button>
+    <button data-go="patterns">Patterns</button>
+    <button data-go="quiz">Practice Quiz</button>
+    <button data-go="practice">Live Python</button>
+    <button data-go="summary">Summary</button>
+  </nav>
+</header>
+
+<main>
+  <!-- INTRO PAGE -->
+  <section class="page show" id="intro">
+    <span class="timebadge">Whole activity: ~40 minutes</span>
+    <h2 class="title">Welcome to Exam Prep</h2>
+    <p class="lead">Interactive dark-mode guide designed to master algorithms, pseudocode conventions, Python syntax, collections, file handling, and runtime exceptions.</p>
+    
+    <div class="stepflow">
+      <div class="step"><b>1. Theory &amp; Pseudocode</b><br>Review 6 computer operations, pseudocode constructs, loops, and data structures. Complete 8 core checks.</div>
+      <div class="step"><b>2. Practice Quiz</b><br>Test your readiness with 12 exam-style questions with instant answers.</div>
+      <div class="step"><b>3. Live Python Tasks</b><br>Write code directly in browser-based task checkers across 10 interactive tasks.</div>
+    </div>
+    
+    <div class="note">
+      <b>Core Concepts Covered:</b> Algorithm design, Pseudocode standard keywords (`INPUT`, `OUTPUT`, `IF-THEN`, `WHILE`, `FOR`), mutable vs. immutable collections (Lists vs. Tuples), file I/O operations (`r`, `w`, `a`), reading methods (`read`, `readline`, `readlines`), and exception handling with `try-except-finally`.
+    </div>
+
+    <div class="card">
+      <h4>Data Structure Comparison</h4>
+      <div class="grid g2" style="margin-top:8px">
+        <div>
+          <b style="color:var(--cyan)">List <code>[ ]</code></b>
+          <table class="data" style="margin-top:6px">
+            <tr><th>Feature</th><th>Details</th></tr>
+            <tr><td>Syntax</td><td>Square brackets <code>[1, 2, 3]</code></td></tr>
+            <tr><td>Mutability</td><td>Mutable (Can be modified)</td></tr>
+            <tr><td>Methods</td><td><code>append()</code>, <code>pop()</code>, <code>sort()</code></td></tr>
+          </table>
+        </div>
+        <div>
+          <b style="color:var(--sea)">Tuple <code>( )</code></b>
+          <table class="data" style="margin-top:6px">
+            <tr><th>Feature</th><th>Details</th></tr>
+            <tr><td>Syntax</td><td>Round brackets <code>(1, 2, 3)</code></td></tr>
+            <tr><td>Mutability</td><td>Immutable (Fixed after creation)</td></tr>
+            <tr><td>Uses</td><td>Read-only values, record keys</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="theory">Begin Theory Recap</button></div>
+  </section>
+
+  <!-- THEORY RECAP -->
+  <section class="page" id="theory">
+    <span class="timebadge">About 8 minutes</span>
+    <h2 class="title">Theory Recap</h2>
+    <p class="lead">Fundamental principles of computer science, algorithmic structures, and execution logic.</p>
+    
+    <h3>Basic Computer Operations &amp; Algorithms</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>6 Basic Computer Operations</h4>
+        <ul>
+          <li><b>Receive information</b> (Input from user or file).</li>
+          <li><b>Produce information</b> (Output to console or file).</li>
+          <li><b>Perform arithmetic</b> (Addition, subtraction, division).</li>
+          <li><b>Assign values</b> to variables or structures.</li>
+          <li><b>Compare two values</b> (Conditional decisions).</li>
+          <li><b>Repeat actions</b> (Iteration / Loops).</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4>Algorithm Traits</h4>
+        <ul>
+          <li>Must be <b>step-by-step</b>, clear, and totally <b>unambiguous</b>.</li>
+          <li>Must execute in a precise, deterministic <b>logical sequence</b>.</li>
+          <li>Acts as a language-independent blueprint prior to code implementation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Execution &amp; Control Flow</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Python Execution Flow</h4>
+        <ul>
+          <li>Python uses an <b>interpreter</b> executing code line-by-line.</li>
+          <li>Statements run top-to-bottom unless diverted by conditionals or loops.</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4>Pre-test Loop Characteristics</h4>
+        <ul>
+          <li>Evaluates condition <b>before</b> running the loop body.</li>
+          <li>Executes <b>0 or more times</b> (e.g., Pseudocode <code>WHILE</code> &amp; Python <code>while</code>).</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Theory Knowledge Check</h3>
+    <p class="lead" style="margin-bottom:6px">Answer all 8 conceptual checks below.</p>
+    <div id="theoryBox"></div>
+    <div class="scorebar"><span id="theoryScore">Theory check: 0 of 0 answered</span><button id="resetTheory">Reset Check</button></div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="pseudocode">Next: Pseudocode</button></div>
+  </section>
+
+  <!-- PSEUDOCODE PAGE -->
+  <section class="page" id="pseudocode">
+    <span class="timebadge">About 6 minutes</span>
+    <h2 class="title">Pseudocode Fundamentals</h2>
+    <p class="lead">Understanding informal, language-agnostic algorithm representations and converting them to Python.</p>
+
+    <h3>What is Pseudocode?</h3>
+    <div class="card tint">
+      <p style="margin:0"><b>Pseudocode</b> is an informal, human-readable outline of a computer program or algorithm. It uses structured plain English rather than strict programming syntax so developers can design logic without worrying about language-specific rules.</p>
+    </div>
+
+    <h3>Standard Pseudocode Conventions vs. Python Syntax</h3>
+    <table class="data" style="margin-top:12px">
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th>Standard Pseudocode Keyword / Format</th>
+          <th>Python Equivalent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Input</b></td>
+          <td><code>INPUT age</code> or <code>READ age</code></td>
+          <td><code>age = input()</code></td>
+        </tr>
+        <tr>
+          <td><b>Output</b></td>
+          <td><code>OUTPUT "Hello"</code> or <code>PRINT "Hello"</code></td>
+          <td><code>print("Hello")</code></td>
+        </tr>
+        <tr>
+          <td><b>Assignment</b></td>
+          <td><code>SET score TO 100</code> or <code>score ← 100</code></td>
+          <td><code>score = 100</code></td>
+        </tr>
+        <tr>
+          <td><b>Selection</b></td>
+          <td>
+            <code>IF score &gt;= 50 THEN</code><br>
+            <code>&nbsp;&nbsp;OUTPUT "Pass"</code><br>
+            <code>ELSE</code><br>
+            <code>&nbsp;&nbsp;OUTPUT "Fail"</code><br>
+            <code>ENDIF</code>
+          </td>
+          <td>
+            <code>if score &gt;= 50:</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;print("Pass")</code><br>
+            <code>else:</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;print("Fail")</code>
+          </td>
+        </tr>
+        <tr>
+          <td><b>Pre-test Loop</b></td>
+          <td>
+            <code>WHILE count &lt; 5 DO</code><br>
+            <code>&nbsp;&nbsp;count ← count + 1</code><br>
+            <code>ENDWHILE</code>
+          </td>
+          <td>
+            <code>while count &lt; 5:</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;count += 1</code>
+          </td>
+        </tr>
+        <tr>
+          <td><b>Counted Loop</b></td>
+          <td>
+            <code>FOR i ← 1 TO 5 STEP 1</code><br>
+            <code>&nbsp;&nbsp;OUTPUT i</code><br>
+            <code>ENDFOR</code>
+          </td>
+          <td>
+            <code>for i in range(1, 6):</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;print(i)</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Pseudocode Algorithm Example</h3>
+    <div class="grid g2" style="margin-top:16px">
+      <div>
+        <h4 style="color:var(--cyan)">Pseudocode Algorithm</h4>
+        <pre class="code"><span class="kw">BEGIN</span>
+  <span class="kw">SET</span> total <span class="kw">TO</span> 0
+  <span class="kw">FOR</span> count <span class="kw">FROM</span> 1 <span class="kw">TO</span> 3
+    <span class="kw">INPUT</span> num
+    <span class="kw">SET</span> total <span class="kw">TO</span> total + num
+  <span class="kw">ENDFOR</span>
+  <span class="kw">OUTPUT</span> <span class="kw">"Sum: "</span>, total
+<span class="kw">END</span></pre>
+      </div>
+      <div>
+        <h4 style="color:var(--cyan)">Python Implementation</h4>
+        <pre class="code">total = 0
+<span class="kw">for</span> count <span class="kw">in</span> range(1, 4):
+    num = int(input(<span class="kw">"Enter number: "</span>))
+    total += num
+
+print(<span class="kw">f"Sum: {total}"</span>)</pre>
+      </div>
+    </div>
+
+    <div class="note"><b>Exam Tip:</b> Always look out for explicit loop delimiters in pseudocode like <code>ENDIF</code>, <code>ENDWHILE</code>, and <code>ENDFOR</code>. Python replaces these block endings with indentation!</div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="python">Next: Python Recap</button></div>
+  </section>
+
+  <!-- PYTHON RECAP -->
+  <section class="page" id="python">
+    <span class="timebadge">About 5 minutes</span>
+    <h2 class="title">Python Recap</h2>
+    <p class="lead">Essential syntax patterns for variables, collections, and control flow.</p>
+
+    <h3>Lists vs. Tuples</h3>
+    <div class="grid g2">
+      <div>
+        <pre class="code"><span class="cm"># Lists use [] and are mutable</span>
+fruits = [<span class="kw">'apple'</span>, <span class="kw">'banana'</span>]
+fruits.append(<span class="kw">'cherry'</span>)
+fruits[0] = <span class="kw">'avocado'</span>  <span class="cm"># Allowed</span>
+
+<span class="cm"># Tuples use () and are immutable</span>
+coords = (10, 20)
+<span class="cm"># coords[0] = 15  --> Raises TypeError!</span></pre>
+      </div>
+      <div class="card">
+        <h4>Key Takeaways</h4>
+        <ul>
+          <li>Use <b>Lists</b> when data will grow, shrink, or change.</li>
+          <li>Use <b>Tuples</b> for static records that must not be altered accidentally.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Pre-Test Loops &amp; Conditionals</h3>
+    <div class="grid g2">
+      <div>
+        <pre class="code"><span class="cm"># Pre-test loop checking condition first</span>
+count = 0
+<span class="kw">while</span> count &lt; 3:
+    print(<span class="kw">f"Count: {count}"</span>)
+    count += 1
+
+<span class="kw">for</span> item <span class="kw">in</span> fruits:
+    <span class="kw">if</span> item == <span class="kw">'banana'</span>:
+        print(<span class="kw">"Found!"</span>)</pre>
+      </div>
+      <div class="card tint">
+        <h4>Behavior Rules</h4>
+        <ul>
+          <li>If a <code>while</code> loop condition starts as <code>False</code>, the body runs <b>0 times</b>.</li>
+          <li><code>for</code> loops automatically iterate through sequences like lists or tuples.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="concept">Next: Files &amp; Exceptions</button></div>
+  </section>
+
+  <!-- FILES & EXCEPTIONS -->
+  <section class="page" id="concept">
+    <span class="timebadge">About 6 minutes</span>
+    <h2 class="title">Files &amp; Exception Handling</h2>
+    <p class="lead">Handling external files safely and managing runtime errors without program crashes.</p>
+
+    <h3>File Access Modes</h3>
+    <div class="grid g3">
+      <div class="card">
+        <h4><code>"r"</code> Read Mode</h4>
+        <ul>
+          <li>Default file mode.</li>
+          <li>Opens file for reading only.</li>
+          <li>Raises <code>FileNotFoundError</code> if missing.</li>
+        </ul>
+      </div>
+      <div class="card tint">
+        <h4><code>"w"</code> Write Mode</h4>
+        <ul>
+          <li>Opens file for writing.</li>
+          <li><b>Overwrites</b> existing content completely.</li>
+          <li>Creates file if non-existent.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><code>"a"</code> Append Mode</h4>
+        <ul>
+          <li>Opens file for writing.</li>
+          <li>Appends new data at the <b>end</b>.</li>
+          <li>Preserves existing file content.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>File Reading Methods</h3>
+    <div class="grid g3">
+      <div class="card">
+        <h4><code>read()</code></h4>
+        <p>Reads the whole file as a single string.</p>
+      </div>
+      <div class="card tint">
+        <h4><code>readline()</code></h4>
+        <p>Reads one line at a time as a string.</p>
+      </div>
+      <div class="card">
+        <h4><code>readlines()</code></h4>
+        <p>Reads all lines into a <b>list of strings</b>.</p>
+      </div>
+    </div>
+
+    <h3>Exception Handling (<code>try-except-finally</code>)</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Structure Overview</h4>
+        <ul>
+          <li><b><code>try</code>:</b> Encloses risky code that might throw an error.</li>
+          <li><b><code>except</code>:</b> Executes if a specific error occurs.</li>
+          <li><b><code>finally</code>:</b> Always executes regardless of errors.</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code"><span class="kw">try</span>:
+    f = open(<span class="kw">'data.txt'</span>, <span class="kw">'r'</span>)
+    text = f.read()
+<span class="kw">except</span> FileNotFoundError:
+    print(<span class="kw">"File not found!"</span>)
+<span class="kw">finally</span>:
+    print(<span class="kw">"Always runs!"</span>)  <span class="cm"># Cleanup code</span></pre>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="patterns">Next: Coding Patterns</button></div>
+  </section>
+
+  <!-- PATTERNS -->
+  <section class="page" id="patterns">
+    <span class="timebadge">About 4 minutes</span>
+    <h2 class="title">Common Coding Patterns</h2>
+    <p class="lead">Frequent code snippets and patterns tested in exam questions.</p>
+    
+    <div class="grid g2">
+      <div>
+        <h4 style="color:var(--cyan)">1. Context Manager (<code>with</code>)</h4>
+        <pre class="code"><span class="cm"># Automatically closes file when block ends</span>
+<span class="kw">with</span> open(<span class="kw">"log.txt"</span>, <span class="kw">"a"</span>) <span class="kw">as</span> f:
+    f.write(<span class="kw">"New log entry\n"</span>)</pre>
+      </div>
+      <div>
+        <h4 style="color:var(--cyan)">2. Multiple Exception Catching</h4>
+        <pre class="code"><span class="kw">try</span>:
+    val = int(input(<span class="kw">"Number: "</span>))
+    res = 10 / val
+<span class="kw">except</span> (ValueError, ZeroDivisionError) <span class="kw">as</span> e:
+    print(<span class="kw">f"Invalid operation: {e}"</span>)</pre>
+      </div>
+      <div>
+        <h4 style="color:var(--cyan)">3. Safe File Reading</h4>
+        <pre class="code"><span class="kw">try</span>:
+    f = open(<span class="kw">"info.txt"</span>, <span class="kw">"r"</span>)
+    data = f.readlines()
+    f.close()
+<span class="kw">except</span> FileNotFoundError:
+    data = []</pre>
+      </div>
+      <div>
+        <h4 style="color:var(--cyan)">4. Iterating List of Tuples</h4>
+        <pre class="code">records = [("Alice", 90), ("Bob", 85)]
+<span class="kw">for</span> name, score <span class="kw">in</span> records:
+    print(<span class="kw">f"{name}: {score}"</span>)</pre>
+      </div>
+    </div>
+    
+    <div class="warn"><b>Exam Note:</b> Files opened manually via <code>open()</code> must always be closed using <code>close()</code> or scoped within a <code>with</code> context block.</div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="quiz">Take Practice Quiz</button></div>
+  </section>
+
+  <!-- PRACTICE QUIZ -->
+  <section class="page" id="quiz">
+    <span class="timebadge">About 10 minutes</span>
+    <h2 class="title">Practice Quiz</h2>
+    <p class="lead">Test your preparation with 12 exam-style questions.</p>
+    <div id="quizBox"></div>
+    <div class="scorebar"><span id="scoreText">Score: 0 of 0 answered</span><button id="resetQuiz">Reset Quiz</button></div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="practice">Next: Live Python Tasks</button></div>
+  </section>
+
+  <!-- LIVE PYTHON TASKS -->
+  <section class="page" id="practice">
+    <span class="timebadge">About 12 minutes</span>
+    <h2 class="title">Live Python Tasks</h2>
+    <p class="lead">Complete all 10 interactive Python coding tasks directly in the code editors.</p>
+    
+    <div class="scorebar" style="position:static;margin:0 0 16px">
+      <span id="actScore">Solved: 0 of 10</span><span id="actCheer"></span>
+    </div>
+    
+    <div id="activityBox"></div>
+    <div style="text-align:center;margin-top:24px"><button class="act sea" data-go="summary">View Final Summary</button></div>
+  </section>
+
+  <!-- SUMMARY PAGE -->
+  <section class="page" id="summary">
+    <span class="timebadge">Final Overview</span>
+    <h2 class="title">Performance Summary</h2>
+    <p class="lead">Here is your overall progress and score across all practice modules.</p>
+    
+    <div class="grid g3" style="margin-top:20px">
+      <div class="card tint" style="text-align:center">
+        <h4 style="margin:0;color:var(--cyan)">Theory Check</h4>
+        <div style="font-size:36px;font-weight:800;margin:10px 0;color:#fff" id="sumTheory">0/8</div>
+        <div style="font-size:13px;color:var(--mut)">Conceptual items</div>
+      </div>
+      <div class="card tint" style="text-align:center">
+        <h4 style="margin:0;color:var(--cyan)">Practice Quiz</h4>
+        <div style="font-size:36px;font-weight:800;margin:10px 0;color:#fff" id="sumQuiz">0/12</div>
+        <div style="font-size:13px;color:var(--mut)">Exam-style questions</div>
+      </div>
+      <div class="card tint" style="text-align:center">
+        <h4 style="margin:0;color:var(--cyan)">Live Python Tasks</h4>
+        <div style="font-size:36px;font-weight:800;margin:10px 0;color:#fff" id="sumTasks">0/10</div>
+        <div style="font-size:13px;color:var(--mut)">Practical coding exercises</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;text-align:center;padding:30px">
+      <h4>Total Completion Score</h4>
+      <div style="font-size:48px;font-weight:800;color:var(--cyan);margin:10px 0" id="totalScoreText">0 / 30</div>
+      <p id="summaryFeedback" style="color:var(--mut);font-size:15px">Complete questions across sections to track your final score.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  APSpace Dark Edition · CS101 Python Programming &amp; Algorithms Prep
+</footer>
+
+<script>
+// 1. STATE & GLOBAL VARIABLES
+const ORDER = ['intro','theory','pseudocode','python','concept','patterns','quiz','practice','summary'];
+const RESULTS = { theory:{c:0,t:8}, quiz:{c:0,t:12} };
+const visited = new Set(['intro']);
+let solved = new Set();
+
+// 2. DATA ARRAYS
+const THEORY = [
+  { q:"Which of the following is NOT one of the 6 basic computer operations?", opts:["Receive information","Compile code directly into hardware binary","Perform arithmetic","Compare two pieces of information"], a:1, e:"Compiling into physical hardware binary is not one of the 6 standard fundamental operations." },
+  { q:"How does Python execute source code?", opts:["It compiles into an .exe binary file prior to execution","It is interpreted directly line-by-line","It requires HTML browser assembly","It converts directly into database queries"], a:1, e:"Python is an interpreted language that runs code directly via an interpreter." },
+  { q:"What characterizes a pre-test loop?", opts:["Evaluates condition after executing the body","Evaluates condition before executing the body","Always runs at least once regardless of condition","Cannot be used with while statements"], a:1, e:"Pre-test loops evaluate conditions before executing the loop body and can run 0 times." },
+  { q:"Which statement accurately describes Lists vs. Tuples?", opts:["Both are immutable sequences","Lists are mutable []; Tuples are immutable ()","Lists use () while Tuples use []","Tuples can grow dynamically using .append()"], a:1, e:"Lists use square brackets and are mutable; Tuples use round brackets and are immutable." },
+  { q:"Which attribute is essential for a valid algorithm?", opts:["Must be step-by-step and unambiguous","Must be written in Python syntax only","Must contain at least 10 lines of code","Must utilize machine compiler optimization"], a:0, e:"An algorithm must provide an unambiguous, step-by-step procedure." },
+  { q:"What happens if a while loop condition evaluates to False on the first check?", opts:["The loop body executes exactly once","The loop body executes 0 times","An exception is raised","The loop runs infinitely"], a:1, e:"Since it is a pre-test loop, evaluating False initially results in 0 executions." },
+  { q:"In programming arithmetic, what is assigned when evaluating <code>x = 5 + 3 * 2</code>?", opts:["16","11","10","13"], a:1, e:"Operator precedence applies: multiplication (3*2=6) first, then addition (5+6=11)." },
+  { q:"Which execution pattern routes code based on conditional evaluation?", opts:["Sequential","Selection (Decision)","Iteration","Recursion"], a:1, e:"Selection structures (if/else) direct flow based on conditional logic." }
+];
+
+const QUIZ = [
+  { q:"1. Which operation is NOT counted among the 6 basic computer operations?", opts:["A) Receive information","B) Compile code into physical hardware","C) Perform arithmetic","D) Compare two values"], a:1, e:"Compiling into hardware is not one of the six fundamental basic computer operations." },
+  { q:"2. What pseudocode keyword is used to represent reading user input?", opts:["A) GET_INFO","B) INPUT or READ","C) RECEIVE_ALL","D) SCAN_LINE"], a:1, e:"Standard pseudocode conventions use INPUT or READ for receiving input data." },
+  { q:"3. What is true about pre-test loops?", opts:["A) They test conditions before running the body","B) They always run at least once","C) Python does not support pre-test loops","D) They test conditions after running the body"], a:0, e:"Pre-test loops test the stopping condition prior to entering the loop body." },
+  { q:"4. What distinguishes a Tuple from a List?", opts:["A) Tuples are mutable and use []","B) Tuples are immutable and use ()","C) Lists cannot hold integers","D) Tuples support .append()"], a:1, e:"Tuples are defined with round brackets () and cannot be edited after creation." },
+  { q:"5. Which file access mode appends data to the end without overwriting?", opts:["A) 'w'","B) 'r'","C) 'a'","D) 'r+'"], a:2, e:"Mode 'a' appends output at the end of existing file content." },
+  { q:"6. When does a <code>finally</code> block run in exception handling?", opts:["A) Only when an error occurs","B) Only when no error occurs","C) Always, regardless of whether an exception occurred","D) Only when opening files"], a:2, e:"The finally block executes guaranteed cleanup code regardless of try/except outcomes." },
+  { q:"7. What does the <code>readlines()</code> method return?", opts:["A) A single combined string","B) A list of strings representing lines","C) An integer count of lines","D) A tuple of bytes"], a:1, e:"readlines() returns a Python list where each item is a line string." },
+  { q:"8. In pseudocode, how is a conditional block explicitly closed?", opts:["A) ENDIF","B) STOPIF","C) CLOSE","D) END_SELECTION"], a:0, e:"Pseudocode uses ENDIF to mark the termination of an IF-THEN statement." },
+  { q:"9. What exception is raised when trying to open a non-existent file in 'r' mode?", opts:["A) KeyError","B) FileNotFoundError","C) ValueError","D) TypeError"], a:1, e:"Opening a non-existent file in read mode ('r') raises FileNotFoundError." },
+  { q:"10. What error occurs if you attempt to modify an element in a tuple: <code>t = (1,2); t[0] = 5</code>?", opts:["A) ValueError","B) IndexError","C) TypeError","D) KeyError"], a:2, e:"Tuples are immutable; attempting item assignment throws a TypeError." },
+  { q:"11. How does <code>readline()</code> behave when reading through a file?", opts:["A) Reads entire file at once","B) Reads a single next line as a string","C) Reads all lines into a dictionary","D) Closes the file automatically"], a:1, e:"readline() fetches one line at a time as a string." },
+  { q:"12. What is the primary benefit of using a <code>with open(...) as f:</code> block?", opts:["A) Makes reading 10x faster","B) Automatically closes the file when done","C) Prevents all runtime exceptions","D) Allows editing immutable tuples"], a:1, e:"Context managers automatically ensure files are properly closed." }
+];
+
+const ACT = [
+  { n:1, q:"Create a list named 'colors' containing 'red', 'green', and 'blue', then append 'yellow'.",
+    hint:"colors = ['red', 'green', 'blue'] then colors.append('yellow')",
+    starter:"colors = ['red', 'green', 'blue']\n# append yellow below:\n",
+    test: (c) => c.includes("colors") && c.includes("append") && c.includes("yellow") && c.includes("[") },
+  
+  { n:2, q:"Define an immutable tuple named 'coords' with coordinates 100 and 200.",
+    hint:"coords = (100, 200)",
+    starter:"coords = ",
+    test: (c) => c.includes("coords") && c.includes("(") && c.includes("100") && c.includes("200") },
+  
+  { n:3, q:"Open a file named 'app.log' in append mode 'a' and assign it to variable 'f'.",
+    hint:"f = open('app.log', 'a')",
+    starter:"f = open(",
+    test: (c) => c.includes("open") && c.includes("app.log") && c.includes("'a'") },
+
+  { n:4, q:"Read all lines of an open file object 'f' into a variable named 'lines'.",
+    hint:"lines = f.readlines()",
+    starter:"# f is an opened file object\nlines = ",
+    test: (c) => c.includes("readlines") },
+
+  { n:5, q:"Write a try-except block catching FileNotFoundError when opening 'data.txt'.",
+    hint:"try:\n  f = open('data.txt')\nexcept FileNotFoundError:",
+    starter:"try:\n    f = open('data.txt', 'r')\nexcept ",
+    test: (c) => c.includes("try:") && c.includes("except") && c.includes("FileNotFoundError") },
+
+  { n:6, q:"Add a finally block that prints 'Finished' regardless of errors.",
+    hint:"finally:\n    print('Finished')",
+    starter:"try:\n    x = 5 / 1\nexcept ZeroDivisionError:\n    pass\n# add finally block:",
+    test: (c) => c.includes("finally:") && c.includes("print") },
+
+  { n:7, q:"Write a while loop printing count while count is less than 5.",
+    hint:"while count < 5:",
+    starter:"count = 0\n# write loop below:\n",
+    test: (c) => c.includes("while") && c.includes("< 5") && c.includes("print") },
+
+  { n:8, q:"Open 'notes.txt' in read mode 'r' using a context manager (with open).",
+    hint:"with open('notes.txt', 'r') as f:",
+    starter:"with open(",
+    test: (c) => c.includes("with") && c.includes("open") && c.includes("notes.txt") && c.includes("'r'") },
+
+  { n:9, q:"Write the string 'Hello World' to an open file object 'f' using write().",
+    hint:"f.write('Hello World')",
+    starter:"# f is an opened file in write mode\n",
+    test: (c) => c.includes("write") && c.includes("Hello World") },
+
+  { n:10, q:"Write a try-except block catching ZeroDivisionError when dividing 10 by 0.",
+    hint:"try:\n  res = 10 / 0\nexcept ZeroDivisionError:",
+    starter:"try:\n    result = 10 / 0\nexcept ",
+    test: (c) => c.includes("try:") && c.includes("ZeroDivisionError") }
+];
+
+// 3. CORE LOGIC FUNCTIONS
+function updateProgress(){ 
+  const el = document.getElementById('progbar');
+  if(el) el.style.width = (visited.size/ORDER.length*100)+'%'; 
+  updateSummaryDisplay();
+}
+
+function go(id){
+  document.querySelectorAll('section.page').forEach(s=>s.classList.toggle('show', s.id===id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active', b.dataset.go===id));
+  visited.add(id); 
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateSummaryDisplay(){
+  const sumTh = document.getElementById('sumTheory');
+  const sumQz = document.getElementById('sumQuiz');
+  const sumTk = document.getElementById('sumTasks');
+  const totalScore = document.getElementById('totalScoreText');
+  const feedback = document.getElementById('summaryFeedback');
+  
+  if(!sumTh || !sumQz || !sumTk) return;
+
+  const th = RESULTS.theory.c, thTot = RESULTS.theory.t;
+  const qz = RESULTS.quiz.c, qzTot = RESULTS.quiz.t;
+  const act = solved.size, actTot = ACT.length;
+  
+  sumTh.textContent = th + '/' + thTot;
+  sumQz.textContent = qz + '/' + qzTot;
+  sumTk.textContent = act + '/' + actTot;
+  
+  const grandTotal = th + qz + act;
+  const grandMax = thTot + qzTot + actTot;
+  totalScore.textContent = grandTotal + ' / ' + grandMax;
+  
+  const pct = Math.round((grandTotal / grandMax) * 100);
+  let msg = 'Keep practicing to improve your score!';
+  if (pct >= 90) msg = 'Outstanding master-level preparation!';
+  else if (pct >= 70) msg = 'Great work! You are in strong shape for the exam.';
+  else if (pct >= 40) msg = 'Good effort! Review missed items in Theory and Quiz.';
+  
+  feedback.textContent = 'Overall Completion: ' + pct + '%. ' + msg;
+}
+
+function renderMCQ(box, items, scoreEl, cls, key){
+  if(!box) return;
+  let answered=0, correct=0;
+  function record(){ if(key && RESULTS[key]){ RESULTS[key].c=correct; RESULTS[key].t=items.length; } updateSummaryDisplay(); }
+  function refresh(){ scoreEl.textContent = (cls==='theory'?'Theory check: ':'Score: ')+correct+' of '+answered+' answered ('+items.length+' total)'; record(); }
+  box.innerHTML='';
+  items.forEach((item,i)=>{
+    const d=document.createElement('div'); d.className='quiz-q'+(cls?(' '+cls):'');
+    d.innerHTML='<div class="qhead"><span class="num">'+(i+1)+'</span>'+item.q+'</div>';
+    item.opts.forEach((o,j)=>{
+      const b=document.createElement('button'); b.className='opt'; b.innerHTML=o;
+      b.onclick=()=>{
+        if(d.dataset.done) return;
+        d.dataset.done='1'; answered++;
+        d.querySelectorAll('.opt').forEach((bb,k)=>{ bb.disabled=true; if(k===item.a) bb.classList.add('correct'); });
+        if(j===item.a) correct++; else b.classList.add('wrong');
+        d.querySelector('.explain').classList.add('show');
+        refresh();
+      };
+      d.appendChild(b);
+    });
+    const ex=document.createElement('div'); ex.className='explain'; ex.innerHTML='<b>Explanation:</b> '+item.e;
+    d.appendChild(ex);
+    box.appendChild(d);
+  });
+  refresh();
+}
+
+function buildTheory(){ renderMCQ(document.getElementById('theoryBox'), THEORY, document.getElementById('theoryScore'), 'theory', 'theory'); }
+function buildQuiz(){ renderMCQ(document.getElementById('quizBox'), QUIZ, document.getElementById('scoreText'), '', 'quiz'); }
+
+function updateActScore(){
+  const actScore = document.getElementById('actScore');
+  const cheer = document.getElementById('actCheer');
+  if(actScore) actScore.textContent='Solved: '+solved.size+' of '+ACT.length;
+  if(cheer){
+    if(solved.size===ACT.length){ cheer.textContent=' All 10 tasks completed!'; }
+    else if(solved.size>=5){ cheer.textContent=' Over half done!'; }
+    else { cheer.textContent=''; }
+  }
+  updateSummaryDisplay();
+}
+
+function buildActivities(){
+  const box=document.getElementById('activityBox'); 
+  if(!box) return;
+  box.innerHTML='';
+  ACT.forEach(a=>{
+    const d=document.createElement('div'); d.className='activity';
+    d.innerHTML =
+      '<div class="ahead"><span class="num">'+a.n+'</span><span class="qtext">'+a.q+'</span><span class="tick">Solved</span></div>'+
+      '<div class="abody">'+
+        '<textarea class="pycode">'+a.starter+'</textarea>'+
+        '<div class="btnrow" style="background:transparent;border:0;padding:10px 0 0">'+
+          '<button class="act sea check">Check Answer</button>'+
+          '<button class="act ghost hintbtn">Hint</button>'+
+        '</div>'+
+        '<p class="hint" style="display:none"></p>'+
+        '<div class="result"></div>'+
+      '</div>';
+    
+    const ta=d.querySelector('textarea');
+    const out=d.querySelector('.result');
+    const hintP=d.querySelector('.hint');
+    
+    d.querySelector('.hintbtn').onclick=()=>{ hintP.style.display='block'; hintP.innerHTML='<b>Hint:</b> '+a.hint; };
+    
+    d.querySelector('.check').onclick=()=>{
+      const code=ta.value.trim();
+      if(!code){ out.innerHTML='<div class="msg errmsg">Please enter Python code first.</div>'; return; }
+      if(a.test(code)){
+        out.innerHTML='<div class="msg okmsg"><b>Correct!</b> Logic condition matched.</div>';
+        if(!solved.has(a.n)){ solved.add(a.n); d.classList.add('done'); updateActScore(); }
+      } else {
+        out.innerHTML='<div class="msg errmsg"><b>Not quite right.</b> Check requirements or use Hint.</div>';
+      }
+    };
+    box.appendChild(d);
+  });
+  updateActScore();
+}
+
+// 4. EVENT LISTENERS & INITIALIZATION
+document.body.addEventListener('click', e=>{ 
+  const t=e.target.closest('[data-go]'); 
+  if(t){ go(t.dataset.go); } 
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  buildTheory();
+  buildQuiz();
+  buildActivities();
+  updateProgress();
+  
+  document.getElementById('resetTheory').onclick = buildTheory;
+  document.getElementById('resetQuiz').onclick = buildQuiz;
+});
+</script>
+</body>
+</html>
