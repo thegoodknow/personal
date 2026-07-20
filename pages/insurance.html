@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEILLI 8th Edition - Interactive Revision Hub</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #0f766e;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --error: #dc2626;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background-color: #e0f2fe;
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+            font-size: 1.3rem;
+        }
+
+        /* Quiz Styling */
+        .question-card {
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            text-align: left;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #f1f5f9;
+            border-color: var(--primary-light);
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: #14532d;
+            font-weight: 600;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: var(--error);
+            color: #7f1d1d;
+        }
+
+        .explanation {
+            margin-top: 12px;
+            padding: 12px;
+            background-color: #f0f9ff;
+            border-left: 4px solid var(--primary-light);
+            font-size: 0.9rem;
+            display: none;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Flashcard Styling */
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 20px 0;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .card-front {
+            background: #eff6ff;
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-back {
+            background: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 0.95rem;
+        }
+
+        .card-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+
+        /* Calculator Styling */
+        .calc-group {
+            margin-bottom: 15px;
+        }
+
+        .calc-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .calc-group input, .calc-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .calc-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        .cite-tag {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            vertical-align: super;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Certificate Examination in Investment-Linked Life Insurance (CEILLI)</h1>
+        <p>Interactive Revision Hub & Practice Guide (8th Edition 2025/2026)[span_1](start_span)[span_1](end_span)</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('notes')">📖 Quick Summary</button>
+        <button class="tab-btn" onclick="switchTab('calculators')">🧮 Rule Calculators</button>
+        <button class="tab-btn" onclick="switchTab('flashcards')">🎴 Flashcards</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">📝 Practice Quiz</button>
+    </div>
+
+    <!-- TAB 1: SUMMARY NOTES -->
+    <div id="notes" class="tab-content active">
+        <div class="card">
+            <h2>Chapter 1: Introduction to Investment-Linked Policies (ILP)</h2>
+            <p>Investment-linked insurance was introduced in Malaysia in <strong>December 1999</strong>[span_2](start_span)[span_2](end_span). It combines insurance protection with investment opportunities, where policyholders bear the investment risk[span_3](start_span)[span_3](end_span).</p>
+            <ul>
+                <li><strong>International Names:</strong> Known as <em>Unit-Linked Life Insurance</em> in some countries and <em>Variable Life Insurance</em> in the USA[span_4](start_span)[span_4](end_span).</li>
+                <li><strong>Key BNM Guideline:</strong> Bank Negara Malaysia Reference BNM/RH/PD 029-36 issued on 13 February 2023[span_5](start_span)[span_5](end_span).</li>
+                <li><strong>Individual Income Tax Relief Limits (YA 2023):</strong>
+                    <ul>
+                        <li>Life Insurance & EPF Total: Up to RM7,000[span_6](start_span)[span_6](end_span)</li>
+                        <li>Life Insurance (Standalone): Up to RM3,000[span_7](start_span)[span_7](end_span)</li>
+                        <li>Education & Medical Insurance: Up to RM3,000[span_8](start_span)[span_8](end_span)</li>
+                        <li>PRS & Deferred Annuity: Up to RM3,000[span_9](start_span)[span_9](end_span)</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Chapter 2: Mechanisms & Features</h2>
+            <h3>Minimum Allocation Rate (MAR)</h3>
+            <p>MAR dictates the minimum percentage of annual premium that must be allocated to purchase unit funds before deducting charges[span_10](start_span)[span_10](end_span):</p>
+            <table>
+                <tr><th>Premium Payment Year</th><th>MAR (%)</th></tr>
+                <tr><td>Years 1 to 3</td><td>60%[span_11](start_span)[span_11](end_span)</td></tr>
+                <tr><td>Years 4 to 6</td><td>80%[span_12](start_span)[span_12](end_span)</td></tr>
+                <tr><td>Years 7 to 10</td><td>95%[span_13](start_span)[span_13](end_span)</td></tr>
+                <tr><td>Year 11 onwards</td><td>100%[span_14](start_span)[span_14](end_span)</td></tr>
+            </table>
+
+            <h3>Sum Assured Multiple (SAM) Factors</h3>
+            <table>
+                <tr><th>Age Range at Inception</th><th>SAM Factor</th></tr>
+                <tr><td>1 – 16</td><td>60[span_15](start_span)[span_15](end_span)</td></tr>
+                <tr><td>17 – 25</td><td>55[span_16](start_span)[span_16](end_span)</td></tr>
+                <tr><td>26 – 35</td><td>50[span_17](start_span)[span_17](end_span)</td></tr>
+                <tr><td>36 – 45</td><td>35[span_18](start_span)[span_18](end_span)</td></tr>
+                <tr><td>46 – 55</td><td>25[span_19](start_span)[span_19](end_span)</td></tr>
+                <tr><td>56 and above</td><td>15[span_20](start_span)[span_20](end_span)</td></tr>
+            </table>
+
+            <h3>Key Product Mechanics</h3>
+            <ul>
+                <li><strong>Free-Look Period:</strong> 15 calendar days from policy delivery date[span_21](start_span)[span_21](end_span). Full refund minus medical examination expenses incurred[span_22](start_span)[span_22](end_span).</li>
+                <li><strong>Pricing Methods:</strong> Dual Pricing (bid/offer 5% spread, used 1999–2005) vs. Single Pricing (NAV-based, mandatory since 2006 for transparency)[span_23](start_span)[span_23](end_span).</li>
+                <li><strong>Fund Management Charge (FMC) Caps:</strong> Maximum 1.0% p.a. of NAV for Money Market/Fixed Income Funds; Maximum 1.5% p.a. of NAV for other funds[span_24](start_span)[span_24](end_span).</li>
+                <li><strong>Riders:</strong> Unit-Deducting Riders (UDR - funded by deducting units, no extra premium) vs. Premium Paying Riders (PPR - separate premiums required)[span_25](start_span)[span_25](end_span).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Chapter 3: Disclosure Requirements</h2>
+            <ul>
+                <li><strong>Product Illustration Scenarios:</strong> Scenario X (2%) and Scenario Y (5% or historical KLCI) represent hypothetical rates of return[span_26](start_span)[span_26](end_span).</li>
+                <li><strong>Fund Fact Sheet:</strong> Contains objectives, risk level, fees, and historical performance (capped at 10 years)[span_27](start_span)[span_27](end_span).</li>
+                <li><strong>Annual Statement:</strong> Sent to policy owners within 2 months of the end of the financial year, showing unit transactions and sustainability test outcomes[span_28](start_span)[span_28](end_span).</li>
+                <li><strong>Unit Price Publication:</strong> Daily Net Asset Value (NAV) per unit must be published on the insurer's official website[span_29](start_span)[span_29](end_span).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TAB 2: CALCULATORS -->
+    <div id="calculators" class="tab-content">
+        <div class="card">
+            <h2>Sum Assured Multiple (SAM) Calculator</h2>
+            <p>Calculate the minimum sum assured required for a given annual premium based on age at entry[span_30](start_span)[span_30](end_span).</p>
+            <div class="calc-group">
+                <label for="samAge">Age at Inception:</label>
+                <input type="number" id="samAge" placeholder="e.g. 30" min="1" max="100">
+            </div>
+            <div class="calc-group">
+                <label for="samPremium">Annual Premium (RM):</label>
+                <input type="number" id="samPremium" placeholder="e.g. 3000">
+            </div>
+            <button class="btn" onclick="calculateSAM()">Calculate Minimum SA</button>
+            <div id="samResult" class="calc-result" style="display:none;"></div>
+        </div>
+
+        <div class="card">
+            <h2>Minimum Allocation Rate (MAR) Allocator</h2>
+            <p>Determine the minimum allocated premium amount and unallocated amount according to policy year[span_31](start_span)[span_31](end_span).</p>
+            <div class="calc-group">
+                <label for="marYear">Policy Year:</label>
+                <select id="marYear">
+                    <option value="1">Year 1 to 3 (60% MAR)</option>
+                    <option value="4">Year 4 to 6 (80% MAR)</option>
+                    <option value="7">Year 7 to 10 (95% MAR)</option>
+                    <option value="11">Year 11 onwards (100% MAR)</option>
+                </select>
+            </div>
+            <div class="calc-group">
+                <label for="marPremium">Annual Premium Paid (RM):</label>
+                <input type="number" id="marPremium" placeholder="e.g. 2400">
+            </div>
+            <button class="btn" onclick="calculateMAR()">Calculate Allocation</button>
+            <div id="marResult" class="calc-result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: FLASHCARDS -->
+    <div id="flashcards" class="tab-content">
+        <div class="card">
+            <h2>Interactive Concept Flashcards</h2>
+            <p>Click on the card to reveal the answer!</p>
+            
+            <div class="flashcard-container">
+                <div class="flashcard" id="fc" onclick="flipCard()">
+                    <div class="card-front" id="fcFront">Question Loading...</div>
+                    <div class="card-back" id="fcBack">Answer Loading...</div>
+                </div>
+            </div>
+
+            <div class="card-controls">
+                <button class="btn" onclick="prevCard()">Previous</button>
+                <span id="fcCounter" style="font-weight:600; color:var(--text-muted);">1 / 5</span>
+                <button class="btn" onclick="nextCard()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: PRACTICE QUIZ -->
+    <div id="quiz" class="tab-content">
+        <div class="card">
+            <h2>CEILLI Examination Practice Questions</h2>
+            <p>Test your knowledge with questions direct from the study text chapters[span_32](start_span)[span_32](end_span).</p>
+            <div id="quizContainer"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab Switching Logic
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // SAM Calculator
+    function calculateSAM() {
+        const age = parseInt(document.getElementById('samAge').value);
+        const premium = parseFloat(document.getElementById('samPremium').value);
+        const resultDiv = document.getElementById('samResult');
+
+        if (isNaN(age) || isNaN(premium) || premium <= 0) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.color = '#dc2626';
+            resultDiv.innerHTML = 'Please enter valid age and premium values.';
+            return;
+        }
+
+        let factor = 0;
+        if (age >= 1 && age <= 16) factor = 60;
+        else if (age >= 17 && age <= 25) factor = 55;
+        else if (age >= 26 && age <= 35) factor = 50;
+        else if (age >= 36 && age <= 45) factor = 35;
+        else if (age >= 46 && age <= 55) factor = 25;
+        else if (age >= 56) factor = 15;
+
+        const minSA = premium * factor;
+        resultDiv.style.display = 'block';
+        resultDiv.style.color = '#166534';
+        resultDiv.innerHTML = `
+            <strong>SAM Factor:</strong> ${factor}<br>
+            <strong>Minimum Sum Assured Required:</strong> RM ${minSA.toLocaleString('en-US', {minimumFractionDigits: 2})}[span_33](start_span)[span_33](end_span)
+        `;
+    }
+
+    // MAR Calculator
+    function calculateMAR() {
+        const year = parseInt(document.getElementById('marYear').value);
+        const premium = parseFloat(document.getElementById('marPremium').value);
+        const resultDiv = document.getElementById('marResult');
+
+        if (isNaN(premium) || premium <= 0) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.color = '#dc2626';
+            resultDiv.innerHTML = 'Please enter a valid premium amount.';
+            return;
+        }
+
+        let rate = 0.60;
+        if (year === 4) rate = 0.80;
+        else if (year === 7) rate = 0.95;
+        else if (year === 11) rate = 1.00;
+
+        const allocated = premium * rate;
+        const unallocated = premium - allocated;
+
+        resultDiv.style.display = 'block';
+        resultDiv.style.color = '#166534';
+        resultDiv.innerHTML = `
+            <strong>Allocation Rate (MAR):</strong> ${rate * 100}%[span_34](start_span)[span_34](end_span)<br>
+            <strong>Allocated Premium (for Units):</strong> RM ${allocated.toFixed(2)}[span_35](start_span)[span_35](end_span)<br>
+            <strong>Unallocated Premium (Insurers Expenses/Commissions):</strong> RM ${unallocated.toFixed(2)}[span_36](start_span)[span_36](end_span)
+        `;
+    }
+
+    // Flashcard Data
+    const flashcards = [
+        {
+            q: "What is the Free-Look Period duration for ILPs and the refund condition?",
+            a: "15 calendar days from delivery date. Refund equals full premium minus medical examination expenses incurred[span_37](start_span)[span_37](end_span)."
+        },
+        {
+            q: "What is the maximum Fund Management Charge (FMC) for Money Market / Fixed Income funds?",
+            a: "Maximum 1.0% p.a. of Net Asset Value (NAV)[span_38](start_span)[span_38](end_span)."
+        },
+        {
+            q: "What is Dollar Cost Averaging (DCA)?",
+            a: "Investing a fixed amount at regular intervals regardless of unit price. You buy more units when prices are low and fewer when high[span_39](start_span)[span_39](end_span)."
+        },
+        {
+            q: "Difference between Single Pricing and Dual Pricing?",
+            a: "Dual Pricing has separate Bid and Offer prices (approx. 5% spread)[span_40](start_span)[span_40](end_span). Single Pricing uses one NAV price for both buying and selling units[span_41](start_span)[span_41](end_span)."
+        },
+        {
+            q: "What rates are used for Scenario X and Y in Product Illustrations?",
+            a: "Scenario X uses 2% hypothetical return[span_42](start_span)[span_42](end_span). Scenario Y uses 5% (or historical KLCI for equities)[span_43](start_span)[span_43](end_span)."
+        }
+    ];
+
+    let currentFC = 0;
+    function flipCard() {
+        document.getElementById('fc').classList.toggle('flipped');
+    }
+
+    function updateCard() {
+        document.getElementById('fc').classList.remove('flipped');
+        setTimeout(() => {
+            document.getElementById('fcFront').innerText = flashcards[currentFC].q;
+            document.getElementById('fcBack').innerText = flashcards[currentFC].a;
+            document.getElementById('fcCounter').innerText = `${currentFC + 1} / ${flashcards.length}`;
+        }, 200);
+    }
+
+    function nextCard() {
+        currentFC = (currentFC + 1) % flashcards.length;
+        updateCard();
+    }
+
+    function prevCard() {
+        currentFC = (currentFC - 1 + flashcards.length) % flashcards.length;
+        updateCard();
+    }
+
+    // Quiz Questions Data
+    const quizData = [
+        {
+            q: "1. An investment-linked life insurance policy is also known by which names globally?",
+            options: [
+                "I. Mutual fund-linked insurance & II. Unit-linked life insurance",
+                "II. Unit-linked life insurance & III. Variable life insurance",
+                "I. Mutual fund-linked insurance & IV. Universal life insurance",
+                "All of the above"
+            ],
+            correct: 1,
+            exp: "In some countries, ILPs are known as unit-linked life insurance, and in the USA, they are called variable life insurance[span_44](start_span)[span_44](end_span)."
+        },
+        {
+            q: "2. Which method of unit pricing was adopted in Malaysia from 2006 onwards to enhance transparency?",
+            options: [
+                "Dual Pricing",
+                "Single Pricing",
+                "Bid-Offer Spread Pricing",
+                "Variable NAV Pricing"
+            ],
+            correct: 1,
+            exp: "Malaysia transitioned from dual pricing to single pricing in 2006 to improve marketing transparency[span_45](start_span)[span_45](end_span)."
+        },
+        {
+            q: "3. Based on the SAM rule, what is the SAM factor for a policyholder aged 30 at inception?",
+            options: [
+                "60",
+                "55",
+                "50",
+                "35"
+            ],
+            correct: 2,
+            exp: "The SAM factor for age range 26 to 35 is 50[span_46](start_span)[span_46](end_span)."
+        },
+        {
+            q: "4. What is the Minimum Allocation Rate (MAR) required for Year 1 to Year 3 regular premium payments?",
+            options: [
+                "50%",
+                "60%",
+                "80%",
+                "95%"
+            ],
+            correct: 1,
+            exp: "Under BNM guidelines, MAR for Year 1 to Year 3 is 60%[span_47](start_span)[span_47](end_span)."
+        },
+        {
+            q: "5. What is the Maximum Fund Management Charge (FMC) allowable for equity-based investment-linked funds?",
+            options: [
+                "1.0% of NAV",
+                "1.5% of NAV",
+                "2.0% of NAV",
+                "2.5% of NAV"
+            ],
+            correct: 1,
+            exp: "FMC cannot exceed 1.0% of NAV for money-market/fixed income funds and 1.5% of NAV for other funds (such as equity funds)[span_48](start_span)[span_48](end_span)."
+        }
+    ];
+
+    function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-card">
+                <div class="question-text">${item.q}</div>
+                <div class="options-grid">
+                    ${item.options.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="checkAnswer(${qIdx}, ${oIdx}, this)">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="explanation" id="exp-${qIdx}">${item.exp}</div>
+            </div>
+        `).join('');
+    }
+
+    function checkAnswer(qIdx, selectedIdx, btn) {
+        const q = quizData[qIdx];
+        const parent = btn.parentElement;
+        const buttons = parent.querySelectorAll('.option-btn');
+
+        buttons.forEach((b, idx) => {
+            b.disabled = true;
+            if (idx === q.correct) {
+                b.classList.add('correct');
+            } else if (idx === selectedIdx) {
+                b.classList.add('incorrect');
+            }
+        });
+
+        document.getElementById(`exp-${qIdx}`).style.display = 'block';
+    }
+
+    // Initialize
+    window.onload = function() {
+        updateCard();
+        renderQuiz();
+    };
+</script>
+
+</body>
+</html>
