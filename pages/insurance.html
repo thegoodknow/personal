@@ -1,333 +1,865 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PCEIA Study Text - 10th Edition</title>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent-color: #38bdf8;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-      --sidebar-width: 280px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEILLI 8th Edition - Master Revision Hub</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #0f766e;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --success-bg: #dcfce7;
+            --success-border: #16a34a;
+            --success-text: #14532d;
+            --error-bg: #fee2e2;
+            --error-border: #dc2626;
+            --error-text: #7f1d1d;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px 12px;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-    /* Sidebar Navigation */
-    #sidebar {
-      width: var(--sidebar-width);
-      background-color: #090d16;
-      border-right: 1px solid var(--border-color);
-      padding: 20px;
-      position: fixed;
-      height: 100vh;
-      overflow-y: auto;
-    }
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 28px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
 
-    #sidebar h2 {
-      font-size: 1.1rem;
-      color: var(--accent-color);
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+        header h1 {
+            margin: 0 0 8px 0;
+            font-size: 1.75rem;
+            letter-spacing: -0.02em;
+        }
 
-    .nav-btn {
-      width: 100%;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      padding: 12px 15px;
-      text-align: left;
-      font-size: 0.95rem;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 8px;
-      transition: all 0.2s ease;
-    }
+        header p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 0.95rem;
+        }
 
-    .nav-btn:hover, .nav-btn.active {
-      background-color: var(--card-bg);
-      color: var(--accent-color);
-      font-weight: 600;
-    }
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
-    /* Main Content Area */
-    #main-content {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      padding: 40px;
-      max-width: 1100px;
-    }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
 
-    .content-section {
-      display: none;
-    }
+        .tab-btn:hover {
+            background-color: #e0f2fe;
+            color: var(--primary);
+        }
 
-    .content-section.active {
-      display: block;
-    }
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
 
-    h1 {
-      font-size: 2rem;
-      color: var(--accent-color);
-      margin-bottom: 10px;
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 10px;
-    }
+        .tab-content {
+            display: none;
+        }
 
-    h2 {
-      font-size: 1.4rem;
-      margin: 25px 0 15px 0;
-      color: var(--text-main);
-    }
+        .tab-content.active {
+            display: block;
+        }
 
-    h3 {
-      font-size: 1.1rem;
-      margin: 20px 0 10px 0;
-      color: var(--accent-color);
-    }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
 
-    p {
-      margin-bottom: 15px;
-      color: #cbd5e1;
-    }
+        h2 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+            font-size: 1.3rem;
+        }
 
-    /* Cards & Tables */
-    .info-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-color);
-      padding: 20px;
-      border-radius: 6px;
-      margin: 20px 0;
-    }
+        h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      background-color: var(--card-bg);
-      border-radius: 6px;
-      overflow: hidden;
-    }
+        .note-highlight {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.93rem;
+        }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
+        /* Table responsiveness fix */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
 
-    th {
-      background-color: #111827;
-      color: var(--accent-color);
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 500px;
+        }
 
-    ul, ol {
-      margin: 10px 0 20px 25px;
-      color: #cbd5e1;
-    }
+        th, td {
+            border-bottom: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+        }
 
-    li {
-      margin-bottom: 6px;
-    }
+        th {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            font-weight: 700;
+        }
 
-    /* Review Questions Box */
-    .quiz-box {
-      background-color: #172554;
-      border: 1px solid #1e40af;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 30px;
-    }
-  </style>
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Quiz Styling */
+        .question-card {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 14px;
+            font-size: 1.02rem;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            text-align: left;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.93rem;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #e0f2fe;
+            border-color: var(--primary-light);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 1 !important;
+        }
+
+        .option-btn.correct {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-border) !important;
+            color: var(--success-text) !important;
+            font-weight: 600;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-border) !important;
+            color: var(--error-text) !important;
+        }
+
+        .explanation {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background-color: #f0f9ff;
+            border-left: 4px solid var(--primary-light);
+            font-size: 0.9rem;
+            display: none;
+            border-radius: 0 6px 6px 0;
+            color: #0c4a6e;
+        }
+
+        /* Flashcard Styling */
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 20px 0;
+        }
+
+        .flashcard {
+            width: 100%;
+            min-height: 220px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            min-height: 220px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            box-sizing: border-box;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .card-front {
+            background: #eff6ff;
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-back {
+            background: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+
+        .card-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-light);
+        }
+
+        /* Calculator Styling */
+        .calc-group {
+            margin-bottom: 14px;
+        }
+
+        .calc-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .calc-group input, .calc-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        .calc-result {
+            margin-top: 16px;
+            padding: 15px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            font-weight: 500;
+            color: #166534;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <nav id="sidebar">
-    <h2>PCEIA 10th Edition</h2>
-    <button class="nav-btn active" onclick="switchTab('preface')">Preface & Overview</button>
-    <button class="nav-btn" onclick="switchTab('chapter1')">Chapter 1: Perspectives & Risk</button>
-    <button class="nav-btn" onclick="switchTab('chapter2')">Chapter 2: Principles of Insurance</button>
-  </nav>
+<div class="container">
+    <header>
+        <h1>Certificate Examination in Investment-Linked Life Insurance (CEILLI)</h1>
+        <p>Interactive Revision Hub & Comprehensive Study Guide (8th Edition)</p>
+    </header>
 
-  <!-- Main Content -->
-  <main id="main-content">
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'notes')">📖 Comprehensive Notes</button>
+        <button class="tab-btn" onclick="switchTab(event, 'calculators')">🧮 Rule Calculators</button>
+        <button class="tab-btn" onclick="switchTab(event, 'flashcards')">🎴 Flashcards</button>
+        <button class="tab-btn" onclick="switchTab(event, 'quiz')">📝 Practice Quiz</button>
+    </div>
 
-    <!-- PREFACE SECTION -->
-    <section id="preface" class="content-section active">
-      <h1>Preface & Industry Overview</h1>
-      <div class="info-card">
-        <h3>Asian Institute of Insurance (Aii)</h3>
-        <p><strong>Published:</strong> 2025 (10th Edition)</p>
-        <p>This study text prepares candidates for the Pre-Contract Examination for Insurance Agents (PCEIA).</p>
-      </div>
+    <!-- TAB 1: EXPANDED STUDY NOTES -->
+    <div id="notes" class="tab-content active">
+        
+        <!-- CHAPTER 1 -->
+        <div class="card">
+            <h2>Chapter 1: Nature & Structure of Investment-Linked Insurance (ILP)</h2>
+            <p>Investment-linked life insurance policies combine insurance protection with investment in unitized funds managed by professional managers. It was introduced in Malaysia in <strong>December 1999</strong>.</p>
 
-      <h2>Structure of Examination</h2>
-      <ul>
-        <li><strong>Part A:</strong> Compulsory for all agents (Chapters 1–6)</li>
-        <li><strong>Part B:</strong> For General Insurance agents (Chapters 7–10)</li>
-        <li><strong>Part C:</strong> For Life Insurance agents (Chapters 11–16)</li>
-      </ul>
+            <h3>Core Differences: Traditional vs. Investment-Linked Policies</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Traditional Insurance</th>
+                            <th>Investment-Linked Policy (ILP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Investment Risk</strong></td>
+                            <td>Borne by Insurance Company</td>
+                            <td>Borne entirely by Policyholder</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cash Value Guarantee</strong></td>
+                            <td>Guaranteed cash surrender values</td>
+                            <td>Non-guaranteed (depends on unit performance)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Structure</strong></td>
+                            <td>Bundled (Protection & savings integrated)</td>
+                            <td>Unbundled (Protection charges and investments separated)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Flexibility</strong></td>
+                            <td>Fixed premium payment schedules</td>
+                            <td>Flexible premium top-ups, switches, & premium holidays</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-      <h2>Purposes & Benefits of Insurance</h2>
-      <p>Insurance serves to provide financial security, stability, and peace of mind across personal and commercial sectors.</p>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Primary Objectives</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Life Insurance</strong></td>
-            <td>Income protection, education/retirement planning, estate planning, business continuity.</td>
-          </tr>
-          <tr>
-            <td><strong>General Insurance</strong></td>
-            <td>Financial protection (property, motor), risk management, liability coverage.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+            <h3>Individual Income Tax Relief Limits</h3>
+            <ul>
+                <li><strong>Life Insurance & EPF Relief:</strong> Up to <strong>RM7,000</strong> total (Max RM3,000 for Life Insurance premiums, Max RM4,000 for EPF).</li>
+                <li><strong>Medical & Education Insurance:</strong> Up to <strong>RM3,000</strong>.</li>
+                <li><strong>Private Retirement Scheme (PRS) & Deferred Annuity:</strong> Up to <strong>RM3,000</strong>.</li>
+            </ul>
+        </div>
 
-    <!-- CHAPTER 1 SECTION -->
-    <section id="chapter1" class="content-section">
-      <h1>Chapter 1: Perspectives on Insurance & Risk Management</h1>
-      
-      <h2>1.1 History of Insurance</h2>
-      <p>Insurance originated in ancient China and Babylon (Code of Hammurabi), developing through medieval marine contracts in Genoa and Venice, and expanding after the Great Fire of London (1666). In Malaysia, modern insurance stems from British regulation (Insurance Act 1963, FSA 2013), alongside Takaful introduced in 1984 under BNM Shariah oversight.</p>
+        <!-- CHAPTER 2 -->
+        <div class="card">
+            <h2>Chapter 2: Types of Funds & Investment Risk Profiles</h2>
+            <p>Investment-linked premiums purchase units in specific funds selected by the policyholder based on their personal risk tolerance.</p>
 
-      <h2>1.2 Risk & Risk Management</h2>
-      <div class="info-card">
-        <h3>Definition of Risk</h3>
-        <p>Uncertainty regarding financial loss or exposure to peril, hazard, and harm.</p>
-      </div>
+            <h3>Major Investment-Linked Fund Types</h3>
+            <ul>
+                <li><strong>Equity Funds:</strong> Invest primarily in stocks/shares. Highest long-term capital growth potential, but highest volatility/risk.</li>
+                <li><strong>Fixed Income / Bond Funds:</strong> Invest in government securities and corporate bonds. Provides steady income stream with moderate risk.</li>
+                <li><strong>Money Market Funds:</strong> Invest in short-term liquid debt instruments (e.g., treasury bills, bank deposits). Capital preservation focus with lowest risk.</li>
+                <li><strong>Managed / Balanced Funds:</strong> Invest in a blend of equities, fixed income, and cash to balance risk and growth.</li>
+            </ul>
 
-      <h3>Classification of Risk</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Risk Type</th>
-            <th>Possible Outcome</th>
-            <th>Example</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Pure Risk</strong></td>
-            <td>Loss or no loss only</td>
-            <td>Factory fire, road accident</td>
-          </tr>
-          <tr>
-            <td><strong>Speculative Risk</strong></td>
-            <td>Profit, loss, or breakeven</td>
-            <td>Stock market investment</td>
-          </tr>
-          <tr>
-            <td><strong>Fundamental Risk</strong></td>
-            <td>Widespread impact</td>
-            <td>Pandemic, war, inflation</td>
-          </tr>
-          <tr>
-            <td><strong>Particular Risk</strong></td>
-            <td>Specific to an individual/group</td>
-            <td>Personal theft, illness</td>
-          </tr>
-        </tbody>
-      </table>
+            <h3>Key Investment Risks</h3>
+            <div class="note-highlight">
+                <ul>
+                    <li><strong>Market Risk:</strong> Value of underlying investments fluctuates due to macroeconomic factor movements.</li>
+                    <li><strong>Interest Rate Risk:</strong> Increases in interest rates lead to drops in fixed-income bond prices.</li>
+                    <li><strong>Credit/Default Risk:</strong> The issuer of a bond defaults on interest or principal repayments.</li>
+                    <li><strong>Liquidity Risk:</strong> Inability to sell assets quickly without taking a heavy loss.</li>
+                    <li><strong>Dollar-Cost Averaging (DCA):</strong> The practice of investing equal amounts at regular intervals regardless of unit price. You buy more units when prices fall and fewer when prices rise, smoothing out volatility over time.</li>
+                </ul>
+            </div>
+        </div>
 
-      <h2>1.3 Peril, Hazard, and Loss</h2>
-      <ul>
-        <li><strong>Peril:</strong> The prime cause of a loss (e.g., Fire, Flood, Theft).</li>
-        <li><strong>Hazard:</strong> A condition that increases the likelihood/severity of a loss (Physical, Moral, Morale, Legal).</li>
-        <li><strong>Loss:</strong> The reduction or disappearance of economic value following a peril.</li>
-      </ul>
+        <!-- CHAPTER 3 -->
+        <div class="card">
+            <h2>Chapter 3: Rules, Allocation Rates & Policy Charges</h2>
+            
+            <h3>Minimum Allocation Rate (MAR)</h3>
+            <p>Under BNM Guidelines, insurers must allocate at least the following percentage of basic premiums toward buying units for the policy owner:</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Policy Premium Year</th>
+                            <th>Minimum Allocation Rate (MAR)</th>
+                            <th>Max Unallocated Rate (Expenses/Commissions)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Year 1 to Year 3</td><td><strong>60%</strong></td><td>40%</td></tr>
+                        <tr><td>Year 4 to Year 6</td><td><strong>80%</strong></td><td>20%</td></tr>
+                        <tr><td>Year 7 to Year 10</td><td><strong>95%</strong></td><td>5%</td></tr>
+                        <tr><td>Year 11 Onwards</td><td><strong>100%</strong></td><td>0%</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-      <h2>1.4 Risk Handling Methods</h2>
-      <ol>
-        <li><strong>Avoidance:</strong> Ceasing or avoiding hazardous activities.</li>
-        <li><strong>Prevention:</strong> Actions to lower loss probability.</li>
-        <li><strong>Mitigation:</strong> Controlling severity (e.g., sprinkler systems).</li>
-        <li><strong>Retention:</strong> Bearing minor losses internally (deductibles/excess).</li>
-        <li><strong>Transfer:</strong> Shifting risk to an insurer via an insurance contract.</li>
-      </ol>
+            <h3>Sum Assured Multiple (SAM) Limits</h3>
+            <p>Formula: <strong>Minimum Sum Assured = Annual Premium × SAM Factor</strong></p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Age Range at Inception</th>
+                            <th>SAM Factor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1 to 16 years old</td><td><strong>60</strong></td></tr>
+                        <tr><td>17 to 25 years old</td><td><strong>55</strong></td></tr>
+                        <tr><td>26 to 35 years old</td><td><strong>50</strong></td></tr>
+                        <tr><td>36 to 45 years old</td><td><strong>35</strong></td></tr>
+                        <tr><td>46 to 55 years old</td><td><strong>25</strong></td></tr>
+                        <tr><td>56 years old and above</td><td><strong>15</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-      <div class="quiz-box">
-        <h3>Chapter 1 Review Questions</h3>
-        <p><strong>1. What is the correct definition of a pure risk?</strong></p>
-        <p><em>Answer:</em> A risk where there is a possibility of financial loss or no loss (no profit potential).</p>
-      </div>
-    </section>
+            <h3>Key Policy Charges</h3>
+            <ul>
+                <li><strong>Fund Management Charge (FMC):</strong> Capped at <strong>1.0% p.a. of NAV</strong> for Money Market/Fixed Income funds, and <strong>1.5% p.a. of NAV</strong> for Equity/Balanced funds. Deduction is built into the daily NAV calculation.</li>
+                <li><strong>Cost of Insurance (COI):</strong> Charges deducted monthly by cancelling units to pay for mortality and morbidity coverage. COI increases as the life assured gets older.</li>
+                <li><strong>Policy / Administration Fee:</strong> Fixed monthly charge deducted via unit cancellation.</li>
+                <li><strong>Switching Fee:</strong> Fee charged when moving investments between funds (many insurers allow 1–2 free switches yearly).</li>
+            </ul>
+        </div>
 
-    <!-- CHAPTER 2 SECTION -->
-    <section id="chapter2" class="content-section">
-      <h1>Chapter 2: Fundamental Principles of Insurance</h1>
-      
-      <h2>2.1 The Six Universal Principles</h2>
-      <ol>
-        <li><strong>Utmost Good Faith (Uberrimae Fidei):</strong> Full, truthful disclosure of all material facts by both parties.</li>
-        <li><strong>Insurable Interest:</strong> Legal/financial relationship requiring financial loss if damage occurs.</li>
-        <li><strong>Indemnity:</strong> Restoring the insured to the exact financial position held prior to loss.</li>
-        <li><strong>Subrogation:</strong> Insurer’s right to step into the insured's shoes to recover payouts from negligent third parties.</li>
-        <li><strong>Contribution:</strong> Sharing loss proportionally among multiple insurers covering the same risk.</li>
-        <li><strong>Proximate Cause:</strong> The dominant/primary cause setting the chain of events into motion.</li>
-      </ol>
+        <!-- CHAPTER 4 -->
+        <div class="card">
+            <h2>Chapter 4: Disclosures & Policy Operations</h2>
+            <ul>
+                <li><strong>Free-Look Period:</strong> <strong>15 calendar days</strong> starting from the date the policy is delivered. Cancellation within this period entitles the policyholder to a full premium refund minus medical expenses.</li>
+                <li><strong>Single Pricing vs Dual Pricing:</strong> Dual pricing (bid/offer 5% spread) was phased out; <strong>Single Pricing (NAV-based)</strong> has been mandatory since 2006 to increase transparency.</li>
+                <li><strong>Product Illustrations:</strong> Must project returns under 2 rates: <strong>Scenario X (2%)</strong> and <strong>Scenario Y (5% or historical index)</strong>.</li>
+                <li><strong>Annual Statement:</strong> Issued to policyholders within 2 months after financial year-end, details unit balance, charge deductions, and policy sustainability updates.</li>
+                <li><strong>Unit-Deducting Riders (UDR):</strong> Optional supplementary riders whose charges are paid by deducting units from the policy fund value without requiring separate regular premiums.</li>
+            </ul>
+        </div>
 
-      <h2>2.2 Life Insurance Application</h2>
-      <p>Life insurance contracts are <strong>not indemnity contracts</strong> (predetermined sum assured), and subrogation/contribution generally do not apply. Insurable interest must exist at inception (FSA 2013 Schedule 8) for spouses, children, employees, or dependents.</p>
+    </div>
 
-      <div class="info-card">
-        <h3>Non-Contestability Provision (FSA 2013)</h3>
-        <p>If a life policy remains in force for over <strong>2 years</strong> during the insured's lifetime, the insurer cannot void the policy for misstatements unless proven intentionally fraudulent on a material matter.</p>
-      </div>
+    <!-- TAB 2: CALCULATORS -->
+    <div id="calculators" class="tab-content">
+        <div class="card">
+            <h2>1. Sum Assured Multiple (SAM) Calculator</h2>
+            <p>Calculate the mandatory minimum insurance protection required for a given regular annual premium.</p>
+            <div class="calc-group">
+                <label for="samAge">Age at Policy Inception:</label>
+                <input type="number" id="samAge" placeholder="e.g. 30" min="1" max="100">
+            </div>
+            <div class="calc-group">
+                <label for="samPremium">Annual Premium Amount (RM):</label>
+                <input type="number" id="samPremium" placeholder="e.g. 3000">
+            </div>
+            <button class="btn" onclick="calculateSAM()">Calculate Minimum Sum Assured</button>
+            <div id="samResult" class="calc-result" style="display:none;"></div>
+        </div>
 
-      <h2>2.3 General Insurance Application</h2>
-      <p>General insurance operates strictly on <strong>Indemnity</strong>, <strong>Subrogation</strong>, and <strong>Contribution</strong>. Ongoing duty of disclosure exists when material changes occur (e.g., modifying property, adding drivers, or renewing policies).</p>
+        <div class="card">
+            <h2>2. Minimum Allocation Rate (MAR) Breakdown</h2>
+            <p>Calculate the allocated amount (buying investment units) vs unallocated amount (paying insurer costs).</p>
+            <div class="calc-group">
+                <label for="marYear">Policy Premium Year:</label>
+                <select id="marYear">
+                    <option value="1">Year 1 to 3 (60% MAR)</option>
+                    <option value="4">Year 4 to 6 (80% MAR)</option>
+                    <option value="7">Year 7 to 10 (95% MAR)</option>
+                    <option value="11">Year 11 onwards (100% MAR)</option>
+                </select>
+            </div>
+            <div class="calc-group">
+                <label for="marPremium">Annual Premium Paid (RM):</label>
+                <input type="number" id="marPremium" placeholder="e.g. 3000">
+            </div>
+            <button class="btn" onclick="calculateMAR()">Calculate Allocation Split</button>
+            <div id="marResult" class="calc-result" style="display:none;"></div>
+        </div>
 
-      <div class="quiz-box">
-        <h3>Chapter 2 Review Questions</h3>
-        <p><strong>1. Which principle grants insurers the right to recover claim payments from responsible third parties?</strong></p>
-        <p><em>Answer:</em> Subrogation.</p>
-      </div>
-    </section>
+        <div class="card">
+            <h2>3. NAV Per Unit Calculator</h2>
+            <p>Calculate the Net Asset Value per unit based on fund assets, liabilities, and outstanding units.</p>
+            <div class="calc-group">
+                <label for="navAssets">Total Fund Assets (RM):</label>
+                <input type="number" id="navAssets" placeholder="e.g. 10500000">
+            </div>
+            <div class="calc-group">
+                <label for="navLiab">Total Fund Liabilities (RM):</label>
+                <input type="number" id="navLiab" placeholder="e.g. 500000">
+            </div>
+            <div class="calc-group">
+                <label for="navUnits">Total Units Issued:</label>
+                <input type="number" id="navUnits" placeholder="e.g. 20000000">
+            </div>
+            <button class="btn" onclick="calculateNAV()">Calculate Unit Price (NAV)</button>
+            <div id="navResult" class="calc-result" style="display:none;"></div>
+        </div>
+    </div>
 
-  </main>
+    <!-- TAB 3: FLASHCARDS -->
+    <div id="flashcards" class="tab-content">
+        <div class="card">
+            <h2>Interactive Flashcards</h2>
+            <p>Click anywhere on the card to flip and test your memory!</p>
+            
+            <div class="flashcard-container">
+                <div class="flashcard" id="fc" onclick="flipCard()">
+                    <div class="card-front" id="fcFront">Question Loading...</div>
+                    <div class="card-back" id="fcBack">Answer Loading...</div>
+                </div>
+            </div>
 
-  <script>
-    function switchTab(sectionId) {
-      // Hide all content sections
-      const sections = document.querySelectorAll('.content-section');
-      sections.forEach(sec => sec.classList.remove('active'));
+            <div class="card-controls">
+                <button class="btn" onclick="prevCard()">Previous</button>
+                <span id="fcCounter" style="font-weight:600; color:var(--text-muted);">1 / 8</span>
+                <button class="btn" onclick="nextCard()">Next</button>
+            </div>
+        </div>
+    </div>
 
-      // Deactivate all buttons
-      const buttons = document.querySelectorAll('.nav-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
+    <!-- TAB 4: PRACTICE QUIZ -->
+    <div id="quiz" class="tab-content">
+        <div class="card">
+            <h2>CEILLI Examination Practice Questions</h2>
+            <p>Select your answer for instant confirmation and detailed explanation.</p>
+            <div id="quizContainer"></div>
+        </div>
+    </div>
+</div>
 
-      // Show selected section & activate clicked button
-      document.getElementById(sectionId).classList.add('active');
-      event.target.classList.add('active');
+<script>
+    function switchTab(evt, tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        if (evt && evt.currentTarget) {
+            evt.currentTarget.classList.add('active');
+        }
     }
-  </script>
+
+    // SAM Calculator
+    function calculateSAM() {
+        const age = parseInt(document.getElementById('samAge').value);
+        const premium = parseFloat(document.getElementById('samPremium').value);
+        const resultDiv = document.getElementById('samResult');
+
+        if (isNaN(age) || isNaN(premium) || premium <= 0) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.color = '#dc2626';
+            resultDiv.innerHTML = '⚠️ Please enter valid numeric values for age and premium.';
+            return;
+        }
+
+        let factor = 0;
+        if (age >= 1 && age <= 16) factor = 60;
+        else if (age >= 17 && age <= 25) factor = 55;
+        else if (age >= 26 && age <= 35) factor = 50;
+        else if (age >= 36 && age <= 45) factor = 35;
+        else if (age >= 46 && age <= 55) factor = 25;
+        else if (age >= 56) factor = 15;
+
+        const minSA = premium * factor;
+        resultDiv.style.display = 'block';
+        resultDiv.style.color = '#166534';
+        resultDiv.innerHTML = `
+            <strong>SAM Factor:</strong> ${factor}<br>
+            <strong>Minimum Sum Assured Required:</strong> RM ${minSA.toLocaleString('en-US', {minimumFractionDigits: 2})}
+        `;
+    }
+
+    // MAR Calculator
+    function calculateMAR() {
+        const year = parseInt(document.getElementById('marYear').value);
+        const premium = parseFloat(document.getElementById('marPremium').value);
+        const resultDiv = document.getElementById('marResult');
+
+        if (isNaN(premium) || premium <= 0) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.color = '#dc2626';
+            resultDiv.innerHTML = '⚠️ Please enter a valid premium amount.';
+            return;
+        }
+
+        let rate = 0.60;
+        if (year === 4) rate = 0.80;
+        else if (year === 7) rate = 0.95;
+        else if (year === 11) rate = 1.00;
+
+        const allocated = premium * rate;
+        const unallocated = premium - allocated;
+
+        resultDiv.style.display = 'block';
+        resultDiv.style.color = '#166534';
+        resultDiv.innerHTML = `
+            <strong>Minimum Allocation Rate (MAR):</strong> ${(rate * 100).toFixed(0)}%<br>
+            <strong>Allocated Premium (Purchases Units):</strong> RM ${allocated.toFixed(2)}<br>
+            <strong>Unallocated Premium (Covers Expenses/Commissions):</strong> RM ${unallocated.toFixed(2)}
+        `;
+    }
+
+    // NAV Calculator
+    function calculateNAV() {
+        const assets = parseFloat(document.getElementById('navAssets').value);
+        const liab = parseFloat(document.getElementById('navLiab').value);
+        const units = parseFloat(document.getElementById('navUnits').value);
+        const resultDiv = document.getElementById('navResult');
+
+        if (isNaN(assets) || isNaN(liab) || isNaN(units) || units <= 0) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.color = '#dc2626';
+            resultDiv.innerHTML = '⚠️ Please enter valid amounts for assets, liabilities, and units.';
+            return;
+        }
+
+        const netAssets = assets - liab;
+        const navPerUnit = netAssets / units;
+
+        resultDiv.style.display = 'block';
+        resultDiv.style.color = '#166534';
+        resultDiv.innerHTML = `
+            <strong>Net Asset Value of Fund:</strong> RM ${netAssets.toLocaleString('en-US', {minimumFractionDigits: 2})}<br>
+            <strong>NAV Per Unit (Unit Price):</strong> RM ${navPerUnit.toFixed(4)}
+        `;
+    }
+
+    // Flashcard Data
+    const flashcards = [
+        {
+            q: "What is the Free-Look Period duration for ILPs and the refund terms?",
+            a: "15 calendar days from delivery date. Refund equals full premium paid minus any medical examination expenses incurred."
+        },
+        {
+            q: "What are the Fund Management Charge (FMC) caps under BNM guidelines?",
+            a: "Money Market / Fixed Income: Max 1.0% p.a. of NAV. Other Funds (Equities/Managed): Max 1.5% p.a. of NAV."
+        },
+        {
+            q: "Explain Dollar Cost Averaging (DCA).",
+            a: "Investing a fixed dollar amount at regular intervals. You buy more units when prices are low and fewer units when prices are high, lowering average cost per unit."
+        },
+        {
+            q: "What is the key difference between Single Pricing and Dual Pricing?",
+            a: "Dual Pricing had separate buying (Offer) and selling (Bid) prices with a ~5% spread. Single Pricing uses one NAV price for both creation and cancellation of units."
+        },
+        {
+            q: "What project return percentages are used in Product Illustrations?",
+            a: "Scenario X uses 2% hypothetical return. Scenario Y uses 5% (or historical benchmark indices like FBM KLCI for equities)."
+        },
+        {
+            q: "What is a Unit-Deducting Rider (UDR)?",
+            a: "A rider where insurance charges are paid by cancelling existing units in the policyholder's fund, without requiring extra out-of-pocket premium payments."
+        },
+        {
+            q: "Who bears the investment risk in an Investment-Linked Policy?",
+            a: "The Policy Owner completely bears the investment risk; benefits vary based on unit asset prices."
+        },
+        {
+            q: "When must the Annual Statement be sent to policyholders?",
+            a: "Within 2 months after the end of the insurance company's financial year."
+        }
+    ];
+
+    let currentFC = 0;
+    function flipCard() {
+        document.getElementById('fc').classList.toggle('flipped');
+    }
+
+    function updateCard() {
+        document.getElementById('fc').classList.remove('flipped');
+        setTimeout(() => {
+            document.getElementById('fcFront').innerText = flashcards[currentFC].q;
+            document.getElementById('fcBack').innerText = flashcards[currentFC].a;
+            document.getElementById('fcCounter').innerText = `${currentFC + 1} / ${flashcards.length}`;
+        }, 150);
+    }
+
+    function nextCard() {
+        currentFC = (currentFC + 1) % flashcards.length;
+        updateCard();
+    }
+
+    function prevCard() {
+        currentFC = (currentFC - 1 + flashcards.length) % flashcards.length;
+        updateCard();
+    }
+
+    // Quiz Questions Data
+    const quizData = [
+        {
+            q: "1. An investment-linked life insurance policy is also known by which names internationally?",
+            options: [
+                "I. Mutual fund-linked insurance & II. Unit-linked life insurance",
+                "II. Unit-linked life insurance & III. Variable life insurance",
+                "I. Mutual fund-linked insurance & IV. Universal life insurance",
+                "All of the above"
+            ],
+            correct: 1,
+            exp: "Globally, ILPs are known as unit-linked life insurance in the UK/Asia, and variable life insurance in the US."
+        },
+        {
+            q: "2. Which pricing system was made mandatory in Malaysia from 2006 to improve transparency?",
+            options: [
+                "Dual Pricing Spread",
+                "Single Pricing (NAV-based)",
+                "Bid-Offer Margin Pricing",
+                "Variable Spread Pricing"
+            ],
+            correct: 1,
+            exp: "Malaysia transitioned from dual pricing to single pricing in 2006 to ensure transparency in unit values."
+        },
+        {
+            q: "3. What is the SAM factor for an individual who is 30 years old at policy inception?",
+            options: [
+                "60",
+                "55",
+                "50",
+                "35"
+            ],
+            correct: 2,
+            exp: "According to BNM SAM limits, the multiplier factor for ages 26 to 35 is 50."
+        },
+        {
+            q: "4. What is the Minimum Allocation Rate (MAR) for Year 1 to Year 3 of a regular premium policy?",
+            options: [
+                "50%",
+                "60%",
+                "80%",
+                "95%"
+            ],
+            correct: 1,
+            exp: "Under BNM guidelines, Year 1 to Year 3 requires a minimum 60% allocation into units."
+        },
+        {
+            q: "5. What is the maximum allowable Fund Management Charge (FMC) for Equity Funds?",
+            options: [
+                "1.0% p.a. of NAV",
+                "1.5% p.a. of NAV",
+                "2.0% p.a. of NAV",
+                "2.5% p.a. of NAV"
+            ],
+            correct: 1,
+            exp: "The FMC cap is 1.0% for money market/fixed income funds and 1.5% for equity and managed funds."
+        },
+        {
+            q: "6. How is the Cost of Insurance (COI) deducted in a regular investment-linked plan?",
+            options: [
+                "By paying cash to the agent annually",
+                "By deducting unallocated premiums directly",
+                "By cancelling an equivalent value of units monthly",
+                "By deducting directly from bank dividends"
+            ],
+            correct: 2,
+            exp: "COI is unbundled and paid by cancelling units from the policy account balance every month."
+        },
+        {
+            q: "7. How long is the statutory Free-Look Period for an investment-linked policy owner?",
+            options: [
+                "7 calendar days",
+                "14 working days",
+                "15 calendar days",
+                "30 calendar days"
+            ],
+            correct: 2,
+            exp: "Policyholders have 15 calendar days from the date of policy delivery to cancel for a refund minus medical costs."
+        }
+    ];
+
+    function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-card">
+                <div class="question-text">${item.q}</div>
+                <div class="options-grid">
+                    ${item.options.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="checkAnswer(${qIdx}, ${oIdx}, this)">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="explanation" id="exp-${qIdx}">${item.exp}</div>
+            </div>
+        `).join('');
+    }
+
+    function checkAnswer(qIdx, selectedIdx, btn) {
+        const q = quizData[qIdx];
+        const parent = btn.parentElement;
+        const buttons = parent.querySelectorAll('.option-btn');
+
+        buttons.forEach((b, idx) => {
+            b.disabled = true;
+            if (idx === q.correct) {
+                b.classList.add('correct');
+            } else if (idx === selectedIdx) {
+                b.classList.add('incorrect');
+            }
+        });
+
+        document.getElementById(`exp-${qIdx}`).style.display = 'block';
+    }
+
+    window.onload = function() {
+        updateCard();
+        renderQuiz();
+    };
+</script>
+
 </body>
 </html>
