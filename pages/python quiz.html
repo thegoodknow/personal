@@ -782,7 +782,7 @@ function buildActivities(){
         out.innerHTML='<div class="msg okmsg"><b>Correct!</b> Logic condition matched.</div>';
         if(!solved.has(a.n)){ solved.add(a.n); d.classList.add('done'); updateActScore(); }
       } else {
-        out.innerHTML='<div class="msg errmsg"><b>Not quite right.</b> Check requirements or use Hint.</div>';
+        out.innerHTML='<div class="msg errmsg"><b>Not quite right.</b> Check requirements or check Hint.</div>';
       }
     };
     box.appendChild(d);
