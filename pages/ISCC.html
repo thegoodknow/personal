@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Travel Management System (STMS) - All Pacific Travel & Tours</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-blue: #29b6f6;
+            --brand-blue-hover: #0288d1;
+            --aptpay-blue: #2563eb;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --error-red: #ef4444;
+            --success-green: #4caf50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Demo Bar */
+        .demo-bar {
+            background-color: #0f172a;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .demo-bar button {
+            background: #e11d48;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Header Navigation */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #0288d1, #29b6f6);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            align-items: center;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        nav button:hover, nav button.active {
+            color: var(--brand-blue);
+        }
+
+        .reach-us-btn {
+            background-color: var(--brand-blue);
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        /* Hero Header */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .hero-script {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.8rem;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Main Section */
+        .main-container {
+            max-width: 1240px;
+            margin: -40px auto 50px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .pkg-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .pkg-img {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .pkg-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(15, 23, 42, 0.85);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .pkg-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .pkg-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .pkg-desc {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background-color: var(--brand-blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background-color: var(--brand-blue-hover); }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .tag-success {
+            background-color: #dcfce7;
+            color: #15803d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .manifest-box {
+            font-size: 0.78rem;
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            max-width: 280px;
+        }
+
+        .manifest-item {
+            margin-bottom: 4px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+        .manifest-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 580px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* APTPay Success Modal Style */
+        .aptpay-card {
+            max-width: 440px;
+            border-radius: 20px;
+            padding: 35px 30px;
+            text-align: left;
+        }
+
+        .aptpay-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+
+        .aptpay-logo span { color: #0284c7; }
+
+        .aptpay-info-label {
+            color: #64748b;
+            font-size: 0.88rem;
+            margin-bottom: 4px;
+        }
+
+        .aptpay-total-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .aptpay-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin-bottom: 25px;
+        }
+
+        .aptpay-check-circle {
+            width: 75px;
+            height: 75px;
+            background-color: #48bb78;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+        }
+
+        .aptpay-check-circle svg {
+            width: 38px;
+            height: 38px;
+            stroke: #ffffff;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        /* PDF Invoice Style */
+        .pdf-invoice {
+            max-width: 650px;
+            font-size: 0.85rem;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+
+        .pdf-header {
+            border-bottom: 2px solid #0288d1;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .pdf-company {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+
+        .pdf-subtext {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .pdf-bill-to {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .pdf-manifest-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.82rem;
+        }
+
+        .pdf-manifest-table th {
+            background: #1e293b;
+            color: white;
+            padding: 6px 10px;
+            text-align: left;
+        }
+
+        .pdf-manifest-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.83rem; font-weight: 500; margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.88rem; }
+        
+        .form-group input.invalid {
+            border-color: var(--error-red);
+            background-color: #fef2f2;
+        }
+
+        .validation-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .guest-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 15px 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Demo Toolbar -->
+    <div class="demo-bar">
+        <span>⚙️ <strong>STMS Interactive Prototype:</strong> Multi-guest details & Payment Details Gateway active.</span>
+        <button id="resetBtn">Reset All Demo Data</button>
+    </div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">✈️</div>
+            <div>
+                <div>ALL PACIFIC</div>
+                <div style="font-size: 0.65rem; color: #94a3b8; font-weight: 400;">TRAVEL & TOURS SDN BHD</div>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><button class="nav-btn active" data-tab="packages-tab">Travel Plans</button></li>
+                <li><button class="nav-btn" data-tab="my-bookings-tab">View Booking History</button></li>
+                <li><button class="nav-btn" data-tab="admin-crm-tab">Admin CRM System</button></li>
+                <li><button class="nav-btn reach-us-btn" data-tab="packages-tab">REACH US</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero">
+        <h2>All Pacific Travel & Tours</h2>
+        <div class="hero-script">Explore The World</div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- TAB 1: Packages -->
+        <div id="packages-tab" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="font-size: 1.4rem;">Featured Tour Packages</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Dynamic seats & live checkout</p>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search destination (e.g. Bali)..." style="padding: 10px 15px; border: 1px solid var(--border); border-radius: 6px; width: 280px;">
+            </div>
+
+            <div class="card-grid" id="packageList"></div>
+        </div>
+
+        <!-- TAB 2: Customer Booking History -->
+        <div id="my-bookings-tab" class="tab-content">
+            <h3 style="font-size: 1.4rem; margin-bottom: 5px;">Customer Booking History</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Click "View" on any record to view or print the receipt with full guest manifest</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Lead Contact</th>
+                            <th>Package Name</th>
+                            <th>Pax</th>
+                            <th>Total Paid</th>
+                            <th>Status</th>
+                            <th>Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: Admin CRM -->
+        <div id="admin-crm-tab" class="tab-content">
+            <h3 style="font-size: 1.4rem; margin-bottom: 5px;">Admin CRM & Ledger</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Centralized view for operations, multi-guest manifest & financial ledger</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Txn Ref</th>
+                            <th>Lead Contact</th>
+                            <th>Phone / Email</th>
+                            <th>Passenger Manifest (IC / Passport)</th>
+                            <th>Package</th>
+                            <th>Pax</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crmTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal 1: Dynamic Booking Input Form -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-card">
+            <h3 id="modalPkgTitle" style="margin-bottom: 5px;">Book Package</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Fill in details for all passengers</p>
+
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Number of Passengers (<span id="availSeatsNotice" style="color: var(--brand-blue-hover); font-weight: 600;">Max: 0</span>)</label>
+                    <input type="number" id="custPax" min="1" max="10" value="1" required>
+                </div>
+
+                <div class="guest-section-title">Customer 1 (Lead Traveler / Contact)</div>
+                <div class="form-group">
+                    <label>Full Name (as in IC/Passport)</label>
+                    <input type="text" id="custName1" required placeholder="e.g., Low Zi Yi">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="custPhone" required placeholder="+60 12-345 6789">
+                    </div>
+                    <div class="form-group">
+                        <label>IC / Passport No.</label>
+                        <input type="text" id="custIc1" class="ic-field" required placeholder="e.g., 030101-14-1234">
+                        <div class="validation-hint">Must contain numbers (e.g. 030101-14-1234 or A12345678)</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="custEmail" required placeholder="ziyi@student.apu">
+                </div>
+
+                <!-- Additional Guest Container -->
+                <div id="additionalGuestsContainer"></div>
+
+                <div style="margin: 20px 0 15px 0; font-size: 1.05rem; font-weight: 700;">
+                    Total Amount: <span id="modalCalcTotal" style="color: var(--brand-blue-hover);">RM 0.00</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="closeBookingBtn" class="btn" style="background: #94a3b8;">Cancel</button>
+                    <button type="submit" class="btn">Proceed to Payment &rarr;</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 1.5: Payment Details Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-card" style="max-width: 480px;">
+            <h3 style="margin-bottom: 5px;">Payment Details</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Complete your purchase securely via APTPay</p>
+
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>Select Payment Method</label>
+                    <select id="payMethod" required>
+                        <option value="Credit / Debit Card">Credit / Debit Card</option>
+                        <option value="Online Banking (FPX)">Online Banking (FPX)</option>
+                        <option value="E-Wallet (Touch n Go / GrabPay)">E-Wallet (Touch n Go / GrabPay)</option>
+                    </select>
+                </div>
+
+                <!-- Card Form Fields -->
+                <div id="cardFields">
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="cardName" placeholder="Name as printed on card">
+                    </div>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV / CVC</label>
+                            <input type="password" id="cardCvv" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0; padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Amount to Pay</div>
+                    <div style="font-size: 1.3rem; font-weight: 700; color: #0f172a;" id="paymentModalTotal">RM 0.00</div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="backToBookingBtn" class="btn" style="background: #94a3b8;">Back</button>
+                    <button type="submit" class="btn" style="background-color: var(--aptpay-blue);">Confirm Payment &rarr;</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: APTPay Payment Success -->
+    <div id="aptPaySuccessModal" class="modal">
+        <div class="modal-card aptpay-card">
+            <div class="aptpay-logo"><span>APT</span>Pay</div>
+
+            <div class="aptpay-info-label">Reference ID: <span id="aptPayRef" style="color:#475569;">2026T6KUNIWR4645</span></div>
+            <div class="aptpay-info-label">Package: <span id="aptPayPkgName" style="color:#475569;">-</span></div>
+            <div class="aptpay-info-label">Payment Method: <span id="aptPayMethod" style="color:#475569;">Credit / Debit Card</span></div>
+            
+            <div style="margin-top: 15px;">
+                <div style="color: #64748b; font-size: 0.85rem;">Total Paid</div>
+                <div class="aptpay-total-val" id="aptPayTotal">RM 0.00</div>
+            </div>
+
+            <div class="aptpay-divider"></div>
+
+            <div style="text-align: center;">
+                <div class="aptpay-check-circle">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Payment Successful</div>
+                <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 25px;">Your booking and passenger details have been recorded.</p>
+                <button class="btn" id="goBackMerchantBtn" style="background-color: #2563eb; border-radius: 25px; padding: 12px;">Return to Merchant System</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: PDF Invoice / Receipt Modal -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-card pdf-invoice">
+            <div class="pdf-header">
+                <div class="pdf-company">All Pacific Travel & Tours Sdn Bhd</div>
+                <div class="pdf-subtext">03-80666618 & sales@allpacifictravel.com</div>
+                <div class="pdf-subtext">6-2, Persiaran Puteri 1, Bandar Puteri, 47100,</div>
+                <div class="pdf-subtext">Puchong, Selangor Darul Ehsan, Malaysia</div>
+            </div>
+
+            <div class="pdf-bill-to">
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Lead Contact</div>
+                    <div style="font-size: 0.9rem; font-weight: 700; color: #0f172a;" id="receiptCustName">Low Zi Yi</div>
+                    <div class="pdf-subtext" id="receiptCustEmail">ziyi@apu.student</div>
+                    <div class="pdf-subtext" id="receiptCustPhone">+60 12-345 6789</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Invoice Reference</div>
+                    <div style="font-size: 0.9rem; font-weight: 700; color: #0f172a;" id="receiptRefNum">INV-020183</div>
+                    <div class="pdf-subtext">Date: <span id="receiptInvoiceDate">23 Jun 2026</span></div>
+                    <div class="pdf-subtext">Payment Method: <span id="receiptPayMethod">Card</span></div>
+                </div>
+            </div>
+
+            <!-- Guest Manifest Table -->
+            <div style="margin-top: 15px;">
+                <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a;">Passenger Manifest & Identity Details</div>
+                <table class="pdf-manifest-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Passenger Full Name</th>
+                            <th>IC / Passport Number</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receiptManifestBody"></tbody>
+                </table>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                    <tr style="background: #f1f5f9;">
+                        <th style="padding: 8px;">Package Details</th>
+                        <th style="padding: 8px; text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px 8px; border-bottom: 1px solid var(--border);">
+                            <strong id="receiptPkgName">Tour Package Title</strong><br>
+                            <span class="pdf-subtext">Quantity: <span id="receiptPax">1</span> Guest(s)</span>
+                        </td>
+                        <td style="padding: 10px 8px; border-bottom: 1px solid var(--border); text-align: right; font-weight: 600;" id="receiptItemPrice">RM 0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table style="width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="font-weight: 600; padding: 4px 8px;">Total Paid:</td>
+                    <td style="text-align: right; font-weight: 700; font-size: 1rem; color: #0f172a; padding: 4px 8px;" id="receiptTotal">RM 0.00</td>
+                </tr>
+            </table>
+
+            <div style="margin-top: 15px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                • Computer-generated invoice. No signature required.<br>
+                • Issued by All Pacific Travel & Tours Sdn Bhd [Reg No. 202101010744 (1246872-K)].
+            </div>
+
+            <button class="btn" id="closeReceiptBtn" style="background: #0f172a; margin-top: 15px;">Close Invoice</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const formatMoney = (val) => Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const isValidIcOrPassport = (str) => {
+                if (!str || str.trim().length < 5) return false;
+                return /[0-9]/.test(str);
+            };
+
+            const defaultPackages = [
+                { id: 1, title: '5D4N Tokyo & Mount Fuji Discovery', desc: 'Experience Shibuya Crossing, Mount Fuji views, and Disneyland.', price: 3800, seats: 6, img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+                { id: 2, title: '4D3N Bali Tropical Beach Escape', desc: 'Luxury private villa, Uluwatu temple tour, and sunset beach dinner.', price: 1850, seats: 10, img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80' },
+                { id: 3, title: '7D6N Classic Paris & Swiss Alps', desc: 'Eiffel Tower, Louvre museum tour, and scenic mountain cable cars.', price: 6500, seats: 4, img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80' },
+                { id: 4, title: '3D2N Langkawi Island Cruise', desc: 'Island hopping, sunset cruise, and cable car tour.', price: 350, seats: 24, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl4RzhBTyw_djdwPzEMVnexXDvEdbUBDslKlYmiQx5LLmwcC0aRA5RrXz_&s=10' },
+                { id: 5, title: '10D9N Spain & Holand Snow Explore', desc: 'Send you to sell to cambodia. [40% Offer]', price: 8888, seats: 10, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl4RzhBTyw_djdwPzEMVnexXDvEdbUBDslKlYmiQx5LLmwcC0aRA5RrXz_&s=10' }
+            ];
+
+            const defaultBookings = [
+                { 
+                    ref: '2026T6K6HCFQ3281', 
+                    phone: '+60 12-411 8814',
+                    email: 'tp123679@mail.apu.edu.my', 
+                    pkg: '10D9N Spain & Holand Snow Explore', 
+                    pax: 2, 
+                    total: 17776, 
+                    payMethod: 'Credit / Debit Card',
+                    status: 'Confirmed', 
+                    date: '23 Aug 2026', 
+                    paidTime: '2026-06-23 8:41am',
+                    guests: [
+                        { name: 'Swen Tee', ic: 'A32723871' },
+                        { name: 'Lum Wen Ni', ic: 'A38733287' }
+                    ]
+                }
+            ];
+
+            let packages = defaultPackages;
+            let bookings = defaultBookings;
+
+            try {
+                const storedPkgs = localStorage.getItem('stms_pkgs_v3');
+                if (storedPkgs) packages = JSON.parse(storedPkgs);
+
+                const storedBks = localStorage.getItem('stms_bks_v3');
+                if (storedBks) bookings = JSON.parse(storedBks);
+            } catch (e) {
+                console.warn('LocalStorage error, using defaults:', e);
+            }
+
+            let activePkg = null;
+            let activeOrder = null;
+
+            function saveData() {
+                try {
+                    localStorage.setItem('stms_pkgs_v3', JSON.stringify(packages));
+                    localStorage.setItem('stms_bks_v3', JSON.stringify(bookings));
+                } catch (e) {
+                    console.error('Failed to save to localStorage:', e);
+                }
+            }
+
+            // Tab Navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetTab = e.target.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                    document.querySelectorAll('.nav-btn').forEach(nb => nb.classList.remove('active'));
+
+                    document.getElementById(targetTab).classList.add('active');
+                    e.target.classList.add('active');
+                });
+            });
+
+            // Render Package Cards
+            function renderPackages(dataToRender = packages) {
+                const list = document.getElementById('packageList');
+                list.innerHTML = '';
+
+                dataToRender.forEach(pkg => {
+                    const card = document.createElement('div');
+                    card.className = 'pkg-card';
+                    card.innerHTML = `
+                        <div class="pkg-img" style="background-image: url('${pkg.img}')">
+                            <span class="pkg-badge">${pkg.seats > 0 ? pkg.seats + ' Seats Left' : 'Sold Out'}</span>
+                        </div>
+                        <div class="pkg-body">
+                            <div>
+                                <div class="pkg-title">${pkg.title}</div>
+                                <div class="pkg-desc">${pkg.desc}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--brand-blue-hover); margin-bottom: 12px;">
+                                    RM ${formatMoney(pkg.price)} <span style="font-size: 0.75rem; color: #94a3b8;">/ person</span>
+                                </div>
+                                <button class="btn book-btn" data-id="${pkg.id}" ${pkg.seats === 0 ? 'disabled style="opacity:0.5;"' : ''}>
+                                    ${pkg.seats > 0 ? 'Book Package Now' : 'Fully Booked'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+                document.querySelectorAll('.book-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        openBookingForm(parseInt(e.target.getAttribute('data-id')));
+                    });
+                });
+            }
+
+            // Dynamic Additional Guest Fields
+            function updateGuestInputFields(paxCount) {
+                const container = document.getElementById('additionalGuestsContainer');
+                container.innerHTML = '';
+
+                for (let i = 2; i <= paxCount; i++) {
+                    const group = document.createElement('div');
+                    group.innerHTML = `
+                        <div class="guest-section-title">Customer ${i} (Passenger Details)</div>
+                        <div class="form-group">
+                            <label>Full Name (as in IC/Passport)</label>
+                            <input type="text" class="add-guest-name" data-guest="${i}" required placeholder="Customer ${i} Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label>IC / Passport No.</label>
+                            <input type="text" class="add-guest-ic ic-field" data-guest="${i}" required placeholder="e.g., 040512-10-5678 or A12345678">
+                            <div class="validation-hint">Must contain numbers (e.g. 040512-10-5678)</div>
+                        </div>
+                    `;
+                    container.appendChild(group);
+                }
+            }
+
+            // Render Tables
+            function renderTables() {
+                const historyBody = document.getElementById('historyTableBody');
+                const crmBody = document.getElementById('crmTableBody');
+
+                historyBody.innerHTML = '';
+                crmBody.innerHTML = '';
+
+                bookings.slice().reverse().forEach(b => {
+                    const primaryGuest = (b.guests && b.guests[0]) ? b.guests[0].name : 'N/A';
+                    
+                    // History Row
+                    const row1 = document.createElement('tr');
+                    row1.innerHTML = `
+                        <td><strong>${b.ref}</strong></td>
+                        <td>${primaryGuest}</td>
+                        <td>${b.pkg}</td>
+                        <td>${b.pax} Pax</td>
+                        <td>RM ${formatMoney(b.total)}</td>
+                        <td><span class="tag-success">${b.status}</span></td>
+                        <td><button class="view-receipt-btn" data-ref="${b.ref}" style="padding: 4px 10px; font-size: 0.8rem; border:1px solid var(--brand-blue); color:var(--brand-blue-hover); background:white; border-radius:4px; cursor:pointer;">View</button></td>
+                    `;
+                    historyBody.appendChild(row1);
+
+                    // CRM Row
+                    let manifestHtml = '<div class="manifest-box">';
+                    if (b.guests && b.guests.length > 0) {
+                        b.guests.forEach((g, idx) => {
+                            manifestHtml += `
+                                <div class="manifest-item">
+                                    <strong>Cust ${idx + 1}:</strong> ${g.name}<br>
+                                    <span style="color:#64748b;">IC: ${g.ic}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                    manifestHtml += '</div>';
+
+                    const row2 = document.createElement('tr');
+                    row2.innerHTML = `
+                        <td><strong>${b.ref}</strong></td>
+                        <td><strong>${primaryGuest}</strong></td>
+                        <td>${b.phone}<br><span style="font-size:0.75rem; color:#64748b;">${b.email}</span></td>
+                        <td>${manifestHtml}</td>
+                        <td>${b.pkg}</td>
+                        <td>${b.pax}</td>
+                        <td>RM ${formatMoney(b.total)}</td>
+                        <td><span style="font-weight:600; font-size:0.78rem;">${b.payMethod || 'Credit / Debit Card'}</span></td>
+                        <td><span class="tag-success">Paid Online</span></td>
+                    `;
+                    crmBody.appendChild(row2);
+                });
+
+                document.querySelectorAll('.view-receipt-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const ref = e.target.getAttribute('data-ref');
+                        const item = bookings.find(x => x.ref === ref);
+                        if (item) {
+                            populateReceiptModal(item);
+                            document.getElementById('receiptModal').style.display = 'flex';
+                        }
+                    });
+                });
+            }
+
+            function populateReceiptModal(order) {
+                const lead = (order.guests && order.guests[0]) ? order.guests[0].name : 'N/A';
+                document.getElementById('receiptCustName').innerText = lead;
+                document.getElementById('receiptCustPhone').innerText = order.phone || 'N/A';
+                document.getElementById('receiptCustEmail').innerText = order.email;
+                document.getElementById('receiptInvoiceDate').innerText = order.date || '23 Jun 2026';
+                document.getElementById('receiptRefNum').innerText = order.ref;
+                document.getElementById('receiptPkgName').innerText = order.pkg;
+                document.getElementById('receiptPax').innerText = order.pax;
+                document.getElementById('receiptPayMethod').innerText = order.payMethod || 'Card';
+                document.getElementById('receiptItemPrice').innerText = `RM ${formatMoney(order.total)}`;
+                document.getElementById('receiptTotal').innerText = `RM ${formatMoney(order.total)}`;
+
+                const manifestBody = document.getElementById('receiptManifestBody');
+                manifestBody.innerHTML = '';
+                if (order.guests && order.guests.length > 0) {
+                    order.guests.forEach((g, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${idx + 1}</td>
+                            <td><strong>${g.name}</strong> ${idx === 0 ? '<span style="font-size:0.7rem; color:#0284c7;">(Lead)</span>' : ''}</td>
+                            <td>${g.ic}</td>
+                        `;
+                        manifestBody.appendChild(tr);
+                    });
+                }
+            }
+
+            function openBookingForm(id) {
+                activePkg = packages.find(p => p.id === id);
+                if (!activePkg) return;
+
+                const paxInput = document.getElementById('custPax');
+                paxInput.max = activePkg.seats;
+                paxInput.value = 1;
+
+                document.getElementById('modalPkgTitle').innerText = `Book: ${activePkg.title}`;
+                document.getElementById('availSeatsNotice').innerText = `Max: ${activePkg.seats}`;
+                
+                updateGuestInputFields(1);
+                updatePrice();
+                document.getElementById('bookingModal').style.display = 'flex';
+            }
+
+            function updatePrice() {
+                if (!activePkg) return;
+                const paxInput = document.getElementById('custPax');
+                let pax = parseInt(paxInput.value) || 1;
+
+                if (pax > activePkg.seats) {
+                    pax = activePkg.seats;
+                    paxInput.value = activePkg.seats;
+                } else if (pax < 1) {
+                    pax = 1;
+                    paxInput.value = 1;
+                }
+
+                updateGuestInputFields(pax);
+                const total = activePkg.price * pax;
+                document.getElementById('modalCalcTotal').innerText = `RM ${formatMoney(total)}`;
+            }
+
+            document.getElementById('custPax').addEventListener('input', updatePrice);
+
+            document.getElementById('closeBookingBtn').addEventListener('click', () => {
+                document.getElementById('bookingModal').style.display = 'none';
+            });
+
+            // Toggle Card Fields dynamically based on Payment Method choice
+            document.getElementById('payMethod').addEventListener('change', (e) => {
+                const cardFields = document.getElementById('cardFields');
+                if (e.target.value === 'Credit / Debit Card') {
+                    cardFields.style.display = 'block';
+                } else {
+                    cardFields.style.display = 'none';
+                }
+            });
+
+            // Booking Form -> Proceed to Payment Modal
+            document.getElementById('bookingForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const pax = parseInt(document.getElementById('custPax').value);
+                const guests = [];
+
+                // Validate Lead Guest IC
+                const custIc1Input = document.getElementById('custIc1');
+                const custIc1Val = custIc1Input.value.trim();
+
+                if (!isValidIcOrPassport(custIc1Val)) {
+                    alert('Invalid IC or Passport number for Customer 1! It must contain actual numbers.');
+                    custIc1Input.classList.add('invalid');
+                    custIc1Input.focus();
+                    return;
+                } else {
+                    custIc1Input.classList.remove('invalid');
+                }
+
+                guests.push({
+                    name: document.getElementById('custName1').value,
+                    ic: custIc1Val
+                });
+
+                // Validate Additional Guests IC
+                for (let i = 2; i <= pax; i++) {
+                    const nameVal = document.querySelector(`.add-guest-name[data-guest="${i}"]`).value;
+                    const icInput = document.querySelector(`.add-guest-ic[data-guest="${i}"]`);
+                    const icVal = icInput.value.trim();
+
+                    if (!isValidIcOrPassport(icVal)) {
+                        alert(`Invalid IC or Passport number for Customer ${i}! It must contain numbers.`);
+                        icInput.classList.add('invalid');
+                        icInput.focus();
+                        return;
+                    } else {
+                        icInput.classList.remove('invalid');
+                    }
+
+                    guests.push({ name: nameVal, ic: icVal });
+                }
+
+                const phone = document.getElementById('custPhone').value;
+                const email = document.getElementById('custEmail').value;
+                const total = activePkg.price * pax;
+
+                const randStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+                const randNum = Math.floor(1000 + Math.random() * 9000);
+                const ref = `2026T6${randStr}${randNum}`;
+
+                const now = new Date();
+                const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                activeOrder = {
+                    ref: ref,
+                    phone: phone,
+                    email: email,
+                    pkg: activePkg.title,
+                    pax: pax,
+                    total: total,
+                    status: 'Confirmed',
+                    pkgId: activePkg.id,
+                    date: formattedDate,
+                    guests: guests
+                };
+
+                document.getElementById('paymentModalTotal').innerText = `RM ${formatMoney(total)}`;
+                document.getElementById('bookingModal').style.display = 'none';
+                document.getElementById('paymentModal').style.display = 'flex';
+            });
+
+            // Back button from Payment Modal to Booking Modal
+            document.getElementById('backToBookingBtn').addEventListener('click', () => {
+                document.getElementById('paymentModal').style.display = 'none';
+                document.getElementById('bookingModal').style.display = 'flex';
+            });
+
+            // Payment Form Submit -> Proceed to APTPay Confirmation
+            document.getElementById('paymentForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const selectedPayMethod = document.getElementById('payMethod').value;
+                activeOrder.payMethod = selectedPayMethod;
+
+                // APTPay Display
+                document.getElementById('aptPayRef').innerText = activeOrder.ref;
+                document.getElementById('aptPayPkgName').innerText = activeOrder.pkg;
+                document.getElementById('aptPayMethod').innerText = selectedPayMethod;
+                document.getElementById('aptPayTotal').innerText = `RM ${formatMoney(activeOrder.total)}`;
+
+                document.getElementById('paymentModal').style.display = 'none';
+                document.getElementById('aptPaySuccessModal').style.display = 'flex';
+            });
+
+            document.getElementById('goBackMerchantBtn').addEventListener('click', () => {
+                if (activeOrder) {
+                    const p = packages.find(x => x.id === activeOrder.pkgId);
+                    if (p && p.seats >= activeOrder.pax) p.seats -= activeOrder.pax;
+                    
+                    bookings.push(activeOrder);
+                    saveData();
+                    renderPackages();
+                    renderTables();
+                    activeOrder = null;
+                }
+                document.getElementById('aptPaySuccessModal').style.display = 'none';
+                document.getElementById('bookingForm').reset();
+                document.getElementById('paymentForm').reset();
+            });
+
+            document.getElementById('closeReceiptBtn').addEventListener('click', () => {
+                document.getElementById('receiptModal').style.display = 'none';
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const query = (e.target.value || '').trim().toLowerCase();
+                if (!query) return renderPackages(packages);
+                renderPackages(packages.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
+            });
+
+            // Reset
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                localStorage.clear();
+                location.reload();
+            });
+
+            // Initial Render
+            renderPackages();
+            renderTables();
+        });
+    </script>
+</body>
+</html>
