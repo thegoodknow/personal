@@ -3,10 +3,10 @@
   <div class="pceia-header">
     <div class="pceia-title-area">
       <h2>PCEIA & CEILLI Practice Engine</h2>
-      <span class="pceia-subtitle" id="pceia-status-text">Showing 18 Randomized Questions</span>
+      <span class="pceia-subtitle" id="pceia-status-text">Showing 100 Randomized Questions</span>
     </div>
     <div class="pceia-controls">
-      <button id="btn-batch" class="pceia-btn active" onclick="generateRandomQuestions()">🔀 Random Batch (18 Qs)</button>
+      <button id="btn-batch" class="pceia-btn active" onclick="generateRandomQuestions()">🔀 Random Batch (100 Qs)</button>
       <button id="btn-all" class="pceia-btn" onclick="showAllQuestions()">📚 Show All (275 Qs)</button>
       <button id="btn-pceia" class="pceia-btn" onclick="showSectionOnly('PCEIA')">📘 PCEIA Only</button>
       <button id="btn-ceilli" class="pceia-btn" onclick="showSectionOnly('CEILLI')">📗 CEILLI Only</button>
@@ -377,7 +377,7 @@
     }
   }
 
-  const BATCH_SIZE = 18;
+  const BATCH_SIZE = 100;
   let currentBatch = [];
   let currentMode = 'batch'; // 'batch' | 'all' | 'pceia' | 'ceilli'
 
@@ -391,7 +391,7 @@
     return array;
   }
 
-  // 18 Random Questions Mode (mixed PCEIA + CEILLI)
+  // 100 Random Questions Mode (mixed PCEIA + CEILLI)
   function generateRandomQuestions() {
     currentMode = 'batch';
     updateModeUI('batch');
@@ -448,7 +448,7 @@
       statusText.textContent = `Showing CEILLI Questions Only (${count} questions)`;
     } else {
       btnBatch.classList.add('active');
-      statusText.textContent = `Showing 18 Randomized Questions`;
+      statusText.textContent = `Showing 100 Randomized Questions`;
     }
   }
 
