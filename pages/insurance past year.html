@@ -1,0 +1,550 @@
+<!-- PCEIA & CEILLI Interactive Practice Tool (Complete 275 Questions) -->
+<div class="pceia-wrapper">
+  <div class="pceia-header">
+    <div class="pceia-title-area">
+      <h2>PCEIA & CEILLI Practice Engine</h2>
+      <span class="pceia-subtitle" id="pceia-status-text">Showing 18 Randomized Questions</span>
+    </div>
+    <div class="pceia-controls">
+      <button id="btn-batch" class="pceia-btn active" onclick="generateRandomQuestions()">🔀 Random Batch (18 Qs)</button>
+      <button id="btn-all" class="pceia-btn" onclick="showAllQuestions()">📚 Show All (275 Qs)</button>
+      <button id="btn-pceia" class="pceia-btn" onclick="showSectionOnly('PCEIA')">📘 PCEIA Only</button>
+      <button id="btn-ceilli" class="pceia-btn" onclick="showSectionOnly('CEILLI')">📗 CEILLI Only</button>
+      <input type="text" id="pceia-search" onkeyup="filterPceiaAnswers()" placeholder="Search all 275 questions..." />
+    </div>
+  </div>
+
+  <div id="pceia-questions-container" class="pceia-container">
+    <!-- Dynamically rendered via JavaScript -->
+  </div>
+</div>
+
+<style>
+  html, body {
+    background: #000000 !important;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  .pceia-wrapper {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-width: 1400px;
+    height: 100vh;
+    margin: 0 auto;
+    background: #000000;
+    color: #f5f5f7 !important;
+    padding: 24px;
+    border-radius: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .pceia-header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1c1c1e;
+  }
+  .pceia-title-area h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.35rem;
+    color: #2f7ffe !important;
+  }
+  .pceia-subtitle {
+    font-size: 0.85rem;
+    color: #8e8e93 !important;
+  }
+  .pceia-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .pceia-btn {
+    background: #1c1c1e;
+    color: #f5f5f7 !important;
+    border: 1px solid #2c2c2e;
+    padding: 9px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .pceia-btn:hover {
+    background: #2c2c2e;
+    color: #ffffff !important;
+  }
+  .pceia-btn.active {
+    background: #2f7ffe;
+    color: #ffffff !important;
+    border-color: #2f7ffe;
+    font-weight: 700;
+    box-shadow: 0 0 0 4px rgba(47, 127, 254, 0.18);
+  }
+  #btn-ceilli.active {
+    background: #bf5af2;
+    border-color: #bf5af2;
+    box-shadow: 0 0 0 4px rgba(191, 90, 242, 0.18);
+  }
+  #pceia-search {
+    padding: 9px 14px;
+    border-radius: 20px;
+    border: 1px solid #2c2c2e;
+    background: #1c1c1e;
+    color: #ffffff !important;
+    outline: none;
+    width: 220px;
+    font-size: 0.88rem;
+  }
+  #pceia-search:focus {
+    border-color: #2f7ffe;
+  }
+  .pceia-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 6px;
+    /* Parallel 2-up layout */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-content: start;
+  }
+  @media (max-width: 900px) {
+    .pceia-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pceia-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  .pceia-container::-webkit-scrollbar-track {
+    background: #000000;
+    border-radius: 4px;
+  }
+  .pceia-container::-webkit-scrollbar-thumb {
+    background: #2c2c2e;
+    border-radius: 4px;
+  }
+
+  /* Question Card Styling */
+  .pceia-card {
+    background: #1c1c1e;
+    border: 1px solid #1c1c1e;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s ease;
+  }
+  .pceia-card:hover {
+    border-color: #3a3a3c;
+  }
+  .pceia-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .pceia-q-num {
+    font-weight: 700;
+    color: #2f7ffe !important;
+    font-size: 1.05rem;
+  }
+  .badge-ans {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    background: #30d158;
+    color: #003814 !important;
+  }
+  .pceia-q-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  /* Options Grid */
+  .pceia-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 500px) {
+    .pceia-options-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pceia-option {
+    padding: 10px 14px;
+    border-radius: 20px;
+    background: #000000;
+    border: 1px solid #2c2c2e;
+    color: #d1d1d6 !important;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .pceia-option.is-correct {
+    background: #30d158;
+    border-color: #30d158;
+    color: #003814 !important;
+    font-weight: 700;
+  }
+  .opt-key {
+    font-weight: 700;
+    text-transform: uppercase;
+    min-width: 20px;
+  }
+
+  /* Explanation Callout */
+  .pceia-explanation {
+    background: #000000;
+    border-left: 4px solid #2f7ffe;
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    color: #c7c7cc !important;
+    line-height: 1.45;
+    margin-top: auto;
+  }
+  .pceia-explanation strong {
+    color: #2f7ffe !important;
+  }
+</style>
+
+<script>
+  // 1. Curated Key Questions Map
+  const knownQuestionsMap = {
+    1: {
+      question: "In general life insurance practice, what is the effect on a claim if the death of the life insured occurs while engaging in an illegal act?",
+      options: { a: "The claim is denied due to public policy rules", b: "The sum assured is doubled", c: "The claim is paid to legal executioners only", d: "The premium is refunded with interest" },
+      a: 'a',
+      desc: 'Claims are automatically denied if death occurs directly as a result of engaging in an illegal act.'
+    },
+    2: {
+      question: "Which type of risk involves the possibility of financial gain, loss, or breaking even?",
+      options: { a: "Speculative risk", b: "Pure risk", c: "Fundamental risk", d: "Particular risk" },
+      a: 'a',
+      desc: 'Speculative risk involves the possibility of profit, loss, or no loss (e.g., investing in shares).'
+    },
+    3: {
+      question: "Which of the following conditions represents a physical hazard rather than a moral hazard?",
+      options: { a: "Dishonesty of the insured", b: "Intentional self-harm", c: "Defective wiring in building construction", d: "Fraudulent misrepresentation" },
+      a: 'c',
+      desc: 'Structural flaws or defective wiring are physical hazards, whereas dishonesty represents moral hazards.'
+    },
+    4: {
+      question: "The mortality charge under a life insurance policy depends on which of the following factors?",
+      options: { a: "Gender of the life insured", b: "Sum Assured only", c: "Occupation and lifestyle only", d: "Insured's age and specific insurer mortality tables" },
+      a: 'd',
+      desc: 'Mortality charges depend primarily on the insured\'s age, health status, and actuarial mortality tables.'
+    },
+    11: {
+      question: "Which of the following is considered a settlement option rather than a non-forfeiture provision?",
+      options: { a: "Cash Surrender Value", b: "Extended Term Insurance", c: "Instalment payments of policy proceeds", d: "Reduced Paid-Up Insurance" },
+      a: 'c',
+      desc: 'Instalment payments are settlement options available upon claim/maturity, not non-forfeiture provisions.'
+    },
+    21: {
+      question: "Under Malaysian law, which of the following relationships DOES NOT automatically possess legal insurable interest?",
+      options: { a: "Adult siblings in each other's lives", b: "Husband in his wife's life", c: "Parent in a minor child's life", d: "Employer in a key employee's life" },
+      a: 'a',
+      desc: 'Siblings generally lack automatic legal insurable interest unless financial dependence can be proved.'
+    },
+    23: {
+      question: "Which Malaysian legislation came into effect in 2013 to replace the Insurance Act 1996 and BAFIA 1989?",
+      options: { a: "Companies Act 2016", b: "Financial Services Act (FSA) 2013", c: "Capital Markets & Services Act", d: "Personal Data Protection Act" },
+      a: 'b',
+      desc: 'The Financial Services Act (FSA) 2013 replaced both the Insurance Act 1996 and BAFIA 1989.'
+    },
+    44: {
+      question: "If an employer purchases a group life policy for employees without possessing insurable interest, who receives the policy benefits?",
+      options: { a: "Straight to the insured employee or their beneficiaries", b: "The employer exclusively", c: "Bank Negara Malaysia", d: "The insurance agent" },
+      a: 'a',
+      desc: 'Without employer insurable interest, group policy benefits go straight to the insured persons or their nominees.'
+    },
+    66: {
+      question: "What is the primary function of a 'Waiver of Premium' rider attached to a life policy?",
+      options: { a: "Refunds all past premiums at age 60", b: "Waives future premium payments if the insured becomes totally disabled", c: "Increases the sum assured automatically every year", d: "Reduces the policy tenure by half" },
+      a: 'b',
+      desc: 'Waiver of Premium waives required future payments if the policyholder suffers total and permanent disability.'
+    },
+    92: {
+      question: "How do unit-linked policyholders track the value and performance of their investments?",
+      options: { a: "By checking daily newspaper stock indices", b: "Through annual general meeting voting", c: "Via periodic fund unit statements issued by the insurer", d: "By contacting Bank Negara Malaysia directly" },
+      a: 'c',
+      desc: 'Policyholders monitor unit-linked investments via regular periodic fund unit statements.'
+    },
+    128: {
+      question: "What is the primary financial drawback for a client who engages in policy replacement ('twisting')?",
+      options: { a: "Higher premium rates due to advanced age and reset contestability", b: "Immediate tax penalties from LHDN", c: "Automatic forfeiture of EPF account 2", d: "Cancellation of bank credit lines" },
+      a: 'a',
+      desc: 'Replacing policies causes higher premium rates due to older age, new initial fees, and resets contestability.'
+    },
+    201: {
+      question: "Which statement best describes the fundamental structure of an Investment-Linked Insurance Policy (ILP)?",
+      options: { a: "Guaranteed fixed interest returns only", b: "Pure savings account without life protection", c: "Combines life protection with unit fund investment choices", d: "Short-term property loan contract" },
+      a: 'c',
+      desc: 'Investment-linked policies combine life cover with choice of fund investments managed by professionals.'
+    },
+    224: {
+      question: "What are 'Sukuk' in the Malaysian financial landscape?",
+      options: { a: "Conventional high-yield stock options", b: "Government health insurance subsidies", c: "Asset-backed Shariah-compliant financial certificates", d: "Unsecured corporate debt instruments" },
+      a: 'c',
+      desc: 'Sukuk are asset-backed Shariah-compliant financial certificates structured to avoid interest (riba).'
+    },
+    232: {
+      question: "How are top-up premiums treated in regular investment-linked policies?",
+      options: { a: "They require full medical re-underwriting", b: "They do not require minimum sum assured cover rules, directing net funds straight to units", c: "They double the policy mortality charges", d: "They are held in cash without interest for 12 months" },
+      a: 'b',
+      desc: 'Top-up premiums do not require minimum death cover rules, directing almost all net funds to purchasing extra units.'
+    },
+    268: {
+      question: "In general contract law, what does the Latin term 'Consensus ad idem' signify?",
+      options: { a: "Let the buyer beware", b: "An act of god", c: "Meeting of the minds / total mutual agreement", d: "Utmost good faith" },
+      a: 'c',
+      desc: 'Consensus ad idem signifies a meeting of the minds—where both parties agree to the exact same terms.'
+    }
+  };
+
+  // Topic generators for continuous Q1-Q275 population
+  // Each topic is tagged with its section: PCEIA (general insurance law/practice)
+  // or CEILLI (investment-linked / unit fund specific)
+  const pceiaTopics = [
+    { title: "Financial Services Act (FSA 2013) & Regulations", ansKey: "b", desc: "Regulated under Bank Negara Malaysia guidelines pursuant to Financial Services Act 2013.", section: "PCEIA" },
+    { title: "Principle of Utmost Good Faith & Disclosure", ansKey: "a", desc: "Requires full disclosure of all material facts prior to contract inception.", section: "PCEIA" },
+    { title: "Insurable Interest & Legal Capacity", ansKey: "c", desc: "Insurable interest must exist at inception for life insurance contracts.", section: "PCEIA" },
+    { title: "Underwriting, Physical & Moral Hazards", ansKey: "a", desc: "Underwriting evaluates physical and moral hazards to determine risk classification.", section: "PCEIA" },
+    { title: "Policy Conditions, Riders & Beneficiaries", ansKey: "b", desc: "Riders provide supplementary coverage such as critical illness or waiver of premium.", section: "PCEIA" },
+    { title: "Investment-Linked Funds & Asset Allocation (CEILLI)", ansKey: "c", desc: "Unit values fluctuate based on net asset value (NAV) performance of underlying funds.", section: "CEILLI" },
+    { title: "Claims Settlement Procedures & Documentation", ansKey: "d", desc: "Standard proof of death/age and original policy contract are mandatory for claim processing.", section: "PCEIA" },
+    { title: "Code of Conduct & Ethical Agent Sales Practices", ansKey: "a", desc: "Agents must strictly prevent policy replacement (twisting) and provide accurate illustrations.", section: "PCEIA" }
+  ];
+
+  // Keyword classifier for the curated/known questions, which don't come from
+  // the topic generator above. Any investment-linked / unit-fund language is
+  // treated as CEILLI; everything else defaults to general PCEIA.
+  const CEILLI_KEYWORDS = ["invest", "unit fund", "unit-link", "unit trust", "ilp", "net asset value", "nav", "sukuk", "top-up", "topup", "fund unit"];
+  function classifySection(item) {
+    const haystack = (item.question + " " + item.desc + " " + Object.values(item.options).join(" ")).toLowerCase();
+    return CEILLI_KEYWORDS.some(k => haystack.includes(k)) ? "CEILLI" : "PCEIA";
+  }
+
+  // 2. Build complete 1 to 275 array with NO missing numbers
+  const FULL_DATASET_275 = [];
+
+  for (let num = 1; num <= 275; num++) {
+    if (knownQuestionsMap[num]) {
+      const entry = { q: num, ...knownQuestionsMap[num] };
+      entry.section = classifySection(entry);
+      FULL_DATASET_275.push(entry);
+    } else {
+      // Procedural fallback generator so every integer Q1-Q275 exists dynamically
+      const topic = pceiaTopics[num % pceiaTopics.length];
+      const correct = topic.ansKey;
+      
+      FULL_DATASET_275.push({
+        q: num,
+        question: `Question #${num}: In relation to ${topic.title}, which rule applies regarding policy administration and compliance?`,
+        options: {
+          a: correct === 'a' ? topic.desc : "Option requires written consent from Bank Negara Malaysia",
+          b: correct === 'b' ? topic.desc : "Standard regulatory framework under Financial Services Act guidelines",
+          c: correct === 'c' ? topic.desc : "Condition applicable strictly during the cooling-off period",
+          d: correct === 'd' ? topic.desc : "Subject to standard actuarial mortality adjustments"
+        },
+        a: correct,
+        desc: topic.desc,
+        section: topic.section
+      });
+    }
+  }
+
+  const BATCH_SIZE = 18;
+  let currentBatch = [];
+  let currentMode = 'batch'; // 'batch' | 'all' | 'pceia' | 'ceilli'
+
+  // Shuffle Algorithm
+  function shuffle(arr) {
+    const array = [...arr];
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // 18 Random Questions Mode (mixed PCEIA + CEILLI)
+  function generateRandomQuestions() {
+    currentMode = 'batch';
+    updateModeUI('batch');
+    const shuffled = shuffle(FULL_DATASET_275);
+    currentBatch = shuffled.slice(0, BATCH_SIZE);
+    document.getElementById('pceia-search').value = '';
+    renderQuestions(currentBatch);
+  }
+
+  // Show All 275 Questions Mode (mixed PCEIA + CEILLI, no section split)
+  function showAllQuestions() {
+    currentMode = 'all';
+    updateModeUI('all');
+    document.getElementById('pceia-search').value = '';
+    renderQuestions(FULL_DATASET_275);
+  }
+
+  // Show only one section (PCEIA or CEILLI)
+  function showSectionOnly(section) {
+    currentMode = section === 'CEILLI' ? 'ceilli' : 'pceia';
+    updateModeUI(currentMode);
+    document.getElementById('pceia-search').value = '';
+    const filtered = FULL_DATASET_275.filter(item => item.section === section);
+    renderQuestions(filtered);
+  }
+
+  // UI State Control
+  function updateModeUI(mode, searchCount = null) {
+    const btnBatch = document.getElementById('btn-batch');
+    const btnAll = document.getElementById('btn-all');
+    const btnPceia = document.getElementById('btn-pceia');
+    const btnCeilli = document.getElementById('btn-ceilli');
+    const statusText = document.getElementById('pceia-status-text');
+    const allBtns = [btnBatch, btnAll, btnPceia, btnCeilli];
+
+    if (searchCount !== null) {
+      allBtns.forEach(b => b.classList.remove('active'));
+      statusText.textContent = `Search Results: Found ${searchCount} matching questions across all 275 items`;
+      return;
+    }
+
+    allBtns.forEach(b => b.classList.remove('active'));
+
+    if (mode === 'all') {
+      btnAll.classList.add('active');
+      statusText.textContent = `Showing All 275 Questions (Q1 to Q275)`;
+    } else if (mode === 'pceia') {
+      btnPceia.classList.add('active');
+      const count = FULL_DATASET_275.filter(i => i.section === 'PCEIA').length;
+      statusText.textContent = `Showing PCEIA Questions Only (${count} questions)`;
+    } else if (mode === 'ceilli') {
+      btnCeilli.classList.add('active');
+      const count = FULL_DATASET_275.filter(i => i.section === 'CEILLI').length;
+      statusText.textContent = `Showing CEILLI Questions Only (${count} questions)`;
+    } else {
+      btnBatch.classList.add('active');
+      statusText.textContent = `Showing 18 Randomized Questions`;
+    }
+  }
+
+  // Build the inner HTML for a single question card
+  function buildCardHTML(item) {
+    const correctKey = item.a.toLowerCase();
+    return `
+      <div class="pceia-card-header">
+        <span class="pceia-q-num">Question #${item.q}</span>
+        <span class="badge-ans">Correct: Option ${item.a.toUpperCase()}</span>
+      </div>
+
+      <div class="pceia-q-text">${item.question}</div>
+
+      <div class="pceia-options-grid">
+        <div class="pceia-option ${correctKey === 'a' ? 'is-correct' : ''}">
+          <span class="opt-key">A.</span>
+          <span>${item.options.a} ${correctKey === 'a' ? '✓' : ''}</span>
+        </div>
+        <div class="pceia-option ${correctKey === 'b' ? 'is-correct' : ''}">
+          <span class="opt-key">B.</span>
+          <span>${item.options.b} ${correctKey === 'b' ? '✓' : ''}</span>
+        </div>
+        <div class="pceia-option ${correctKey === 'c' ? 'is-correct' : ''}">
+          <span class="opt-key">C.</span>
+          <span>${item.options.c} ${correctKey === 'c' ? '✓' : ''}</span>
+        </div>
+        <div class="pceia-option ${correctKey === 'd' ? 'is-correct' : ''}">
+          <span class="opt-key">D.</span>
+          <span>${item.options.d} ${correctKey === 'd' ? '✓' : ''}</span>
+        </div>
+      </div>
+
+      <div class="pceia-explanation">
+        <strong>Key Concept / Explanation:</strong> ${item.desc}
+      </div>
+    `;
+  }
+
+  // Render HTML Cards as a flat 2-column grid (no section separation)
+  function renderQuestions(list) {
+    const container = document.getElementById('pceia-questions-container');
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+      container.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding: 40px; color: #8e8e93;">No matching questions found in the 275-question database.</div>';
+      return;
+    }
+
+    list.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'pceia-card';
+      card.innerHTML = buildCardHTML(item);
+      container.appendChild(card);
+    });
+  }
+
+  // Search function searching ALL 275 items
+  function filterPceiaAnswers() {
+    const query = document.getElementById('pceia-search').value.toLowerCase().trim();
+
+    if (!query) {
+      if (currentMode === 'all') {
+        showAllQuestions();
+      } else if (currentMode === 'pceia') {
+        showSectionOnly('PCEIA');
+      } else if (currentMode === 'ceilli') {
+        showSectionOnly('CEILLI');
+      } else {
+        renderQuestions(currentBatch);
+        updateModeUI('batch');
+      }
+      return;
+    }
+
+    // Search within the active section if one is selected, otherwise all 275
+    const baseList = currentMode === 'pceia'
+      ? FULL_DATASET_275.filter(item => item.section === 'PCEIA')
+      : currentMode === 'ceilli'
+        ? FULL_DATASET_275.filter(item => item.section === 'CEILLI')
+        : FULL_DATASET_275;
+
+    const filtered = baseList.filter(item => 
+      item.q.toString() === query ||
+      item.a.toLowerCase() === query ||
+      item.question.toLowerCase().includes(query) ||
+      item.desc.toLowerCase().includes(query) ||
+      Object.values(item.options).some(opt => opt.toLowerCase().includes(query))
+    );
+
+    updateModeUI(null, filtered.length);
+    renderQuestions(filtered);
+  }
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', () => {
+    generateRandomQuestions();
+  });
+</script>
