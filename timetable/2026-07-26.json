@@ -26,7 +26,7 @@
         {
           "moduleCode": "AAPP015-4-1-PWP-L-6",
           "moduleName": "PROGRAMNG WITH PYTHON",
-          "time": "11:00-13:00",
+          "time": "11:00 - 13:00",
           "location": "Autitorium 1 @ Level 7, Spine",
           "campus": "APU CAMPUS",
           "lecturer": "AMARDEEP SINGH UTTAM SINGH",
@@ -35,7 +35,7 @@
           "isReplacement": false,
           "replacementType": "",
           "isTest": true,
-          "testType": "Class Test"
+          "testType": "Class"
         },
         {
           "moduleCode": "AICT015-4-1-DBM-L-2",
