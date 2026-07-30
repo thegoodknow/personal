@@ -13,11 +13,10 @@ const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
-    { fileName: "CA_Quiz.html", tags: ["Academic", "Quiz"] },
+    { fileName: "ISCC.html", tags: ["Academic"] },
     { fileName: "convert.html", tags: ["Utility"] },
     { fileName: "DBM LAB7.html", tags: ["Academic", "Quiz"] },
     { fileName: "department.html", tags: ["Academic"] },
-    { fileName: "gdp.html", tags: ["Economics", "Data"] },
     { fileName: "timetable test.html", tags: ["System Testing"] },
     { fileName: "timetable.html", tags: ["Utility"] }
 ];
@@ -29,7 +28,7 @@ const ACADEMIC_DEADLINES = [
     { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
     { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-08-14", type: "Assignment" },
     { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-08-02", type: "Assignment" },
-    { title: "Part 2 Assignment", module: "AICT022-4-1-ISCC", dueDate: "2026-07-27", type: "Assignment" },
+    { title: "Part 2 Assignment", module: "AICT022-4-1-ISCC", dueDate: "2026-07-31", type: "Assignment" },
     { title: "Final Exam", module: "AICT015-4-1-DBM", dueDate: "2026-08-24", type: "Exam" },
     { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-26", type: "Exam" },
     { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-28", type: "Exam" },
