@@ -26,16 +26,16 @@
         {
           "moduleCode": "AAPP015-4-1-PWP-L-6",
           "moduleName": "PROGRAMNG WITH PYTHON",
-          "time": "13:30 - 15:30",
-          "location": "D-09-02",
+          "time": "14:30 - 16:30",
+          "location": "EXAM HALL, Level 5",
           "campus": "APU CAMPUS",
           "lecturer": "AMARDEEP SINGH UTTAM SINGH",
           "isOnline": false,
-          "classType": "Lecture",
+          "classType": "Class Test",
           "isReplacement": false,
           "replacementType": "",
-          "isTest": false,
-          "testType": ""
+          "isTest": true,
+          "testType": "Re-test Class"
         },
         {
           "moduleCode": "AICT015-4-1-DBM-L-2",
@@ -55,40 +55,11 @@
     },
     {
       "date": "Wed, 12-Aug-2026",
-      "classes": [
-        {
-          "moduleCode": "AICT021-4-1-OPS-L-2",
-          "moduleName": "OPERATING SYSTEMS",
-          "time": "15:45 - 17:45",
-          "location": "D-09-02",
-          "campus": "APU CAMPUS",
-          "lecturer": "VIJAYALAXMI AMUTHAN",
-          "isOnline": false,
-          "classType": "Lecture",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        }
-      ]
+      "classes": []
     },
     {
       "date": "Thu, 13-Aug-2026",
       "classes": [
-        {
-          "moduleCode": "AICT021-4-1-OPS-T-4",
-          "moduleName": "OPERATING SYSTEMS",
-          "time": "10:45 - 12:45",
-          "location": "D-07-13",
-          "campus": "APU CAMPUS",
-          "lecturer": "VIJAYALAXMI AMUTHAN",
-          "isOnline": false,
-          "classType": "Tutorial",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        },
         {
           "moduleCode": "AICT015-4-1-DBM-T-6",
           "moduleName": "DATABASE MANAGEMENT",
