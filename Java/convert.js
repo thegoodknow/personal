@@ -24,12 +24,12 @@
 
         // MAPPING: Used to look up module name based on the module code prefix.
         const MODULE_MAPPING = {
-            'AICT015': 'DATABASE MANAGEMENT',
-            'AAPP015': 'PROGRAMNG WITH PYTHON',
-            'AICT021': 'OPERATING SYSTEMS',
-            'AICT022': 'INFORMATION SYSTEM WITH CLOUD CONCEPTS',
+            'AAPP013': 'OBJECT ORIENTED PROGRAMMING',
+            'AAQS039': 'ALGEBRA AND DISCREATE MATHEMATICS',
+            'AINT007': 'FUNDAMENTALS OF UI UX DESIGN',
+            'AAPP007': 'SYSTEM ANALYSIS AND DESIGN',
             'MPU2213': 'BAHASA MALAYU KEBANGSAAN (A)',
-            'MPU2412' : 'CO CURRICULAR'
+            'MPU2342': 'INTEGRITY AND ANTI CORRUPTION COURSE'
             // Add more module codes and names here
         };
 
