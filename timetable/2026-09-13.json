@@ -1,0 +1,123 @@
+{
+  "weekStartDate": "2026-09-13",
+  "days": [
+    {
+      "date": "Mon, 14-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AAPP013-4-2-OOP-L-6",
+          "moduleName": "OBJECT ORIENTED PROGRAMMING",
+          "time": "08:30 - 10:30",
+          "location": "B-07-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAPP013-4-2-OOP-LAB-20",
+          "moduleName": "OBJECT ORIENTED PROGRAMMING",
+          "time": "13:30 - 15:30",
+          "location": "Tech Lab 6-09",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lab",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAQS039-4-1-ADM-T-19",
+          "moduleName": "ALGEBRA AND DISCREATE MATHEMATICS",
+          "time": "16:30 - 17:30",
+          "location": "C-09-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Tue, 15-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "MPU2342-KIAR-L-23",
+          "moduleName": "INTEGRITY AND ANTI CORRUPTION COURSE",
+          "time": "08:30 - 10:30",
+          "location": "ONLMCO3-12",
+          "campus": "APU CAMPUS",
+          "lecturer": "NEESHANTI RHAMAROO",
+          "isOnline": true,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-9",
+          "moduleName": "ALGEBRA AND DISCREATE MATHEMATICS",
+          "time": "10:45 - 12:15",
+          "location": "B-09-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Thu, 17-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AINT007-4-1-FUUD-T-16",
+          "moduleName": "FUNDAMENTALS OF UI UX DESIGN",
+          "time": "15:45 - 17:45",
+          "location": "E-08-07",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Fri, 18-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-8",
+          "moduleName": "ALGEBRA AND DISCREATE MATHEMATICS",
+          "time": "08:45 - 10:15",
+          "location": "E-08-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    }
+  ]
+}
