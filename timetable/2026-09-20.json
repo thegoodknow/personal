@@ -1,0 +1,156 @@
+{
+  "weekStartDate": "2026-09-20",
+  "days": [
+    {
+      "date": "Mon, 21-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AAPP013-4-2-OOP-LAB-20",
+          "moduleName": "OBJECT ORIENTED PROGRAMMING",
+          "time": "13:30 - 15:30",
+          "location": "Tech Lab 6-09",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lab",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAQS039-4-1-ADM-T-19",
+          "moduleName": "ALGEBRA AND DISCREATE MATHEMATICS",
+          "time": "16:30 - 17:30",
+          "location": "C-09-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Tue, 22-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-9",
+          "moduleName": "ALGEBRA AND DISCREATE MATHEMATICS",
+          "time": "10:45 - 12:15",
+          "location": "B-09-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAPP013-4-2-OOP-L-6",
+          "moduleName": "OBJECT ORIENTED PROGRAMMING",
+          "time": "16:00 - 18:00",
+          "location": "D-08-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Wed, 23-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AINT007-4-1-FUUD-L-6",
+          "moduleName": "FUNDAMENTALS OF UI UX DESIGN",
+          "time": "08:30 - 10:30",
+          "location": "E-08-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAPP007-4-2-SYAD-T-23",
+          "moduleName": "SYSTEM ANALYSIS AND DESIGN",
+          "time": "10:45 - 12:45",
+          "location": "E-07-05",
+          "campus": "APU CAMPUS",
+          "lecturer": "THAVAMALINI SIVASAMY",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Thu, 24-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AAPP007-4-2-SYAD-L-12",
+          "moduleName": "SYSTEM ANALYSIS AND DESIGN",
+          "time": "13:30 - 15:30",
+          "location": "B-09-03",
+          "campus": "APU CAMPUS",
+          "lecturer": "THAVAMALINI SIVASAMY",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AINT007-4-1-FUUD-T-16",
+          "moduleName": "FUNDAMENTALS OF UI UX DESIGN",
+          "time": "15:45 - 17:45",
+          "location": "E-08-07",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Fri, 25-Sep-2026",
+      "classes": [
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-8",
+          "moduleName": "ALGEBRA AND DISCREATE MATHEMATICS",
+          "time": "08:45 - 10:15",
+          "location": "E-08-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    }
+  ]
+}

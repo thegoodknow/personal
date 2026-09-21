@@ -23,16 +23,7 @@ const MY_WORKSPACE_PAGES = [
 
 // --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
 const ACADEMIC_DEADLINES = [
-    { title: "Part 1 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-07-06", type: "Assignment" },
-    { title: "Report Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Install Assignment", module: "AICT021-4-1-OPS", dueDate: "2026-07-27", type: "Assignment" },
-    { title: "Python Assignment", module: "AAPP015-4-1-PWP", dueDate: "2026-08-14", type: "Assignment" },
-    { title: "Part 2 Assignment", module: "AICT015-4-1-DBM", dueDate: "2026-08-02", type: "Assignment" },
-    { title: "Part 2 Assignment", module: "AICT022-4-1-ISCC", dueDate: "2026-07-31", type: "Assignment" },
-    { title: "Final Exam", module: "AICT015-4-1-DBM", dueDate: "2026-08-24", type: "Exam" },
-    { title: "Final Exam", module: "AICT021-4-1-OPS", dueDate: "2026-08-26", type: "Exam" },
-    { title: "Final Exam", module: "AICT022-4-1-ISCC", dueDate: "2026-08-28", type: "Exam" },
-    { title: "Final Exam", module: "AAPP015-4-1-PWP", dueDate: "2026-09-02", type: "Exam" }
+    { title: "", module: "", dueDate: "", type: "" }
 ];
 
 let selectedModuleCode = null;
