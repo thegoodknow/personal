@@ -52,6 +52,20 @@
           "testType": ""
         },
         {
+          "moduleCode": "AINT007-4-1-FUUD-L-6",
+          "moduleName": "FUNDAMENTALS OF UI UX DESIGN",
+          "time": "13:00 - 15:00",
+          "location": "B-06-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": true,
+          "replacementType": "Lecture",
+          "isTest": false,
+          "testType": ""
+        },
+        {
           "moduleCode": "AAPP013-4-2-OOP-L-6",
           "moduleName": "OBJECT ORIENTED PROGRAMMING",
           "time": "16:00 - 18:00",
@@ -70,20 +84,6 @@
     {
       "date": "Wed, 30-Sep-2026",
       "classes": [
-        {
-          "moduleCode": "AINT007-4-1-FUUD-L-6",
-          "moduleName": "FUNDAMENTALS OF UI UX DESIGN",
-          "time": "08:30 - 10:30",
-          "location": "E-08-02",
-          "campus": "APU CAMPUS",
-          "lecturer": "SITI FARHAH MOHD NIZAM",
-          "isOnline": false,
-          "classType": "Lecture",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        },
         {
           "moduleCode": "AAPP007-4-2-SYAD-T-23",
           "moduleName": "SYSTEM ANALYSIS AND DESIGN",
