@@ -122,11 +122,11 @@ function render() {
       pct = 100 * (now - s.b.s) / (s.b.e - s.b.s);
       sub = '<b>Now:</b> ' + who(s.b.items) + '<br>Until ' + fT.format(s.until) + (s.after ? ' · then free for ' + dur(s.after.s - s.until).replace(/ \d+s$/, '') : ' · then free for the rest of the day');
     } else if (s.next) {
-      cls = s.freeFor < 900000 ? 'soon' : 'free'; pill = 'Free'; lbl = 'Free for'; big = '<span class="cd" data-t="' + s.next.s + '">' + dur(s.freeFor) + '</span>';
+      cls = s.freeFor < 900000 ? 'soon' : 'free'; pill = 'Available'; lbl = 'Free for'; big = '<span class="cd" data-t="' + s.next.s + '">' + dur(s.freeFor) + '</span>';
       pct = Math.min(100, 100 * s.freeFor / 14400000);
       sub = 'Until ' + fT.format(s.next.s) + '<br><b>Next:</b> ' + who(s.next.items);
     } else {
-      cls = 'free'; pill = 'Free'; lbl = 'Free for'; big = 'Rest of the day'; pct = 100; sub = 'No more classes scheduled today';
+      cls = 'free'; pill = 'Available'; lbl = 'Free for'; big = 'Rest of the day'; pct = 100; sub = 'No more classes scheduled today';
     }
     return { b: r.block, h: '<div class="card ' + cls + '" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">' + pill + '</span></div>' +
       '<div class="lbl">' + lbl + '</div><div class="big">' + big + '</div><div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div><div class="sub">' + sub + '</div></div>' };
