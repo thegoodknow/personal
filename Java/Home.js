@@ -11,7 +11,7 @@ const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
 let BASE_PAGES_URL = 'https://thegoodknow.nx.kg/pages/';   // can be overridden with "siteBase" in config.json
 const CLASSROOM_PAGE = 'classroom';                          // classroom.html, opened WITHOUT ".html"
-const REDIRECT_DELAY_MS = 5000;
+const REDIRECT_DELAY_MS = 3000;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
