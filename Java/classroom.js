@@ -8,6 +8,11 @@ var $ = function (id) { return document.getElementById(id); };
 var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
 
 var ROOMS = [], DATES = {}, firstRender = true, lastToday = '';
+var ONLY = (function () {                                              // ?classroom=D-08-02  (or #classroom=D-08-02)
+  var v = new URLSearchParams(location.search).get('classroom');
+  if (!v) { var m = /classroom=([^&]+)/.exec(location.hash); v = m ? decodeURIComponent(m[1]) : ''; }
+  return v.replace(/^['"\s]+|['"\s]+$/g, '');
+})();
 
 /* ---------- data ---------- */
 function getJson(url) { return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
@@ -101,6 +106,7 @@ function render() {
   else note.textContent = 'Based on the weekly class timetable for ' + today + '. Rooms with no scheduled class show as free; ad-hoc bookings and online rooms are not included.';
 
   var list = all.filter(function (x) {
+    if (ONLY && x.r.name.toLowerCase() !== ONLY.toLowerCase()) return false;
     if (q && x.r.name.toLowerCase().indexOf(q) < 0) return false;
     if (blk && x.r.block !== blk) return false;
     if (stf === 'free' && x.st.busy) return false;
@@ -113,8 +119,10 @@ function render() {
     return a.st.until - b.st.until;
   });
 
+  var ob = $('only');
+  if (ONLY) { ob.classList.remove('hidden'); ob.innerHTML = 'Showing room <b>' + esc(ONLY) + '</b> only <a href="' + esc(location.pathname) + '">Show all rooms</a>'; }
   var g = $('grid'); g.className = firstRender ? 'anim' : '';
-  if (!list.length) { g.innerHTML = '<div class="empty">No rooms match these filters.</div>'; firstRender = false; return; }
+  if (!list.length) { g.innerHTML = '<div class="empty">' + (ONLY ? 'Room “' + esc(ONLY) + '” was not found in the timetable data. Rooms with no scheduled class this week are not listed.' : 'No rooms match these filters.') + '</div>'; firstRender = false; return; }
   var cards = list.map(function (x, i) {
     var r = x.r, s = x.st, cls, pill, lbl, big, pct, sub;
     if (s.busy) {
@@ -122,11 +130,11 @@ function render() {
       pct = 100 * (now - s.b.s) / (s.b.e - s.b.s);
       sub = '<b>Now:</b> ' + who(s.b.items) + '<br>Until ' + fT.format(s.until) + (s.after ? ' · then free for ' + dur(s.after.s - s.until).replace(/ \d+s$/, '') : ' · then free for the rest of the day');
     } else if (s.next) {
-      cls = s.freeFor < 900000 ? 'soon' : 'free'; pill = 'Available'; lbl = 'Free for'; big = '<span class="cd" data-t="' + s.next.s + '">' + dur(s.freeFor) + '</span>';
+      cls = s.freeFor < 900000 ? 'soon' : 'free'; pill = 'Free'; lbl = 'Free for'; big = '<span class="cd" data-t="' + s.next.s + '">' + dur(s.freeFor) + '</span>';
       pct = Math.min(100, 100 * s.freeFor / 14400000);
       sub = 'Until ' + fT.format(s.next.s) + '<br><b>Next:</b> ' + who(s.next.items);
     } else {
-      cls = 'free'; pill = 'Available'; lbl = 'Free for'; big = 'Rest of the day'; pct = 100; sub = 'No more classes scheduled today';
+      cls = 'free'; pill = 'Free'; lbl = 'Free for'; big = 'Rest of the day'; pct = 100; sub = 'No more classes scheduled today';
     }
     return { b: r.block, h: '<div class="card ' + cls + '" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">' + pill + '</span></div>' +
       '<div class="lbl">' + lbl + '</div><div class="big">' + big + '</div><div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div><div class="sub">' + sub + '</div></div>' };

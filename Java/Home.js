@@ -1,4 +1,4 @@
-/**
+        /**
  * Core Automation Script Modules for Workspace Hub
  * - Immediate class condition checks (accurate to the second)
  * - Feature: Separate global configuration fetching for holidays and exam modes
@@ -9,7 +9,9 @@
 
 const REPO_OWNER = 'thegoodknow';
 const REPO_NAME = 'personal';
-const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/pages/`;
+let BASE_PAGES_URL = 'https://thegoodknow.nx.kg/pages/';   // can be overridden with "siteBase" in config.json
+const CLASSROOM_PAGE = 'classroom';                          // classroom.html, opened WITHOUT ".html"
+const REDIRECT_DELAY_MS = 1500;
 
 // --- DATA REGISTRY: LOCAL PAGES WITH ACADEMIC TAGS ---
 const MY_WORKSPACE_PAGES = [
@@ -22,12 +24,90 @@ const MY_WORKSPACE_PAGES = [
     { fileName: "timetable.html", tags: ["Utility"] }
 ];
 
-// --- DATA REGISTRY: ASSIGNMENTS & LAB DEADLINES ---
-const ACADEMIC_DEADLINES = [
-    { title: "", module: "", dueDate: "", type: "" }
-];
-
+// --- CONFIG (config.json): assignments, exams, holidays, optional siteBase ---
+const DEFAULT_CONFIG = { siteBase: '', announcements: { isExamWeek: false }, exams: [], holidays: [], assignments: [] };
+let CONFIG = DEFAULT_CONFIG;
+let configSignature = '';
+let configError = '';
 let selectedModuleCode = null;
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// Returns true when config.json changed (or loaded for the first time)
+async function loadConfig() {
+    try {
+        const res = await fetch('config.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('config.json not found (HTTP ' + res.status + ')');
+        const text = await res.text();
+        if (text === configSignature) return false;
+        const parsed = JSON.parse(text);
+        configSignature = text;
+        configError = '';
+        CONFIG = Object.assign({}, DEFAULT_CONFIG, parsed);
+        if (CONFIG.siteBase) BASE_PAGES_URL = String(CONFIG.siteBase).replace(/\/?$/, '/');
+        return true;
+    } catch (e) {
+        configError = e.message;
+        console.warn('Config unavailable, keeping previous settings.', e);
+        return false;
+    }
+}
+
+// --- LINK HELPERS: every link opens in a NEW tab through a redirecting screen ---
+function pageHref(fileName) {                       // "DBM LAB7.html" -> BASE/DBM%20LAB7  (no .html)
+    return BASE_PAGES_URL + fileName.replace(/\.html?$/i, '').split('/').map(encodeURIComponent).join('/');
+}
+
+function roomLinkHtml(c) {
+    const room = (c.location || '').trim();
+    if (!room) return '';
+    if (c.isOnline || /^onl/i.test(room)) return esc(room);          // online rooms are not on the availability page
+    const href = `${BASE_PAGES_URL}${CLASSROOM_PAGE}?classroom=${encodeURIComponent(room)}`;
+    return `<a class="room-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer" data-redirect data-label="${esc('Room ' + room + ' availability')}" title="View ${esc(room)} availability">${esc(room)}</a>`;
+}
+
+function buildRedirectPage(url, label, delay) {
+    const host = new URL(url).hostname;
+    const urlJson = JSON.stringify(url).replace(/</g, '\\u003c');
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Redirecting…</title><style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#121212;color:#f2f2f7;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+.box{width:min(420px,90vw);text-align:center;background:rgba(30,30,30,.65);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:in .5s cubic-bezier(.16,1,.3,1) both}
+.ring{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;border:4px solid rgba(255,255,255,.1);border-top-color:#007BFF;animation:spin .9s linear infinite}
+h1{font-size:1.15rem;margin:0 0 6px}.host{color:#98989f;font-size:.85rem;margin:0 0 20px;word-break:break-all}
+.track{height:6px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden}#bar{height:100%;width:0;background:linear-gradient(90deg,#007BFF,#00D2FF)}
+.sub{color:#98989f;font-size:.8rem;margin:12px 0 20px}.row{display:flex;gap:10px;justify-content:center}
+a.go,button{font:inherit;font-size:.85rem;font-weight:600;border-radius:8px;padding:9px 18px;cursor:pointer;text-decoration:none;border:1px solid rgba(255,255,255,.12)}
+a.go{background:#007BFF;border-color:#007BFF;color:#fff}button{background:rgba(255,255,255,.06);color:#f2f2f7}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+</style></head><body><div class="box"><div class="ring"></div><h1>Redirecting you to ${esc(label)}</h1><p class="host">${esc(host)}</p><div class="track"><div id="bar"></div></div><p class="sub">Opening in <span id="n">${Math.ceil(delay / 1000)}</span>s…</p><div class="row"><a class="go" href="${esc(url)}">Go now</a><button id="x" type="button">Cancel</button></div></div><script>
+(function(){var u=${urlJson},d=${delay},t0=Date.now(),bar=document.getElementById('bar'),n=document.getElementById('n');
+var iv=setInterval(function(){var e=Date.now()-t0;bar.style.width=Math.min(100,e/d*100)+'%';n.textContent=Math.max(0,Math.ceil((d-e)/1000));},50);
+var tm=setTimeout(function(){location.replace(u);},d);
+document.getElementById('x').onclick=function(){clearTimeout(tm);clearInterval(iv);window.close();};
+document.querySelector('a.go').onclick=function(e){e.preventDefault();clearTimeout(tm);location.replace(u);};
+})();
+<\/script></body></html>`;
+}
+
+// Opens the tab immediately (so pop-up blockers allow it), shows the redirect screen there, then forwards.
+function openWithRedirect(url, label) {
+    let target;
+    try { target = new URL(url, location.href); } catch (e) { return; }
+    if (!/^https?:$/.test(target.protocol)) return;
+    const win = window.open('', '_blank');
+    if (!win) { alert('Your browser blocked the new tab. Please allow pop-ups for this site and try again.'); return; }
+    try { win.opener = null; } catch (e) {}
+    win.document.open();
+    win.document.write(buildRedirectPage(target.href, label || target.hostname, REDIRECT_DELAY_MS));
+    win.document.close();
+}
+
+document.addEventListener('click', (e) => {
+    const a = e.target.closest ? e.target.closest('a[data-redirect]') : null;
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;   // let modified clicks behave normally
+    e.preventDefault();
+    openWithRedirect(a.href, a.dataset.label || a.textContent.trim());
+});
 
 // Turnitin Framework API Link Handler Integration
 function redirectToTurnitin() {
@@ -36,8 +116,7 @@ function redirectToTurnitin() {
         alert("Please enter a valid Turnitin Report ID first!");
         return;
     }
-    const turnitinApiUrl = `https://ev.turnitin.com/app/carta/en_us/?lang=en_us&o=${reportId}&u=1192157007&ro=103&s=1&student_user=1`;
-    window.open(turnitinApiUrl, '_blank');
+    openWithRedirect(`https://ev.turnitin.com/app/carta/en_us/?lang=en_us&o=${encodeURIComponent(reportId)}&u=1192157007&ro=103&s=1&student_user=1`, 'Turnitin report');
 }
 
 // Utility Time Conversions
@@ -109,125 +188,125 @@ function getCurrentWeeklyFileName() {
 }
 
 // Render Workspace Pages Links with Subject Category Tags
+const TAG_CLASS = { 'Academic': 'test-tag', 'Utility': 'replacement-tag', 'System': 'online-tag', 'System Testing': 'online-tag' };
+
 function loadRepositoryPages() {
     const container = document.getElementById('pages-container');
     if (!container) return;
     container.innerHTML = '';
-    
+
     MY_WORKSPACE_PAGES.forEach(pageObj => {
-        const cleanTitle = pageObj.fileName.replace('.html', '').replace(/[-_]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-        
-        let tagsMarkup = '';
-        pageObj.tags.forEach(tag => {
-            let colorClass = 'open-tag'; 
-            if (tag === 'Academic' || tag === 'DBM LAB7' || tag === 'DMS-ClassTest') colorClass = 'test-tag'; 
-            if (tag === 'System') colorClass = 'online-tag'; 
-            if (tag === 'Utility') colorClass = 'replacement-tag'; 
-            
-            tagsMarkup += `<span class="pill ${colorClass}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${tag}</span>`;
-        });
+        const cleanTitle = pageObj.fileName.replace(/\.html?$/i, '').replace(/[-_]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        const tagsMarkup = pageObj.tags.map(tag =>
+            `<span class="pill ${TAG_CLASS[tag] || 'open-tag'}" style="font-size: 0.65rem; padding: 2px 6px; margin-left: 5px; font-weight:600;">${esc(tag)}</span>`).join('');
 
         const linkElement = document.createElement('a');
         linkElement.className = 'page-item-link';
-        linkElement.href = `${BASE_PAGES_URL}${pageObj.fileName}`;
+        linkElement.href = pageHref(pageObj.fileName);          // no ".html" in the opened URL
+        linkElement.target = '_blank';
+        linkElement.rel = 'noopener noreferrer';
+        linkElement.dataset.redirect = '';
+        linkElement.dataset.label = cleanTitle;
         linkElement.innerHTML = `
             <div class="page-title-group">
                 <span class="material-icons">construction</span>
                 <div style="display: flex; flex-direction: column; gap: 2px;">
-                    <span>${cleanTitle}</span>
+                    <span>${esc(cleanTitle)}</span>
                     <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;">${tagsMarkup}</div>
                 </div>
             </div>
-            <span class="material-icons" style="font-size: 1.1rem; color: var(--text-subtle);">arrow_forward</span>
+            <span class="material-icons" style="font-size: 1.1rem; color: var(--text-subtle);">open_in_new</span>
         `;
         container.appendChild(linkElement);
     });
 }
 
-// --- INTERACTIVE ASSIGNMENTS PANEL ---
+// --- INTERACTIVE ASSIGNMENTS PANEL (data comes from config.json -> "assignments") ---
+function getAssignmentGroups() {
+    return Array.isArray(CONFIG.assignments) ? CONFIG.assignments.filter(g => g && g.moduleCode && Array.isArray(g.items)) : [];
+}
+
+function dueDateOf(task) {
+    return new Date(`${task.dueDate}T${task.dueTime || '23:59'}:00`);
+}
+
 function buildModuleDeadlinesSelector() {
     const tabsRow = document.getElementById('module-tabs-row');
-    if (!tabsRow) return;
+    const box = document.getElementById('deadlines-container');
+    if (!tabsRow || !box) return;
     tabsRow.innerHTML = '';
 
-    if (ACADEMIC_DEADLINES.length === 0) {
-        document.getElementById('deadlines-container').innerHTML = `<div class="empty-state">No upcoming tasks listed!</div>`;
+    const groups = getAssignmentGroups();
+    if (!groups.length) {
+        box.innerHTML = `<div class="empty-state">${configError ? 'Could not read config.json: ' + esc(configError) : 'No upcoming tasks listed!'}</div>`;
         return;
     }
+    if (selectedModuleCode && !groups.some(g => g.moduleCode === selectedModuleCode)) selectedModuleCode = null;
 
-    const uniqueModules = [...new Set(ACADEMIC_DEADLINES.map(t => t.module))];
-
-    uniqueModules.forEach(moduleCode => {
+    groups.forEach(group => {
+        const pending = group.items.filter(t => !t.done).length;
         const tabBtn = document.createElement('button');
-        tabBtn.className = 'module-tab-btn';
-        tabBtn.textContent = moduleCode;
-        
+        tabBtn.className = 'module-tab-btn' + (group.moduleCode === selectedModuleCode ? ' active-tab' : '');
+        tabBtn.title = group.moduleName || group.moduleCode;
+        tabBtn.innerHTML = `${esc(group.moduleCode)}<span class="count">(${pending})</span>`;
         tabBtn.addEventListener('click', () => {
-            selectedModuleCode = moduleCode;
-            document.querySelectorAll('.module-tab-btn').forEach(b => b.classList.remove('active-tab'));
+            selectedModuleCode = group.moduleCode;
+            tabsRow.querySelectorAll('.module-tab-btn').forEach(b => b.classList.remove('active-tab'));
             tabBtn.classList.add('active-tab');
             renderSelectedModuleTasks();
         });
-        
         tabsRow.appendChild(tabBtn);
     });
 
-    // NOTE: Auto-execution logic for `renderSelectedModuleTasks()` is completely removed on initialization
-    // to preserve the instruction text until a module button is actively selected.
+    if (selectedModuleCode) renderSelectedModuleTasks();
+    else box.innerHTML = `<div class="empty-state" id="initial-assignment-state">Please select a specific module framework above to see active deadlines.</div>`;
 }
 
 function renderSelectedModuleTasks() {
     const container = document.getElementById('deadlines-container');
     if (!container) return;
-
-    // Remove the descriptive placeholder prompt layout safely
-    const initialPrompt = document.getElementById('initial-assignment-state');
-    if (initialPrompt) {
-        initialPrompt.remove();
-    }
-
     container.innerHTML = '';
-    if (!selectedModuleCode) return;
+    const group = getAssignmentGroups().find(g => g.moduleCode === selectedModuleCode);
+    if (!group) return;
 
-    const filteredTasks = ACADEMIC_DEADLINES.filter(t => t.module === selectedModuleCode);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    if (group.moduleName) container.insertAdjacentHTML('beforeend', `<div class="deadline-date-sub" style="margin-bottom:8px;">${esc(group.moduleName)}</div>`);
+    if (!group.items.length) { container.insertAdjacentHTML('beforeend', `<div class="empty-state">No tasks for this module.</div>`); return; }
 
-    filteredTasks.forEach(task => {
-        const taskDate = new Date(task.dueDate);
-        taskDate.setHours(0, 0, 0, 0);
-        
-        const diffTime = taskDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        let pillClass = "open-tag"; 
-        let countdownLabel = `${diffDays} days left`;
-        let leftBorderColor = "rgba(255, 255, 255, 0.15)";
+    const now = new Date();
+    const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
+    const items = group.items.slice().sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0) || dueDateOf(a) - dueDateOf(b));
 
-        if (diffDays < 0) {
-            pillClass = "conducted-tag";
-            countdownLabel = "Overdue";
-        } else if (diffDays === 0) {
-            pillClass = "test-tag";
-            countdownLabel = "TODAY";
-            leftBorderColor = "var(--color-test)";
-        } else if (diffDays <= 3) {
-            pillClass = "replacement-tag";
-            countdownLabel = "Urgent";
-            leftBorderColor = "var(--color-replacement)";
+    items.forEach(task => {
+        const due = dueDateOf(task);
+        let pillClass = 'open-tag', label = '', border = 'rgba(255, 255, 255, 0.15)';
+
+        if (task.done) { pillClass = 'online-tag'; label = 'Done'; border = '#28a745'; }
+        else if (isNaN(due)) { label = 'No date'; }
+        else if (due < now) { pillClass = 'conducted-tag'; label = 'Overdue'; }
+        else {
+            const dueDay = new Date(due); dueDay.setHours(0, 0, 0, 0);
+            const diffDays = Math.round((dueDay - todayStart) / 86400000);
+            if (diffDays === 0) { pillClass = 'test-tag'; label = 'TODAY'; border = 'var(--color-test)'; }
+            else if (diffDays <= 3) { pillClass = 'replacement-tag'; label = 'Urgent'; border = 'var(--color-replacement)'; }
+            else label = `${diffDays} days left`;
         }
 
-        const taskItem = document.createElement('div');
-        taskItem.className = 'deadline-task-item'; 
-        taskItem.style.borderLeftColor = leftBorderColor;
-        taskItem.innerHTML = `
+        const titleHtml = task.link
+            ? `<a class="deadline-title deadline-link" href="${esc(task.link)}" target="_blank" rel="noopener noreferrer" data-redirect data-label="${esc(task.title)}">${esc(task.title)}</a>`
+            : `<span class="deadline-title">${esc(task.title)}</span>`;
+        const dueText = task.dueDate ? `Due: ${esc(task.dueDate)}${task.dueTime ? ' ' + esc(task.dueTime) : ''}` : 'No due date';
+
+        const item = document.createElement('div');
+        item.className = 'deadline-task-item' + (task.done ? ' deadline-done' : '');
+        item.style.borderLeftColor = border;
+        item.innerHTML = `
             <div class="task-info-side">
-                <span class="deadline-title">${task.title}</span>
-                <span class="deadline-date-sub">Due Date: ${task.dueDate}</span>
+                ${titleHtml}
+                <span class="deadline-date-sub">${dueText}${task.type ? ' · ' + esc(task.type) : ''}${task.notes ? ' · ' + esc(task.notes) : ''}</span>
             </div>
-            <span class="pill ${pillClass}" style="font-size:0.7rem; padding:2px 6px;">${countdownLabel}</span>
+            <span class="pill ${pillClass}" style="font-size:0.7rem; padding:2px 6px;">${label}</span>
         `;
-        container.appendChild(taskItem);
+        container.appendChild(item);
     });
 }
 
@@ -245,16 +324,7 @@ async function loadTimetable() {
     const currentFormattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const currentMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
 
-    let configData = { announcements: { isExamWeek: false }, exams: [], holidays: [] };
-
-    try {
-        const configRes = await fetch(`config.json`);
-        if (configRes.ok) {
-            configData = await configRes.json();
-        }
-    } catch (e) {
-        console.warn("Global config parameters offline, running standard cycle configurations.", e);
-    }
+    const configData = CONFIG;
 
     const currentHoliday = configData.holidays ? configData.holidays.find(h => h.date === currentFormattedDate) : null;
 
@@ -436,10 +506,10 @@ async function loadTimetable() {
                     card.innerHTML = `
                         <div class="card-title">
                             <span class="material-icons ${classItem.isOnline && !isCurrent ? 'online-icon' : ''}">${iconType}</span>
-                            <span>${classItem.moduleName}</span>
+                            <span>${esc(classItem.moduleName)}</span>
                         </div>
                         <div class="card-subtitle">
-                            ${classItem.location} (${classItem.campus})${labelType}
+                            ${roomLinkHtml(classItem)} (${esc(classItem.campus)})${esc(labelType)}
                         </div>
                         <div class="card-details">
                             <span>${dayGroup.date.split(',')[0]} (${dayGroup.date.split(',')[1]?.trim() || ''})</span>
@@ -491,11 +561,20 @@ async function loadTimetable() {
 }
 
 // --- INITIALIZE SUBSYSTEMS ON WEB CONTENT LOAD ---
-document.addEventListener("DOMContentLoaded", () => {
+async function refreshAll() {
+    if (await loadConfig()) {            // config.json changed -> redraw the config-driven panels
+        loadRepositoryPages();
+        buildModuleDeadlinesSelector();
+    }
+    await loadTimetable();
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadConfig();
     loadRepositoryPages();
     buildModuleDeadlinesSelector();
     loadTimetable();
 
-    // Re-scan timetable metrics configuration parameters every 30 seconds
-    setInterval(loadTimetable, 30000);
+    // Re-scan config + timetable every 30 seconds
+    setInterval(refreshAll, 30000);
 });

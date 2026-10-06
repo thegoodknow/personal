@@ -455,6 +455,14 @@
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* --- Clickable room links + assignment links --- */
+        .room-link { color: #4da3ff; text-decoration: none; border-bottom: 1px dashed rgba(77,163,255,.6); cursor: pointer; transition: color .2s, border-color .2s; }
+        .room-link:hover { color: #ffffff; border-bottom-style: solid; border-color: #ffffff; }
+        .deadline-link { color: var(--text-light); text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,.35); }
+        .deadline-link:hover { color: #4da3ff; border-color: #4da3ff; }
+        .module-tab-btn .count { opacity: .7; margin-left: 4px; font-weight: 400; }
+        .deadline-done .deadline-title { text-decoration: line-through; opacity: .55; }
     </style>
 </head>
 <body>
@@ -501,14 +509,14 @@
                     <span>Student's Webpages</span>
                 </div>
                 <div class="portal-grid">
-                    <a href="https://apspace.apu.edu.my" target="_blank" class="page-item-link portal-card">
+                    <a href="https://apspace.apu.edu.my" target="_blank" rel="noopener noreferrer" data-redirect data-label="APSpace" class="page-item-link portal-card">
                         <div class="page-title-group">
                             <span class="material-icons">dashboard</span>
                             <span>APSpace</span>
                         </div>
                         <span class="material-icons link-arrow">launch</span>
                     </a>
-                    <a href="https://lms2.apiit.edu.my/my/" target="_blank" class="page-item-link portal-card">
+                    <a href="https://lms2.apiit.edu.my/my/" target="_blank" rel="noopener noreferrer" data-redirect data-label="MOODLE" class="page-item-link portal-card">
                         <div class="page-title-group">
                             <span class="material-icons">local_library</span>
                             <span>MOODLE</span>
@@ -559,21 +567,5 @@
     </main>
 
     <script src="Java/Home.js"></script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const tabsRow = document.getElementById('module-tabs-row');
-            const observer = new MutationObserver(() => {
-                const tabs = tabsRow.querySelectorAll('.module-tab-btn');
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        tabs.forEach(t => t.classList.remove('active-tab'));
-                        tab.classList.add('active-tab');
-                    });
-                });
-            });
-            observer.observe(tabsRow, { childList: true });
-        });
-    </script>
 </body>
 </html>
