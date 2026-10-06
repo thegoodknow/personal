@@ -1,103 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timetable Converter</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="shortcut icon" href="../img/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intake Timetable Converter</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    .hidden { display:none !important; }
+  /* ---- APSpace dark theme (approximation: near-black surfaces, Ionic-style blue accent) ---- */
+  :root { --bg:#121212; --surface:#1c1c1e; --surface2:#2a2a2d; --border:#38383a; --accent:#3880ff; --accent-h:#4c8dff; --text:#f2f2f7; --muted:#98989f; }
+  body { background:var(--bg) !important; color:var(--text) !important; }
+  .bg-gray-900 { background:var(--surface) !important; }
+  .bg-gray-800 { background:var(--surface) !important; }
+  .bg-gray-700 { background:var(--surface2) !important; }
+  .border-gray-700 { border-color:var(--border) !important; }
+  .text-gray-400 { color:var(--muted) !important; }
+  .text-gray-300 { color:#c7c7cc !important; }
+  .text-blue-400 { color:#5b9bff !important; }
+  .btn { background:var(--accent) !important; border-radius:.6rem !important; }
+  .btn:hover { background:var(--accent-h) !important; transform:translateY(-1px); box-shadow:0 4px 14px rgba(56,128,255,.35); }
+  .btn:active { transform:translateY(0) scale(.98); }
+  .btn-sec { background:var(--surface2) !important; border:1px solid var(--border); }
+  .btn-sec:hover { background:#38383c !important; box-shadow:none; }
+  .field { background:var(--surface2) !important; border-color:var(--border) !important; transition:border-color .2s, box-shadow .2s; }
+  .field:focus { border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(56,128,255,.25) !important; }
+  .chip { background:var(--surface2) !important; transition:background .2s, transform .15s; }
+  .chip:hover { background:var(--accent) !important; transform:translateY(-1px); }
+  .tab { transition:background .2s, color .2s; }
+  .tab.active { background:var(--accent) !important; }
+  pre.json { background:#0d0d0f !important; border-color:var(--border) !important; }
+  nav, section, .week-card { border-radius:1rem !important; }
+  .week-card { transition:transform .25s ease, box-shadow .25s ease, border-color .25s; }
+  .week-card:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.5); border-color:#4a4a4e !important; }
+  .cls { border-left:3px solid var(--accent); transition:transform .2s, background .2s; }
+  .cls:hover { transform:translateX(4px); background:#323236 !important; }
+
+  /* ---- animations ---- */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes popIn { from { opacity:0; transform:scale(.94) translateY(10px); } to { opacity:1; transform:none; } }
+  @keyframes slideIn { from { opacity:0; transform:translateX(-14px); } to { opacity:1; transform:none; } }
+  @keyframes pulse { 50% { opacity:.45; } }
+  #login-card { animation:popIn .5s cubic-bezier(.2,.8,.2,1) both; }
+  #app:not(.hidden) { animation:fadeIn .5s ease both; }
+  nav { animation:fadeUp .5s ease both; }
+  section { animation:fadeUp .5s .08s ease both; }
+  .week-card { animation:fadeUp .55s cubic-bezier(.2,.8,.2,1) both; }
+  .cls { animation:slideIn .4s ease both; }
+  .pane-in { animation:fadeIn .3s ease both; }
+  .loading { animation:pulse 1.2s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+
+  body { font-family: 'Inter', system-ui, sans-serif; background:#111827; color:#e5e7eb; }
+  .btn { background:#2563eb; color:#fff; border-radius:.375rem; padding:.5rem 1rem; font-size:.875rem; font-weight:600; transition:background .15s; }
+  .btn:hover { background:#1d4ed8; }
+  .btn:disabled { opacity:.5; }
+  .btn-sec { background:#4b5563; }
+  .btn-sec:hover { background:#374151; }
+  .field { background:#374151; border:1px solid #4b5563; color:#fff; border-radius:.375rem; padding:.5rem .75rem; font-size:.875rem; }
+  .field:focus { outline:none; border-color:#2563eb; box-shadow:0 0 0 1px #2563eb; }
+  .tab { padding:.25rem .75rem; border-radius:.375rem; font-size:.8rem; color:#9ca3af; }
+  .tab.active { background:#2563eb; color:#fff; }
+  .chip { background:#374151; border-radius:9999px; padding:.15rem .7rem; font-size:.8rem; cursor:pointer; }
+  .chip:hover { background:#2563eb; }
+  pre.json { background:#1f2937; border:1px solid #4b5563; border-radius:.5rem; padding:1rem; font-size:.75rem; max-height:28rem; overflow:auto; white-space:pre; }
+</style>
 </head>
-<body class="p-4 sm:p-8 min-h-screen-center">
+<body class="p-4 sm:p-8">
 
-    <div id="mobile-warning" class="flex-col items-center justify-center text-center p-8 bg-gray-900 shadow-xl rounded-2xl w-full max-w-sm mx-auto border border-gray-700">
-        <svg class="w-12 h-12 text-yellow-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.394 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-        <h3 class="text-xl font-bold text-white mb-2">Device Restriction</h3>
-        <p class="text-gray-400">This page only works on PC, please open me on a PC or a tablet for the best experience.</p>
+<!-- LOGIN (same credentials as the original converter) -->
+<div id="login-container" class="w-full max-w-md mx-auto mt-24">
+  <div id="login-card" class="bg-gray-900 p-8 shadow-xl rounded-2xl border border-gray-700">
+    <h2 class="text-2xl font-bold text-white text-center mb-1">Timetable Converter</h2>
+    <p class="text-gray-400 text-sm text-center mb-6">Please log in to access this feature</p>
+    <p id="login-message" class="hidden p-3 text-sm rounded-lg text-center bg-red-900 text-red-200 mb-4"></p>
+    <form id="login-form" class="space-y-4" onsubmit="return false">
+      <div><label class="block text-sm text-gray-300 mb-1">Username</label><input id="username" required class="field w-full"></div>
+      <div><label class="block text-sm text-gray-300 mb-1">Password</label><input id="password" type="password" required class="field w-full"></div>
+      <button type="submit" class="btn w-full">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="container mx-auto hidden">
+  <nav class="bg-gray-900 p-4 mb-6 shadow-xl rounded-xl border border-gray-700 flex justify-between items-center">
+    <span class="text-xl font-bold text-white">Intake Timetable Converter</span>
+    <a href="https://thegoodknow.github.io/personal/pages/timetable.html" target="_blank" class="text-sm px-4 py-2 rounded-lg text-white bg-gray-600 hover:bg-gray-700">View Timetable Page</a>
+  </nav>
+
+  <section class="bg-gray-800 p-6 shadow-xl rounded-2xl border border-gray-700 mb-6">
+    <div class="flex flex-wrap items-end gap-4">
+      <div class="flex-1 min-w-[220px]">
+        <label for="intake" class="block text-sm font-medium text-gray-300 mb-1">Intake code</label>
+        <input id="intake" list="intake-list" placeholder="e.g. UCDF2511ICT(SE)" value="UCDF2511ICT(SE)" autocomplete="off" class="field w-full uppercase">
+        <datalist id="intake-list"></datalist>
+      </div>
+      <div class="min-w-[140px]">
+        <label for="group" class="block text-sm font-medium text-gray-300 mb-1">Group</label>
+        <select id="group" class="field w-full"><option value="">All groups</option></select>
+      </div>
+      <button id="reload" class="btn btn-sec">Reload data</button>
+      <button id="dl-all" class="btn hidden">Download all weeks</button>
     </div>
+    <div id="suggest" class="flex flex-wrap gap-2 mt-3"></div>
+    <p id="status" class="text-sm text-gray-400 mt-3">Loading timetable data…</p>
 
+    <details id="manual" class="hidden mt-4">
+      <summary class="text-sm text-yellow-400 cursor-pointer">Couldn't reach the link from the browser — paste the JSON instead</summary>
+      <textarea id="manual-text" rows="5" placeholder="Paste the JSON from the link here" class="field w-full mt-2 text-xs"></textarea>
+      <button id="manual-load" class="btn mt-2">Use pasted JSON</button>
+    </details>
+  </section>
 
-    <div id="login-container" class="w-full max-w-md">
-        <div class="bg-gray-900 p-6 md:p-10 shadow-xl rounded-2xl border border-gray-700">
-            <header class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white mb-1">Timetable Converter</h2>
-                <p class="text-gray-400 text-sm">Please log in to access this feature</p>
-            </header>
-            <div id="login-message" class="p-3 text-sm font-medium rounded-lg text-center hidden"></div>
-            
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-300">Username</label>
-                    <input type="text" id="username" required
-                        class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm 
-                               bg-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-apspace focus:border-apspace sm:text-sm">
-                </div>
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
-                    <input type="password" id="password" required
-                        class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm 
-                               bg-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-apspace focus:border-apspace sm:text-sm">
-                </div>
-                <div class="pt-2">
-                    <button type="submit"
-                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white btn-apspace hover:btn-apspace focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-apspace transition duration-150">
-                        Sign In
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+  <div id="weeks" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
+</div>
 
-    <div id="app-container" class="container mx-auto hidden flex-col">
-        
-        <nav class="bg-gray-900 p-4 mb-8 shadow-xl rounded-xl flex justify-between items-center border border-gray-700">
-            <div class="flex items-center">
-                <img src="../img/favicon.ico" alt="Timetable Converter Logo" class="w-8 h-8 rounded-md mr-3">
-                <span class="text-xl font-bold text-white">Timetable Converter</span>
-            </div>
-            
-            <a href="https://thegoodknow.github.io/personal/pages/timetable.html" target="_blank"
-                class="text-sm px-4 py-2 rounded-lg text-white btn-totimetable hover:btn-totimetable transition duration-150 shadow-md">
-                View Timetable Page
-            </a>
-        </nav>
-        <div class="bg-gray-800 p-6 md:p-10 shadow-xl rounded-2xl border border-gray-700">
-            <header class="text-center mb-10">
-                <h1 class="text-3xl font-bold text-white mb-2">HTML to JSON Extractor</h1>
-                <p class="text-gray-400">Upload your HTML file to extract the schedule data.</p>
-            </header>
-
-            <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="space-y-4">
-                    <label for="fileInput" class="block text-lg font-medium text-gray-300">1. Select Timetable HTML File</label>
-                    <input type="file" id="fileInput" accept=".html,text/html" onchange="storeFile(event)" class="text-sm">
-                    
-                    <button onclick="triggerConversion()" id="convertButton" disabled
-                        class="w-full mt-6 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white btn-apspace hover:btn-apspace focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-apspace disabled:opacity-50 transition duration-150">
-                        Convert to JSON
-                    </button>
-                </div>
-
-                <div class="space-y-4">
-                    <label for="jsonOutput" class="block text-lg font-medium text-gray-300 flex justify-between items-center">
-                        <span>2. Extracted JSON Output (New Format)</span>
-                        <button onclick="downloadJson()" id="downloadButton" disabled
-                                 class="text-sm px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition duration-150">
-                            Download JSON
-                        </button>
-                    </label>
-                    <textarea id="jsonOutput" rows="15" readonly
-                             placeholder="JSON output will appear here after conversion."
-                             class="w-full p-4 border border-gray-600 rounded-lg bg-gray-700 text-white text-sm shadow-inner"></textarea>
-                </div>
-            </main>
-            
-            <div id="messageBox" class="mt-6 p-4 text-sm font-medium rounded-lg text-center hidden"></div>
-        </div>
-    </div>
-
- <script src="../Java/convert.js"></script>
+<script src = "../Java/convert.js"></script>
 </body>
-
 </html>

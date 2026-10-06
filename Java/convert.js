@@ -1,389 +1,229 @@
- // Global utility functions for the UI
-        const jsonOutput = document.getElementById('jsonOutput');
-        const downloadButton = document.getElementById('downloadButton');
-        const messageBox = document.getElementById('messageBox');
-        const fileInput = document.getElementById('fileInput');
-        const convertButton = document.getElementById('convertButton');
+window.onerror = function (m) { var e = document.getElementById('login-message'); if (e) { e.textContent = 'Script error: ' + m; e.className = 'p-3 text-sm rounded-lg text-center bg-red-900 text-red-200 mb-4'; } };
+const DEFAULT_INTAKE = 'UCDF2511ICT(SE)';
+const API = 'https://s3-ap-southeast-1.amazonaws.com/open-ws/weektimetable';
+const PROXY = u => 'https://corsproxy.io/?url=' + encodeURIComponent(u);
+const USER = 'admin', PASS = 'admin123';
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-        // Login/View Elements
-        const loginContainer = document.getElementById('login-container');
-        const appContainer = document.getElementById('app-container');
-        const loginMessage = document.getElementById('login-message');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const mobileWarning = document.getElementById('mobile-warning');
+let DATA = [];       // raw rows from the link
+let WEEKS = [];      // converted weeks currently displayed
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-        // Store the file content globally after selection
-        let fileContent = null; 
+/* ---------- login ---------- */
+$('login-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if ($('username').value.trim().toLowerCase() === USER && $('password').value.trim() === PASS) {
+    $('login-container').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    init();
+  } else {
+    const m = $('login-message');
+    m.textContent = 'Invalid username or password.'; m.classList.remove('hidden');
+    $('password').value = '';
+  }
+});
 
-        // --- AUTHENTICATION CONSTANTS ---
-        const CORRECT_USERNAME = 'admin';
-        const CORRECT_PASSWORD = 'admin123';
-        // ---------------------------------
+/* ---------- data loading ---------- */
+async function fetchJson(url) {
+  const r = await fetch(url, { cache: 'no-store' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+async function loadData() {
+  $('status').textContent = 'Loading timetable data…'; $('status').classList.add('loading');
+  $('manual').classList.add('hidden');
+  let json;
+  try { json = await fetchJson(API); }
+  catch (e1) {
+    try { json = await fetchJson(PROXY(API)); }   // fallback if the bucket blocks cross-origin requests
+    catch (e2) {
+      $('status').classList.remove('loading');
+      $('status').textContent = 'Could not load the data from the link.';
+      $('manual').classList.remove('hidden'); $('manual').open = true;
+      return;
+    }
+  }
+  $('status').classList.remove('loading');
+  setData(json);
+}
+function setData(json) {
+  if (!Array.isArray(json)) { $('status').textContent = 'Unexpected data format (expected a JSON list).'; return; }
+  DATA = json;
+  const intakes = [...new Set(DATA.map(r => r.INTAKE).filter(Boolean))].sort();
+  $('intake-list').innerHTML = intakes.map(i => `<option value="${esc(i)}">`).join('');
+  $('status').textContent = `Loaded ${DATA.length} classes across ${intakes.length} intakes. Enter an intake code to see its timetable.`;
+  render();
+}
 
+/* ---------- conversion (same output format as the original converter) ---------- */
+function parseISO(iso) { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
+function toISO(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function weekStartOf(iso) { const d = parseISO(iso); d.setDate(d.getDate() - d.getDay()); return toISO(d); } // preceding Sunday
+function dayLabel(iso) { const d = parseISO(iso); return `${DAYS[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')}-${MONTHS[d.getMonth()]}-${d.getFullYear()}`; }
 
-        // MAPPING: Used to look up module name based on the module code prefix.
-        const MODULE_MAPPING = {
-            'AAPP013': 'OBJECT ORIENTED PROGRAMMING',
-            'AAQS039': 'ALGEBRA AND DISCREATE MATHEMATICS',
-            'AINT007': 'FUNDAMENTALS OF UI UX DESIGN',
-            'AAPP007': 'SYSTEM ANALYSIS AND DESIGN',
-            'MPU2213': 'BAHASA MALAYU KEBANGSAAN (A)',
-            'MPU2342': 'INTEGRITY AND ANTI CORRUPTION COURSE'
-            // Add more module codes and names here
-        };
+function classTypeOf(code, room) {
+  const c = code.toUpperCase();
+  if (/[-\s]LAB[-\s\d]/.test(c)) return 'Lab';
+  if (/-L\s?T-|-L-/.test(c)) return 'Lecture';
+  if (/-T-/.test(c)) return 'Tutorial';
+  if (/-P-/.test(c)) return 'Practical';
+  return /lab/i.test(room) ? 'Lab' : 'Lecture';
+}
+function toClass(r) {
+  const code = (r.MODID || '').replace(/\s*\(online\)/i, '').trim();
+  return {
+    moduleCode: code,
+    moduleName: r.MODULE_NAME || 'UNKNOWN MODULE NAME',
+    time: `${r.TIME_FROM} - ${r.TIME_TO}`,
+    location: r.ROOM || '',
+    campus: r.LOCATION || '',
+    lecturer: r.NAME || '',
+    isOnline: /\(online\)/i.test(r.MODID || '') || /^onl/i.test(r.ROOM || ''),
+    classType: classTypeOf(code, r.ROOM || ''),
+    isReplacement: false, replacementType: '', isTest: false, testType: ''
+  };
+}
+function buildWeeks(rows) {
+  // drop duplicates that only differ by group
+  const seen = new Set();
+  rows = rows.filter(r => { const k = [r.MODID, r.DATESTAMP_ISO, r.TIME_FROM, r.ROOM].join('|'); if (seen.has(k)) return false; seen.add(k); return true; });
+  const byWeek = {};
+  rows.forEach(r => { const k = weekStartOf(r.DATESTAMP_ISO); if (!byWeek[k]) byWeek[k] = []; byWeek[k].push(r); });
+  return Object.keys(byWeek).sort().map(ws => {
+    const byDate = {};
+    byWeek[ws].forEach(r => { if (!byDate[r.DATESTAMP_ISO]) byDate[r.DATESTAMP_ISO] = []; byDate[r.DATESTAMP_ISO].push(r); });
+    const days = Object.keys(byDate).sort().map(iso => ({
+      date: dayLabel(iso),
+      classes: byDate[iso].sort((a,b) => (a.TIME_FROM_ISO||'').localeCompare(b.TIME_FROM_ISO||'')).map(toClass)
+    }));
+    return { weekStartDate: ws, days };
+  });
+}
 
-        // --- LOGIN/VIEW MANAGEMENT FUNCTIONS (MODIFIED FOR MOBILE SUPPORT) ---
+/* ---------- rendering ---------- */
+function render() {
+  const q = $('intake').value.trim().toUpperCase();
+  const box = $('weeks'), sug = $('suggest');
+  box.innerHTML = ''; sug.innerHTML = ''; WEEKS = []; updateDlAll();
+  if (!DATA.length) return;
+  if (!q) { fillGroups([]); return; }
 
-        function showLoginMessage(text, type = 'error') {
-            loginMessage.textContent = text;
-            loginMessage.classList.remove('hidden', 'error', 'success');
-            loginMessage.classList.add(type);
-            loginMessage.style.display = 'block'; // Ensure visibility
-            
-            setTimeout(() => {
-                loginMessage.style.display = 'none';
-            }, 3000);
-        }
+  let rows = DATA.filter(r => (r.INTAKE||'').toUpperCase() === q);
+  if (!rows.length) {
+    fillGroups([]);
+    const near = [...new Set(DATA.map(r => r.INTAKE))].filter(i => i && i.toUpperCase().includes(q)).sort().slice(0, 30);
+    $('status').textContent = near.length ? `No exact match for "${q}". Did you mean:` : `No timetable found for "${q}".`;
+    near.forEach(i => { const b = document.createElement('span'); b.className = 'chip'; b.textContent = i; b.onclick = () => { $('intake').value = i; $('group').value = ''; render(); }; sug.appendChild(b); });
+    return;
+  }
+  fillGroups([...new Set(rows.map(r => r.GROUPING).filter(Boolean))].sort());
+  const g = $('group').value;
+  if (g) rows = rows.filter(r => r.GROUPING === g);
 
-        function isMobile() {
-            // MODIFIED: Always return false to bypass the device size restriction
-            return false; 
-        }
+  WEEKS = buildWeeks(rows);
+  updateDlAll();
+  const total = WEEKS.reduce((n, w) => n + w.days.reduce((m, d) => m + d.classes.length, 0), 0);
+  $('status').textContent = `${q}${g ? ' · ' + g : ''}: ${total} classes in ${WEEKS.length} week${WEEKS.length === 1 ? '' : 's'}.`;
 
-        function showApp() {
-            // 1. Hide the login container completely
-            loginContainer.style.display = 'none'; 
-            loginContainer.classList.add('hidden'); 
+  WEEKS.forEach((w, i) => {
+    const count = w.days.reduce((n, d) => n + d.classes.length, 0);
+    const card = document.createElement('div');
+    card.className = 'week-card bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-xl';
+    card.style.animationDelay = (i * 90) + 'ms';
+    card.innerHTML = `
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+        <div>
+          <h3 class="text-lg font-bold text-white">Week of ${esc(w.weekStartDate)}</h3>
+          <p class="text-xs text-gray-400">${w.days.length} day(s) · ${count} class(es)</p>
+        </div>
+        <div class="flex gap-1">
+          <button class="tab active" data-i="${i}" data-t="view">Schedule</button>
+          <button class="tab" data-i="${i}" data-t="json">JSON</button>
+        </div>
+      </div>
+      <div id="view-${i}">${scheduleHtml(w)}</div>
+      <div id="json-${i}" class="hidden">
+        <pre class="json">${esc(JSON.stringify(w, null, 2))}</pre>
+        <div class="flex gap-2 mt-3">
+          <button class="btn btn-sec" data-i="${i}" data-a="copy">Copy JSON</button>
+          <button class="btn" data-i="${i}" data-a="download">Download ${esc(w.weekStartDate)}.json</button>
+        </div>
+      </div>`;
+    box.appendChild(card);
+  });
+}
+function scheduleHtml(w) {
+  return w.days.map(d => `
+    <div class="mb-3">
+      <div class="text-sm font-semibold text-blue-400 mb-1">${esc(d.date)}</div>
+      ${d.classes.map((c, n) => `
+        <div class="cls bg-gray-700 rounded-lg p-3 mb-2 text-sm" style="animation-delay:${150 + n * 45}ms">
+          <div class="flex justify-between gap-2">
+            <span class="font-semibold text-white">${esc(c.moduleName)}</span>
+            <span class="text-gray-300 whitespace-nowrap">${esc(c.time)}</span>
+          </div>
+          <div class="text-gray-400 text-xs mt-1">${esc(c.moduleCode)} · ${esc(c.classType)}${c.isOnline ? ' · Online' : ''}</div>
+          <div class="text-gray-300 text-xs mt-1">${esc(c.location)} · ${esc(c.campus)} · ${esc(c.lecturer)}</div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+function fillGroups(groups) {
+  const sel = $('group'), cur = sel.value;
+  sel.innerHTML = '<option value="">All groups</option>' + groups.map(g => `<option>${esc(g)}</option>`).join('');
+  if (groups.includes(cur)) sel.value = cur;
+}
 
-            // 2. Hide the mobile warning
-            mobileWarning.style.display = 'none';
+/* ---------- downloads ---------- */
+function downloadWeek(i) {
+  const blob = new Blob([JSON.stringify(WEEKS[i], null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = WEEKS[i].weekStartDate + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function downloadAll() {
+  const btn = $('dl-all'), n = WEEKS.length;
+  btn.disabled = true;
+  WEEKS.forEach((w, i) => setTimeout(() => {          // staggered so browsers don't drop the extra downloads
+    downloadWeek(i);
+    btn.textContent = 'Downloading ' + (i + 1) + '/' + n + '…';
+    if (i === n - 1) setTimeout(() => { btn.disabled = false; updateDlAll(); }, 600);
+  }, i * 350));
+}
+function updateDlAll() {
+  const b = $('dl-all');
+  b.classList.toggle('hidden', !WEEKS.length);
+  b.textContent = 'Download all ' + WEEKS.length + ' week' + (WEEKS.length === 1 ? '' : 's') + ' (separate files)';
+}
+$('dl-all').addEventListener('click', downloadAll);
 
-            // 3. Show the app container unconditionally
-            appContainer.classList.remove('hidden');
-            appContainer.style.display = 'flex'; // Use flex for column layout
-            appContainer.classList.add('show-app'); 
-            
-            // 4. Adjust body classes for the full app view
-            document.body.classList.remove('min-h-screen-center'); 
-            document.body.style.padding = '0'; // Remove centering padding
-        }
+/* ---------- events ---------- */
+$('weeks').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  const i = t.dataset.i;
+  if (t.dataset.t) {
+    const json = t.dataset.t === 'json';
+    $('view-' + i).classList.toggle('hidden', json);
+    $('json-' + i).classList.toggle('hidden', !json);
+    var pane = $(json ? 'json-' + i : 'view-' + i); pane.classList.remove('pane-in'); void pane.offsetWidth; pane.classList.add('pane-in');
+    t.parentElement.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b === t));
+  } else if (t.dataset.a === 'copy') {
+    navigator.clipboard.writeText(JSON.stringify(WEEKS[i], null, 2)).then(() => { t.textContent = 'Copied!'; setTimeout(() => t.textContent = 'Copy JSON', 1500); });
+  } else if (t.dataset.a === 'download') {
+    downloadWeek(i);
+  }
+});
+$('intake').addEventListener('input', () => { $('group').value = ''; render(); });
+$('group').addEventListener('change', render);
+$('reload').addEventListener('click', loadData);
+$('manual-load').addEventListener('click', () => {
+  try { setData(JSON.parse($('manual-text').value)); $('manual').classList.add('hidden'); }
+  catch (e) { $('status').textContent = 'That is not valid JSON.'; }
+});
 
-        function handleLogin(event) {
-            event.preventDefault();
-    
-            // ADD THIS LINE: Clear any previous message when the user attempts a new login
-            loginMessage.style.display = 'none'; 
-    
-        const user = usernameInput.value;
-        const pass = passwordInput.value;
-
-        if (user === CORRECT_USERNAME && pass === CORRECT_PASSWORD) {
-                showApp();
-            } else {
-                showLoginMessage('Invalid username or password.', 'error');
-                passwordInput.value = '';
-            }
-        }
-        
-        // --- Initialize view on page load ---
-        function initializeView() {
-            // Since we are no longer restricting by size, just show the login container.
-            loginContainer.style.display = 'flex'; // Use flex for centering
-            mobileWarning.style.display = 'none';
-            document.body.classList.add('min-h-screen-center');
-        }
-
-        // Run initialization function when the script loads
-        window.addEventListener('load', initializeView);
-        // Note: The 'resize' listener is effectively irrelevant now, but can be kept
-        // window.addEventListener('resize', initializeView);
-
-
-        // --- FILE HANDLING AND CONVERSION FUNCTIONS ---
-
-        // Step 1: Store the file content when a file is selected
-        function storeFile(event) {
-            const file = event.target.files[0];
-            fileContent = null; // Clear previous content
-            convertButton.disabled = true;
-
-            // Clear output and disable download button on new file selection
-            jsonOutput.value = ''; 
-            downloadButton.disabled = true;
-
-            if (!file) {
-                 showMessage("File selection cancelled.", 'error');
-                 return;
-            }
-
-            // Simple check based on extension/type
-            if (file.type !== 'text/html' && !file.name.toLowerCase().endsWith('.html')) {
-                showMessage("Please select a valid HTML file.", 'error');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                fileContent = e.target.result;
-                convertButton.disabled = false; // Enable conversion button
-                showMessage(`File selected: ${file.name}. Click 'Convert to JSON' to process.`, 'success');
-            };
-            reader.onerror = function(e) {
-                showMessage("Error reading file.", 'error');
-                console.error("File reading error:", e);
-            };
-            reader.readAsText(file);
-        }
-
-        // Step 2: Trigger conversion when the button is pressed
-        function triggerConversion() {
-            if (fileContent) {
-                convertHtmlToJson(fileContent);
-            } else {
-                showMessage("Please select an HTML file first.", 'error');
-            }
-        }
-
-        function showMessage(text, type = 'success') {
-            const currentMessageBox = document.getElementById('messageBox');
-            currentMessageBox.innerHTML = text; // Use innerHTML for potential bolding
-            currentMessageBox.classList.remove('hidden', 'error', 'success');
-            currentMessageBox.classList.add('message-box', type);
-            currentMessageBox.style.display = 'block';
-            
-            setTimeout(() => {
-                currentMessageBox.style.display = 'none';
-            }, 5000);
-        }
-
-        /**
-         * Converts a date string like "Mon, 08-Dec-2025" to a Date object representing the
-         * previous Sunday (the start of the week).
-         */
-        function calculateWeekStart(dateStr) {
-            const parts = dateStr.split(', ')[1];
-            if (!parts) return null;
-
-            const [dayStr, monthName, yearStr] = parts.split('-');
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const monthIndex = monthNames.indexOf(monthName);
-
-            if (monthIndex === -1) return null;
-
-            // Create a Date object for the extracted date (e.g., Monday, 08 Dec 2025)
-            const day = parseInt(dayStr, 10);
-            const year = parseInt(yearStr, 10);
-            const extractedDate = new Date(year, monthIndex, day);
-            
-            if (isNaN(extractedDate.getTime())) return null;
-
-            // Calculate the preceding Sunday (dayOfWeek=0 for Sunday)
-            const dayOfWeek = extractedDate.getDay(); 
-            const sundayDate = new Date(extractedDate);
-            // Subtract (dayOfWeek - 0) days. If Monday (1), subtract 1. If Sunday (0), subtract 0.
-            sundayDate.setDate(extractedDate.getDate() - (dayOfWeek === 0 ? 0 : dayOfWeek - 0)); 
-            
-            return sundayDate;
-        }
-
-        /**
-         * Formats a Date object into "YYYY-MM-DD".
-         */
-        function formatDateToISO(dateObj) {
-            if (!dateObj) return 'N/A';
-            const year = dateObj.getFullYear();
-            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const day = String(dateObj.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-        
-        /**
-         * Extracts the module code prefix (e.g., 'AAQS038') from the full subject string.
-         */
-        function getModuleCodePrefix(subject) {
-            // Look for any combination of uppercase letters and numbers at the start
-            const match = subject.match(/^([A-Z0-9]+)/); 
-            return match ? match[1] : null;
-        }
-
-        /**
-         * Parses the raw HTML content and converts it into the desired JSON format.
-         */
-        function convertHtmlToJson(htmlContent) {
-            htmlContent = htmlContent.trim();
-            jsonOutput.value = '';
-            downloadButton.disabled = true;
-            convertButton.disabled = true; // Disable button while processing
-
-            if (!htmlContent) {
-                showMessage("No HTML content loaded.", 'error');
-                convertButton.disabled = false;
-                return;
-            }
-
-            try {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlContent, 'text/html');
-
-                // 1. Extract Header Information
-                let weekStartDate = 'N/A';
-                
-                // Find the cell containing the first day's date (e.g., "Mon, 08-Dec-2025")
-                const firstDayCell = doc.querySelector('table.table tbody tr:not(.thead-dark) td:first-child');
-                if (firstDayCell) {
-                    const firstDateStr = firstDayCell.textContent.trim();
-                    const sundayDateObj = calculateWeekStart(firstDateStr);
-                    
-                    if (sundayDateObj) {
-                        weekStartDate = formatDateToISO(sundayDateObj);
-                    }
-                }
-                
-                // 2. Extract Timetable Rows
-                const rows = doc.querySelectorAll('table.table tbody tr');
-                
-                let days = [];
-                let currentDay = null;
-
-                // 3. Process Data Rows
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-
-                    // Check for minimum cell count and skip header rows
-                    if (cells.length < 6 || row.classList.contains('thead-dark')) {
-                        return; 
-                    }
-                    
-                    const dayData = cells[0].textContent.trim(); 
-                    const time = cells[1].textContent.trim();
-                    const location = cells[2].textContent.trim(); 
-                    const campus = cells[3].textContent.trim(); 
-                    let subject = cells[4].textContent.trim();
-                    const lecturer = cells[5].textContent.trim();
-
-                    if (!subject || subject.toUpperCase() === 'BREAK' || !time) {
-                        return;
-                    }
-
-                    // Derived Fields Logic
-                    
-                    // 1. Module Code and Name
-                    const moduleCodeMatch = subject.match(/^([A-Z0-9-]+)/);
-                    let moduleCode = moduleCodeMatch ? moduleCodeMatch[1] : subject;
-                    
-                    const moduleCodePrefix = getModuleCodePrefix(moduleCode);
-                    const moduleName = MODULE_MAPPING[moduleCodePrefix] || 'UNKNOWN MODULE NAME';
-
-                    // 2. isOnline
-                    const isOnline = subject.toLowerCase().includes('(online)') || location.toLowerCase().startsWith('onl');
-                    
-                    // Clean up module code (remove the redundant (Online) suffix)
-                    let finalModuleCode = moduleCode.replace(' (Online)', '').trim();
-                    
-                    // 3. Class Type
-                    let classType = 'Lecture';
-                    const typeMatch = finalModuleCode.match(/-([LT]|LAB)-/i);
-                    if (typeMatch) {
-                        const typeChar = typeMatch[1].toUpperCase();
-                        if (typeChar === 'L') classType = 'Lecture';
-                        else if (typeChar === 'T') classType = 'Tutorial';
-                        else if (typeChar === 'LAB') classType = 'Lab';
-                    } else if (location.toLowerCase().includes('lab')) {
-                        classType = 'Lab';
-                    }
-
-                    // 4. Replacement Fields (Assuming all are false/empty for standard timetable)
-                    const isReplacement = false;
-                    const replacementType = "";
-                    const isTest = false;
-                    const testType = "";
-
-                    const newClass = {
-                        moduleCode: finalModuleCode,
-                        moduleName: moduleName,
-                        time: time,
-                        location: location,
-                        campus: campus,
-                        lecturer: lecturer,
-                        isOnline: isOnline,
-                        classType: classType,
-                        isReplacement: isReplacement,
-                        replacementType: replacementType,
-                        isTest: isTest,
-                        testType: testType
-                    };
-
-                    // Group classes by day
-                    if (currentDay !== dayData) {
-                        days.push({
-                            date: dayData,
-                            classes: [newClass]
-                        });
-                        currentDay = dayData;
-                    } else if (days.length > 0) {
-                        days[days.length - 1].classes.push(newClass);
-                    }
-                });
-
-                // 4. Construct the Final JSON Object
-                const finalJson = {
-                    weekStartDate: weekStartDate,
-                    days: days
-                };
-
-                // 5. Display the output
-                const jsonString = JSON.stringify(finalJson, null, 2);
-                jsonOutput.value = jsonString;
-                downloadButton.disabled = days.length === 0;
-                convertButton.disabled = false; // Re-enable button after processing
-                showMessage("Conversion successful! JSON data is ready to download.", 'success');
-
-            } catch (e) {
-                console.error("Parsing error:", e);
-                convertButton.disabled = false; // Re-enable button on error
-                showMessage(`Error parsing HTML. Details: ${e.message}`, 'error');
-            }
-        }
-
-        // --- DOWNLOAD JSON FUNCTION ---
-
-        function downloadJson() {
-            const jsonString = jsonOutput.value;
-            if (!jsonString) {
-                showMessage("No JSON output available to download.", 'error');
-                return;
-            }
-
-            try {
-                const jsonObject = JSON.parse(jsonString);
-                const weekDate = jsonObject.weekStartDate;
-                
-                // Filename uses the Sunday date
-                let filename = "timetable_converted.json";
-                if (weekDate && weekDate !== 'N/A') {
-                    filename = `${weekDate}.json`;
-                }
-
-                // Create a Blob from the JSON string
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                
-                // Create a temporary link element for the download
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                
-                // Programmatically click the link to trigger the download
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url); // Clean up the URL object
-
-                showMessage(`Successfully downloaded as <b>${filename}</b>!`, 'success');
-
-            } catch (e) {
-                console.error("Download error:", e);
-                showMessage("Error during JSON download or filename parsing.", 'error');
-            }
-        }
+function init() {
+  const p = new URLSearchParams(location.search).get('intake');
+  $('intake').value = p || DEFAULT_INTAKE;
+  loadData();
+}
