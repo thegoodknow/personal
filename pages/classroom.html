@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom Availability</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#121212; --surface:#1c1c1e; --surface2:#2a2a2d; --border:#38383a; --accent:#3880ff; --text:#f2f2f7; --muted:#98989f; --free:#30d158; --soon:#ff9f0a; --busy:#ff453a; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:1.25rem; font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); }
+  .wrap { max-width:1280px; margin:0 auto; }
+  header.top { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.75rem; background:var(--surface); border:1px solid var(--border); border-radius:1rem; padding:1rem 1.25rem; margin-bottom:1rem; animation:fadeUp .5s ease both; }
+  h1 { margin:0; font-size:1.25rem; }
+  .clock { text-align:right; font-variant-numeric:tabular-nums; }
+  .clock b { display:block; font-size:1.15rem; }
+  .clock span { font-size:.75rem; color:var(--muted); }
+  .live { display:inline-block; width:.55rem; height:.55rem; border-radius:50%; background:var(--free); margin-right:.4rem; animation:pulse 1.6s infinite; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.75rem; margin-bottom:1rem; }
+  .stat { background:var(--surface); border:1px solid var(--border); border-radius:1rem; padding:.8rem 1rem; animation:fadeUp .5s ease both; }
+  .stat b { font-size:1.6rem; display:block; font-variant-numeric:tabular-nums; }
+  .stat span { font-size:.78rem; color:var(--muted); }
+  .stat.f b { color:var(--free); } .stat.b b { color:var(--busy); }
+  .controls { display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:.6rem; animation:fadeUp .5s .1s ease both; }
+  input, select, button { background:var(--surface2); color:var(--text); border:1px solid var(--border); border-radius:.6rem; padding:.55rem .8rem; font:inherit; font-size:.85rem; transition:border-color .2s, box-shadow .2s, transform .15s; }
+  input:focus, select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(56,128,255,.25); }
+  button { cursor:pointer; background:var(--accent); border-color:var(--accent); font-weight:600; }
+  button:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(56,128,255,.35); }
+  #search { flex:1; min-width:180px; }
+  .note { font-size:.8rem; color:var(--muted); margin:.4rem 0 1rem; }
+  .note.warn { color:var(--soon); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:.8rem; }
+  .card { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--free); border-radius:1rem; padding:.9rem 1rem; transition:transform .25s, box-shadow .25s; }
+  .card:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(0,0,0,.5); }
+  .anim .card { animation:fadeUp .5s cubic-bezier(.2,.8,.2,1) both; }
+  .card.soon { border-left-color:var(--soon); } .card.busy { border-left-color:var(--busy); }
+  .row { display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem; }
+  .room { font-weight:700; font-size:1.05rem; }
+  .meta { font-size:.74rem; color:var(--muted); }
+  .pill { font-size:.7rem; font-weight:700; padding:.2rem .6rem; border-radius:9999px; background:rgba(48,209,88,.15); color:var(--free); white-space:nowrap; }
+  .soon .pill { background:rgba(255,159,10,.15); color:var(--soon); } .busy .pill { background:rgba(255,69,58,.15); color:var(--busy); }
+  .lbl { font-size:.72rem; color:var(--muted); margin-top:.7rem; }
+  .big { font-size:1.55rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--free); }
+  .soon .big { color:var(--soon); } .busy .big { color:var(--text); }
+  .bar { height:5px; border-radius:3px; background:var(--surface2); margin:.45rem 0; overflow:hidden; }
+  .bar i { display:block; height:100%; background:var(--free); transition:width .6s; }
+  .soon .bar i { background:var(--soon); } .busy .bar i { background:var(--busy); }
+  .sub { font-size:.78rem; color:#c7c7cc; line-height:1.4; }
+  .sec { display:flex; align-items:baseline; gap:.75rem; font-size:1.05rem; margin:1.4rem 0 .6rem; padding-bottom:.4rem; border-bottom:1px solid var(--border); animation:fadeUp .4s ease both; }
+  .sec small { font-size:.75rem; font-weight:400; color:var(--muted); }
+  .empty { text-align:center; color:var(--muted); padding:3rem 0; }
+  #manual { margin-top:.6rem; } #manual textarea { width:100%; margin:.5rem 0; font-size:.75rem; }
+  .hidden { display:none !important; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+  @keyframes pulse { 50% { opacity:.3; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Classroom Availability</h1>
+    <div class="clock"><b id="clock">--:--:--</b><span><i class="live"></i>Live · Malaysia time · <span id="updated">loading…</span></span></div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><b id="s-total">–</b><span>Rooms tracked</span></div>
+    <div class="stat f"><b id="s-free">–</b><span>Free now</span></div>
+    <div class="stat b"><b id="s-busy">–</b><span>Occupied now</span></div>
+    <div class="stat f"><b id="s-long">–</b><span>Free for 1h or more</span></div>
+  </div>
+
+  <div class="controls">
+    <input id="search" placeholder="Search room, e.g. D-07 or Tech Lab">
+    <select id="block"><option value="">All blocks</option></select>
+    <select id="status"><option value="">Free &amp; occupied</option><option value="free">Free only</option><option value="busy">Occupied only</option></select>
+    <select id="minfree"><option value="0">Any free duration</option><option value="30">Free ≥ 30 min</option><option value="60">Free ≥ 1 hour</option><option value="120">Free ≥ 2 hours</option></select>
+    <button id="refresh">Refresh data</button>
+  </div>
+  <p id="note" class="note"></p>
+  <details id="manual" class="hidden">
+    <summary class="note warn" style="cursor:pointer">Couldn't reach the link from the browser — paste the JSON instead</summary>
+    <textarea id="manual-text" rows="4" placeholder="Paste the JSON from the link here"></textarea>
+    <button id="manual-load">Use pasted JSON</button>
+  </details>
+
+  <div id="grid" class="anim"></div>
+</div>
+
+<script src = "../Java/classroom.js"></script>
+</body>
+</html>

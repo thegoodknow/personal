@@ -17,6 +17,7 @@ const MY_WORKSPACE_PAGES = [
     { fileName: "convert.html", tags: ["Utility"] },
     { fileName: "DBM LAB7.html", tags: ["Academic", "Quiz"] },
     { fileName: "department.html", tags: ["Academic"] },
+    { fileName: "classroom.html", tags: ["Academic"] },
     { fileName: "timetable test.html", tags: ["System Testing"] },
     { fileName: "timetable.html", tags: ["Utility"] }
 ];
