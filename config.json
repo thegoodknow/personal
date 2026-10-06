@@ -133,7 +133,7 @@
         {
           "title": "Group Assignment",
           "type": "Assignment",
-          "dueDate": "2017-01-05",
+          "dueDate": "2027-01-05",
           "dueTime":"23:59",
           "link": "https://lms2.apiit.edu.my/mod/assign/view.php?id=1308393",
           "notes": "More Info in Moodle. This is a documentary Assignment.",
@@ -142,7 +142,7 @@
       ]
     },
     {
-      "moduleCode": "AINT007",
+      "moduleCode": "AAPP013-4-2-OOP",
       "moduleName": "Object Oriented Programming",
       "items": [
         {
