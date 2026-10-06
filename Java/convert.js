@@ -71,12 +71,19 @@ function classTypeOf(code, room) {
   if (/-P-/.test(c)) return 'Practical';
   return /lab/i.test(room) ? 'Lab' : 'Lecture';
 }
+function to24(t) {                                   // "06:45 PM" -> "18:45"
+  const m = /^\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*$/i.exec(t || '');
+  if (!m) return t || '';
+  let h = parseInt(m[1], 10) % 12;
+  if (m[3].toUpperCase() === 'PM') h += 12;
+  return String(h).padStart(2, '0') + ':' + m[2];
+}
 function toClass(r) {
   const code = (r.MODID || '').replace(/\s*\(online\)/i, '').trim();
   return {
     moduleCode: code,
     moduleName: r.MODULE_NAME || 'UNKNOWN MODULE NAME',
-    time: `${r.TIME_FROM} - ${r.TIME_TO}`,
+    time: `${to24(r.TIME_FROM)} - ${to24(r.TIME_TO)}`,
     location: r.ROOM || '',
     campus: r.LOCATION || '',
     lecturer: r.NAME || '',
