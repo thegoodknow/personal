@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APU Classroom Availability</title>
+<title>Classroom Availability</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root { --bg:#121212; --surface:#1c1c1e; --surface2:#2a2a2d; --border:#38383a; --accent:#3880ff; --text:#f2f2f7; --muted:#98989f; --free:#30d158; --soon:#ff9f0a; --busy:#ff453a; }
@@ -61,21 +61,21 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>Asia Pacific University (APU) Classroom Availability</h1>
+    <h1>Classroom Availability</h1>
     <div class="clock"><b id="clock">--:--:--</b><span><i class="live"></i>Live · Malaysia time · <span id="updated">loading…</span></span></div>
   </header>
 
   <div class="stats">
-    <div class="stat"><b id="s-total">–</b><span>Classroom are tracked</span></div>
-    <div class="stat f"><b id="s-free">–</b><span>Classrom are available</span></div>
-    <div class="stat b"><b id="s-busy">–</b><span>Classroom are occupied for now</span></div>
-    <div class="stat f"><b id="s-long">–</b><span>Classroom that is free for 1h or more</span></div>
+    <div class="stat"><b id="s-total">–</b><span>Rooms tracked</span></div>
+    <div class="stat f"><b id="s-free">–</b><span>Free now</span></div>
+    <div class="stat b"><b id="s-busy">–</b><span>Occupied now</span></div>
+    <div class="stat f"><b id="s-long">–</b><span>Free for 1h or more</span></div>
   </div>
 
   <div class="controls">
     <input id="search" placeholder="Search room, e.g. D-07 or Tech Lab">
     <select id="block"><option value="">All blocks</option></select>
-    <select id="status"><option value="">All Status</option><option value="free">Available classroom only</option><option value="busy">Occupied classroom only</option></select>
+    <select id="status"><option value="">Free &amp; occupied</option><option value="free">Free only</option><option value="busy">Occupied only</option></select>
     <select id="minfree"><option value="0">Any free duration</option><option value="30">Free ≥ 30 min</option><option value="60">Free ≥ 1 hour</option><option value="120">Free ≥ 2 hours</option></select>
     <button id="refresh">Refresh data</button>
   </div>
@@ -90,6 +90,6 @@
   <div id="grid" class="anim"></div>
 </div>
 
-<script src = "../Java/classroom.js"></script>
+<script src="../Java/classroom.js"></script>
 </body>
 </html>

@@ -4,8 +4,19 @@
   "siteBase": "https://thegoodknow.nx.kg/pages/",
 
   "announcements": { "isExamWeek": false },
-  "exams": [],
-  "holidays": [],
+  "exams": [
+  {
+    "date": "2026-11-16",
+    "module": "Object Oriented Programming (AAPP013)",
+    "location": "Auditorium 2 @ Level 6",
+    "time": "09:00 AM - 11:00 AM",
+    "duration": "2 hours"
+  }
+],
+
+"holidays": [
+  { "date": "2026-10-20", "name": "Deepavali" }
+],
 
   "assignments": [
     {

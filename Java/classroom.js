@@ -113,10 +113,8 @@ function render() {
     if (stf === 'busy' && !x.st.busy) return false;
     if (minf && (x.st.busy || x.st.freeFor < minf)) return false;
     return true;
-  }).sort(function (a, b) {
-    if (a.st.busy !== b.st.busy) return a.st.busy ? 1 : -1;
-    if (!a.st.busy) return b.st.freeFor === a.st.freeFor ? a.r.name.localeCompare(b.r.name, undefined, { numeric: true }) : (b.st.freeFor > a.st.freeFor ? 1 : -1);
-    return a.st.until - b.st.until;
+  }).sort(function (a, b) {                                           // room-number order (A-05-01, A-05-02, ... A-10-01), not by availability
+    return a.r.name.localeCompare(b.r.name, undefined, { numeric: true, sensitivity: 'base' });
   });
 
   var ob = $('only');
