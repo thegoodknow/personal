@@ -94,19 +94,88 @@ function who(items) {
 
 /* ---------- time-slot finder ---------- */
 function dateLabel(d) { return new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'short', day: '2-digit', month: 'short' }).format(Date.parse(d + 'T12:00:00+08:00')); }
+var SLOT = { date: '', from: '14:00', to: '16:00' }, POP = null, CAL = { y: 0, m: 0 }, PT = null;
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+function fmt12(hhmm) { var p = hhmm.split(':'), h = +p[0]; return pad2(h % 12 || 12) + ':' + p[1] + ' ' + (h >= 12 ? 'PM' : 'AM'); }
+function to24(h12, min, ap) { return pad2((h12 % 12) + (ap === 'PM' ? 12 : 0)) + ':' + pad2(min); }
+function updateSlotLabels() {
+  var today = fD.format(Date.now());
+  $('slot-date').textContent = '📅 ' + (SLOT.date === today ? 'Today · ' : '') + dateLabel(SLOT.date);
+  $('slot-from').textContent = '🕒 ' + fmt12(SLOT.from);
+  $('slot-to').textContent = '🕒 ' + fmt12(SLOT.to);
+}
 function refreshSlotDates() {
-  var today = fD.format(Date.now()), keys = Object.keys(DATES);
-  if (keys.indexOf(today) < 0) keys.push(today);
-  keys.sort();
-  var sel = $('slot-date'), cur = sel.value || today;
-  sel.innerHTML = keys.map(function (d) { return '<option value="' + d + '">' + (d === today ? 'Today · ' : '') + dateLabel(d) + '</option>'; }).join('');
-  sel.value = keys.indexOf(cur) >= 0 ? cur : today;
+  var today = fD.format(Date.now());
+  if (!SLOT.date || (!DATES[SLOT.date] && SLOT.date !== today)) SLOT.date = today;
+  updateSlotLabels();
 }
 function getSlot() {
   if ($('slot-panel').classList.contains('hidden')) return null;
-  var d = $('slot-date').value, f = $('slot-from').value, t = $('slot-to').value;
+  var d = SLOT.date, f = SLOT.from, t = SLOT.to;
   var s = Date.parse(d + 'T' + f + ':00+08:00'), e = Date.parse(d + 'T' + t + ':00+08:00');
   return { date: d, s: s, e: e, ok: !!(d && f && t) && !isNaN(s) && !isNaN(e) && e > s };
+}
+
+/* ---------- custom calendar + time picker popovers ---------- */
+function openPop(kind, anchor) {
+  if (POP && POP.kind === kind) { closePop(); return; }
+  closePop();
+  POP = { kind: kind, anchor: anchor }; anchor.classList.add('open');
+  if (kind === 'date') { var p = SLOT.date.split('-'); CAL.y = +p[0]; CAL.m = +p[1] - 1; renderCal(); }
+  else { var v = SLOT[kind].split(':'), h = +v[0]; PT = { h: h % 12 || 12, m: +v[1], ap: h >= 12 ? 'PM' : 'AM' }; renderTimePick(); }
+  $('pop').classList.remove('hidden'); placePop();
+}
+function closePop() {
+  if (POP) POP.anchor.classList.remove('open');
+  POP = null; $('pop').classList.add('hidden');
+}
+function placePop() {
+  if (!POP) return;
+  var el = $('pop'), r = POP.anchor.getBoundingClientRect(), pw = el.offsetWidth, ph = el.offsetHeight;
+  var left = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8)), top = r.bottom + 6;
+  if (top + ph > window.innerHeight - 8 && r.top - ph - 6 > 8) top = r.top - ph - 6;
+  el.style.left = left + 'px'; el.style.top = top + 'px';
+}
+function renderCal() {
+  var today = fD.format(Date.now()), y = CAL.y, m = CAL.m;
+  var dow = new Date(Date.UTC(y, m, 1)).getUTCDay(), n = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  var title = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m, 1)));
+  var h = '<div class="ch"><button type="button" data-a="pm" aria-label="Previous month">‹</button><b>' + title + '</b><button type="button" data-a="nm" aria-label="Next month">›</button></div><div class="cg">';
+  ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(function (x) { h += '<span class="dw">' + x + '</span>'; });
+  for (var i = 0; i < dow; i++) h += '<span></span>';
+  for (var d = 1; d <= n; d++) {
+    var ds = y + '-' + pad2(m + 1) + '-' + pad2(d), ok = DATES[ds] || ds === today;
+    h += '<button type="button" class="dy' + (ds === SLOT.date ? ' sel' : '') + (ds === today ? ' tod' : '') + (DATES[ds] ? ' has' : '') + '"' + (ok ? ' data-d="' + ds + '"' : ' disabled') + '>' + d + '</button>';
+  }
+  $('pop').innerHTML = h + '</div><div class="pf"><button type="button" data-a="today">Today</button><span class="meta" style="align-self:center">● = has classes</span></div>';
+}
+function renderTimePick() {
+  var h = '<div class="pv">' + pad2(PT.h) + ':' + pad2(PT.m) + ' ' + PT.ap + '</div><div class="tl">Hour</div><div class="tg">', i;
+  for (i = 1; i <= 12; i++) h += '<button type="button" data-h="' + i + '"' + (i === PT.h ? ' class="sel"' : '') + '>' + pad2(i) + '</button>';
+  h += '</div><div class="tl">Minute</div><div class="tg">';
+  for (i = 0; i < 60; i += 5) h += '<button type="button" data-m="' + i + '"' + (i === PT.m ? ' class="sel"' : '') + '>' + pad2(i) + '</button>';
+  h += '</div><div class="tl">AM / PM</div><div class="apg">';
+  ['AM', 'PM'].forEach(function (x) { h += '<button type="button" data-p="' + x + '"' + (x === PT.ap ? ' class="sel"' : '') + '>' + x + '</button>'; });
+  $('pop').innerHTML = h + '</div><div class="pf"><button type="button" data-a="cancel">Cancel</button><button type="button" data-a="set">Set time</button></div>';
+}
+function pickDate(d) { SLOT.date = d; updateSlotLabels(); closePop(); if (ROOMS.length) render(); }
+function popClick(e) {
+  e.stopPropagation();
+  var b = e.target.closest('button'); if (!b || b.disabled || !POP) return;
+  var a = b.getAttribute('data-a');
+  if (POP.kind === 'date') {
+    if (a === 'pm') { if (--CAL.m < 0) { CAL.m = 11; CAL.y--; } renderCal(); placePop(); }
+    else if (a === 'nm') { if (++CAL.m > 11) { CAL.m = 0; CAL.y++; } renderCal(); placePop(); }
+    else if (a === 'today') pickDate(fD.format(Date.now()));
+    else if (b.getAttribute('data-d')) pickDate(b.getAttribute('data-d'));
+  } else {
+    if (b.hasAttribute('data-h')) PT.h = +b.getAttribute('data-h');
+    else if (b.hasAttribute('data-m')) PT.m = +b.getAttribute('data-m');
+    else if (b.hasAttribute('data-p')) PT.ap = b.getAttribute('data-p');
+    else if (a === 'cancel') { closePop(); return; }
+    else if (a === 'set') { SLOT[POP.kind] = to24(PT.h, PT.m, PT.ap); updateSlotLabels(); closePop(); if (ROOMS.length) render(); return; }
+    renderTimePick(); placePop();
+  }
 }
 function slotInfo(room, slot) {
   var bl = blocksOf(room, slot.date), free = true, prev = null, next = null;
@@ -260,12 +329,17 @@ $('manual-load').addEventListener('click', function () {
   try { setData(JSON.parse($('manual-text').value)); $('manual').classList.add('hidden'); } catch (e) { $('updated').textContent = 'invalid JSON'; }
 });
 $('slot-toggle').addEventListener('click', function () {
-  var p = $('slot-panel'); p.classList.toggle('hidden');
+  closePop(); var p = $('slot-panel'); p.classList.toggle('hidden');
   $('slot-toggle').classList.toggle('on', !p.classList.contains('hidden'));
   if (ROOMS.length) render();
 });
-$('slot-clear').addEventListener('click', function () { $('slot-panel').classList.add('hidden'); $('slot-toggle').classList.remove('on'); if (ROOMS.length) render(); });
-['slot-date', 'slot-from', 'slot-to'].forEach(function (id) { $(id).addEventListener('input', function () { if (ROOMS.length) render(); }); });
+$('slot-clear').addEventListener('click', function () { closePop(); $('slot-panel').classList.add('hidden'); $('slot-toggle').classList.remove('on'); if (ROOMS.length) render(); });
+['date', 'from', 'to'].forEach(function (k) { $('slot-' + k).addEventListener('click', function (e) { e.stopPropagation(); openPop(k === 'date' ? 'date' : k, e.currentTarget); }); });
+$('pop').addEventListener('click', popClick);
+document.addEventListener('click', function () { if (POP) closePop(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && POP) closePop(); });
+window.addEventListener('scroll', placePop, true);
+window.addEventListener('resize', placePop);
 $('grid').addEventListener('click', function (e) { var c = e.target.closest('.card'); if (c) openModal(c.getAttribute('data-room')); });
 $('grid').addEventListener('keydown', function (e) { var c = e.target.closest && e.target.closest('.card'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openModal(c.getAttribute('data-room')); } });
 $('m-close').addEventListener('click', closeModal);

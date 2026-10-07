@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>APU Classroom Availability</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
 <style>
   :root { --bg:#121212; --surface:#1c1c1e; --surface2:#2a2a2d; --border:#38383a; --accent:#3880ff; --text:#f2f2f7; --muted:#98989f; --free:#30d158; --soon:#ff9f0a; --busy:#ff453a; }
   * { box-sizing:border-box; }
@@ -76,6 +75,26 @@
   .srow.now { background:rgba(255,69,58,.15); color:var(--text); }
   .slotrow { font-size:.85rem; padding:.55rem .75rem; border-radius:.7rem; margin-bottom:.4rem; background:rgba(48,209,88,.12); }
   .slotrow.no { background:rgba(255,69,58,.12); }
+  .slot .lab { font-size:.8rem; color:var(--muted); }
+  button.pick { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; min-width:8rem; background:var(--surface2); color:var(--text); border:1px solid var(--border); font-weight:500; }
+  button.pick:hover, button.pick.open { border-color:var(--accent); box-shadow:none; }
+  .pop { position:fixed; z-index:60; width:17.5rem; background:var(--surface); border:1px solid var(--border); border-radius:1rem; padding:.8rem; box-shadow:0 14px 40px rgba(0,0,0,.6); animation:popIn .2s ease both; }
+  .pop button { background:transparent; border:1px solid transparent; color:var(--text); padding:.45rem 0; border-radius:.6rem; font-size:.85rem; font-weight:500; }
+  .pop button:hover { background:var(--surface2); transform:none; box-shadow:none; }
+  .pop button.sel, .pop button.sel:hover { background:var(--accent); color:#fff; }
+  .pop button:disabled { opacity:.3; cursor:default; } .pop button:disabled:hover { background:transparent; }
+  .ch { display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; }
+  .ch button { width:2rem; font-size:1.1rem; }
+  .cg { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+  .dw { font-size:.68rem; color:var(--muted); padding:.3rem 0; }
+  .dy { position:relative; } .dy.tod { border-color:var(--accent) !important; }
+  .dy.has::after { content:''; position:absolute; bottom:3px; left:50%; width:4px; height:4px; margin-left:-2px; border-radius:50%; background:var(--free); }
+  .pv { font-size:1.3rem; font-weight:700; text-align:center; margin-bottom:.2rem; font-variant-numeric:tabular-nums; }
+  .tl { font-size:.7rem; color:var(--muted); margin:.55rem 0 .25rem; }
+  .tg { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; } .apg { display:grid; grid-template-columns:1fr 1fr; gap:3px; }
+  .pf { display:flex; justify-content:space-between; gap:.5rem; margin-top:.7rem; }
+  .pop .pf button { border:1px solid var(--border); padding:.45rem .9rem; }
+  .pop .pf button[data-a=set] { background:var(--accent); border-color:var(--accent); color:#fff; }
   .empty { text-align:center; color:var(--muted); padding:3rem 0; }
   #manual { margin-top:.6rem; } #manual textarea { width:100%; margin:.5rem 0; font-size:.75rem; }
   .hidden { display:none !important; }
@@ -89,7 +108,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>Asia Pacafic University (APU) Classroom Availability</h1>
+    <h1>Asia Pacific University (APU) Classroom Availability</h1>
     <div class="clock"><b id="clock">--:--:--</b><span><i class="live"></i>Live · Malaysia time · <span id="updated">loading…</span></span></div>
   </header>
 
@@ -97,21 +116,21 @@
     <div class="stat"><b id="s-total">–</b><span>Tracked classroom</span></div>
     <div class="stat f"><b id="s-free">–</b><span>Classroom are available</span></div>
     <div class="stat b"><b id="s-busy">–</b><span>Classroom are occupied now</span></div>
-    <div class="stat f"><b id="s-long">–</b><span>Classroom are Free for 1h or more</span></div>
+    <div class="stat f"><b id="s-long">–</b><span>Classroom are available for 1h or more</span></div>
   </div>
 
   <div class="controls">
     <input id="search" placeholder="Search room, e.g. D-07 or Tech Lab">
     <select id="block"><option value="">All blocks</option></select>
-    <select id="status"><option value="">available &amp; occupied</option><option value="free">available classroom only</option><option value="busy">Occupied classroom only</option></select>
+    <select id="status"><option value="">Free &amp; occupied classroom</option><option value="free">Available classroom only</option><option value="busy">Occupied classroom only</option></select>
     <select id="minfree"><option value="0">Any free duration</option><option value="30">Free ≥ 30 min</option><option value="60">Free ≥ 1 hour</option><option value="120">Free ≥ 2 hours</option></select>
     <button id="refresh">Refresh data</button>
     <button id="slot-toggle" class="ghost">🕒 Find by time slot</button>
   </div>
   <div id="slot-panel" class="slot hidden">
-    <label>Day <select id="slot-date"></select></label>
-    <label>From <input type="time" id="slot-from" value="14:00"></label>
-    <label>To <input type="time" id="slot-to" value="16:00"></label>
+    <span class="lab">Day</span><button type="button" id="slot-date" class="pick"></button>
+    <span class="lab">From</span><button type="button" id="slot-from" class="pick"></button>
+    <span class="lab">To</span><button type="button" id="slot-to" class="pick"></button>
     <button id="slot-clear" class="ghost">Clear</button>
     <div id="slot-msg" class="slot-msg"></div>
   </div>
@@ -126,8 +145,9 @@
   <div id="grid" class="anim"></div>
 </div>
 
+<div id="pop" class="pop hidden"></div>
 <div id="modal" class="modal hidden"><div class="panel" role="dialog" aria-modal="true"><button id="m-close" class="x" aria-label="Close">&times;</button><div id="m-body"></div></div></div>
 
-<script src="../Java/classroom.js"></script>
+<script src = "../Java/classroom.js"></script>
 </body>
 </html>
