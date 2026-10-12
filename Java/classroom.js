@@ -83,14 +83,6 @@ function status(room, now, today) {
   for (i = 0; i < bl.length; i++) if (bl[i].s > now) { next = bl[i]; break; }
   return { busy: false, next: next, freeFor: next ? next.s - now : Infinity };
 }
-function who(items) {
-  var codes = [], ints = [];
-  items.forEach(function (c) { if (codes.indexOf(c.code) < 0) codes.push(c.code); if (c.intake && ints.indexOf(c.intake) < 0) ints.push(c.intake); });
-  var t = esc(codes.slice(0, 2).join(', ')) + (codes.length > 2 ? ' +' + (codes.length - 2) : '');
-  if (items[0].mod) t += ' · ' + esc(items[0].mod);
-  if (ints.length) t += '<br>' + esc(ints.slice(0, 3).join(', ')) + (ints.length > 3 ? ' +' + (ints.length - 3) + ' more' : '');
-  return t;
-}
 
 /* ---------- time-slot finder ---------- */
 function dateLabel(d) { return new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'short', day: '2-digit', month: 'short' }).format(Date.parse(d + 'T12:00:00+08:00')); }
@@ -193,7 +185,7 @@ function updateSlotMsg(slot, n, total) {
 }
 
 /* ---------- room details popup ---------- */
-var OPEN_ROOM = null;
+var OPEN_ROOM = null, MODAL_DATE = '';
 function levelOf(n) {
   var m = /^[A-Z]-(\d+)-/.exec(n) || /(\d+)-\d+/.exec(n) || /level\s*(\d+)/i.exec(n);
   return m ? 'Level ' + parseInt(m[1], 10) : 'Level –';
@@ -214,11 +206,14 @@ function classBox(c) {
 function renderModal() {
   var room = ROOMS.filter(function (r) { return r.name === OPEN_ROOM; })[0];
   if (!room) { closeModal(); return; }
-  var now = Date.now(), today = fD.format(now), st = status(room, now, today), bl = blocksOf(room, today), slot = getSlot(), all = [];
-  bl.forEach(function (b) { all = all.concat(b.items); });
+  var now = Date.now(), today = fD.format(now), st = status(room, now, today), slot = getSlot();
   var when = st.busy ? 'Free in <span class="cd" data-t="' + st.until + '">' + dur(st.until - now) + '</span>'
     : st.next ? 'Free for <span class="cd" data-t="' + st.next.s + '">' + dur(st.freeFor) + '</span>' : 'Free for the rest of the day';
-  var nextBlock = st.busy ? st.after : st.next;
+  var nextBlock = st.busy ? st.after : st.next, nextDay = '';
+  if (!nextBlock) {                                                     // nothing left today -> look at the following days
+    var fut = room.cls.filter(function (c) { return c.date > today; }).sort(function (a, b) { return a.s - b.s; })[0];
+    if (fut) { nextBlock = blocksOf(room, fut.date)[0]; nextDay = dateLabel(fut.date); }
+  }
   var h = '<div class="mh ' + (st.busy ? 'busy' : 'free') + '"><div><div class="room" style="font-size:1.4rem">' + esc(room.name) + '</div><div class="meta">' + esc(room.campus) + '</div></div><span class="pill">' + (st.busy ? 'Occupied' : 'Free') + '</span></div>' +
     '<div class="kv"><div><span>Block</span>' + esc(room.block) + '</div><div><span>Level</span>' + esc(levelOf(room.name)) + '</div><div><span>Campus</span>' + esc(room.campus || '–') + '</div><div><span>Right now</span>' + when + '</div></div>';
   if (slot && slot.ok) {
@@ -226,14 +221,19 @@ function renderModal() {
     h += '<div class="slotrow ' + (sl.free ? '' : 'no') + '">Selected slot ' + fT.format(slot.s) + ' – ' + fT.format(slot.e) + ' (' + dateLabel(slot.date) + '): <b>' + (sl.free ? 'Free' : 'Occupied') + '</b></div>';
   }
   h += '<h3>Current class</h3>' + (st.busy ? grp(st.b.items).map(classBox).join('') : '<div class="m">No class in this room right now.</div>');
-  h += '<h3>Next class</h3>' + (nextBlock ? grp(nextBlock.items).map(classBox).join('') : '<div class="m">No more classes scheduled today.</div>');
-  h += '<h3>Today\'s schedule</h3>' + (all.length ? grp(all).map(function (c) {
-    return '<div class="srow' + (c.s <= now && now < c.e ? ' now' : '') + '">' + fT.format(c.s) + ' – ' + fT.format(c.e) + ' · ' + esc(c.code) + '</div>';
-  }).join('') : '<div class="m">No classes scheduled today.</div>');
+  h += '<h3>Next class' + (nextDay ? ' · ' + esc(nextDay) : '') + '</h3>' + (nextBlock ? grp(nextBlock.items).map(classBox).join('') : '<div class="m">No upcoming classes in the timetable data.</div>');
+  var md = MODAL_DATE || today, keys = Object.keys(DATES), items = [];
+  if (keys.indexOf(today) < 0) keys.push(today);
+  keys.sort();
+  blocksOf(room, md).forEach(function (b) { items = items.concat(b.items); });
+  h += '<h3>Schedule</h3><div class="dnav"><button type="button" class="ghost" data-dn="-1"' + (md <= keys[0] ? ' disabled' : '') + ' aria-label="Previous day">‹</button><b>' + (md === today ? 'Today · ' : '') + esc(dateLabel(md)) + '</b><button type="button" class="ghost" data-dn="1"' + (md >= keys[keys.length - 1] ? ' disabled' : '') + ' aria-label="Next day">›</button>' + (md !== today ? '<button type="button" class="ghost" data-dn="0">Today</button>' : '') + '</div>';
+  h += items.length ? grp(items).map(function (c) {
+    return '<div class="srow' + (md === today && c.s <= now && now < c.e ? ' now' : '') + '">' + fT.format(c.s) + ' – ' + fT.format(c.e) + ' · ' + esc(c.code) + (c.mod ? ' · ' + esc(c.mod) : '') + '</div>';
+  }).join('') : '<div class="m">' + (DATES[md] ? 'No classes in this room on this day.' : 'No timetable data for this day yet.') + '</div>';
   $('m-body').innerHTML = h;
 }
-function openModal(name) { OPEN_ROOM = name; renderModal(); if (OPEN_ROOM) { $('modal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
-function closeModal() { OPEN_ROOM = null; $('modal').classList.add('hidden'); document.body.style.overflow = ''; }
+function openModal(name) { OPEN_ROOM = name; MODAL_DATE = ''; renderModal(); if (OPEN_ROOM) { $('modal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+function closeModal() { OPEN_ROOM = null; MODAL_DATE = ''; $('modal').classList.add('hidden'); document.body.style.overflow = ''; }
 
 /* ---------- render ---------- */
 function render() {
@@ -281,21 +281,21 @@ function render() {
       var sl = x.sl;
       return { b: r.block, h: '<div class="card free" data-room="' + esc(r.name) + '" tabindex="0" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + ' · ' + esc(levelOf(r.name)) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">Available</span></div>' +
         '<div class="lbl">Free window</div><div class="big sm">' + (sl.prev ? fT.format(sl.prev.e) : 'Start of day') + ' – ' + (sl.next ? fT.format(sl.next.s) : 'End of day') + '</div><div class="bar"><i style="width:100%"></i></div>' +
-        '<div class="sub"><b>Before:</b> ' + (sl.prev ? who(sl.prev.items) : 'No earlier class') + '<br><b>After:</b> ' + (sl.next ? who(sl.next.items) : 'No later class') + '</div></div>' };
+        '<div class="sub">Free for the whole slot</div><div class="hint">View details ›</div></div>' };
     }
     if (s.busy) {
       cls = 'busy'; pill = 'Occupied'; lbl = 'Free in'; big = '<span class="cd" data-t="' + s.until + '">' + dur(s.until - now) + '</span>';
       pct = 100 * (now - s.b.s) / (s.b.e - s.b.s);
-      sub = '<b>Now:</b> ' + who(s.b.items) + '<br>Until ' + fT.format(s.until) + (s.after ? ' · then free for ' + dur(s.after.s - s.until).replace(/ \d+s$/, '') : ' · then free for the rest of the day');
+      sub = 'Until ' + fT.format(s.until) + (s.after ? ' · then free for ' + dur(s.after.s - s.until).replace(/ \d+s$/, '') : ' · then free for the rest of the day');
     } else if (s.next) {
       cls = s.freeFor < 900000 ? 'soon' : 'free'; pill = 'Free'; lbl = 'Free for'; big = '<span class="cd" data-t="' + s.next.s + '">' + dur(s.freeFor) + '</span>';
       pct = Math.min(100, 100 * s.freeFor / 14400000);
-      sub = 'Until ' + fT.format(s.next.s) + '<br><b>Next:</b> ' + who(s.next.items);
+      sub = 'Until ' + fT.format(s.next.s);
     } else {
       cls = 'free'; pill = 'Free'; lbl = 'Free for'; big = 'Rest of the day'; pct = 100; sub = 'No more classes scheduled today';
     }
     return { b: r.block, h: '<div class="card ' + cls + '" data-room="' + esc(r.name) + '" tabindex="0" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + ' · ' + esc(levelOf(r.name)) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">' + pill + '</span></div>' +
-      '<div class="lbl">' + lbl + '</div><div class="big">' + big + '</div><div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div><div class="sub">' + sub + '</div></div>' };
+      '<div class="lbl">' + lbl + '</div><div class="big">' + big + '</div><div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div><div class="sub">' + sub + '</div><div class="hint">View details ›</div></div>' };
   });
   var groups = {};
   list.forEach(function (x, i) { (groups[x.r.block] = groups[x.r.block] || []).push(i); });
@@ -342,6 +342,12 @@ window.addEventListener('scroll', placePop, true);
 window.addEventListener('resize', placePop);
 $('grid').addEventListener('click', function (e) { var c = e.target.closest('.card'); if (c) openModal(c.getAttribute('data-room')); });
 $('grid').addEventListener('keydown', function (e) { var c = e.target.closest && e.target.closest('.card'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openModal(c.getAttribute('data-room')); } });
+$('m-body').addEventListener('click', function (e) {                     // previous / next day in the popup schedule
+  var b = e.target.closest('button[data-dn]'); if (!b || b.disabled) return;
+  var today = fD.format(Date.now()), n = +b.getAttribute('data-dn');
+  MODAL_DATE = n === 0 ? today : fD.format(Date.parse((MODAL_DATE || today) + 'T12:00:00+08:00') + n * 86400000);
+  renderModal();
+});
 $('m-close').addEventListener('click', closeModal);
 $('modal').addEventListener('click', function (e) { if (e.target === $('modal')) closeModal(); });
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && OPEN_ROOM) closeModal(); });
