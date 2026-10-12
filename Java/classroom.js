@@ -170,18 +170,26 @@ function popClick(e) {
   }
 }
 function slotInfo(room, slot) {
-  var bl = blocksOf(room, slot.date), free = true, prev = null, next = null;
+  var bl = blocksOf(room, slot.date), free = true, prev = null, next = null, hits = [];
   bl.forEach(function (b) {
-    if (b.s < slot.e && b.e > slot.s) free = false;
+    if (b.s < slot.e && b.e > slot.s) { free = false; hits.push(b); }
     if (b.e <= slot.s) prev = b;
     if (b.s >= slot.e && !next) next = b;
   });
-  return { free: free, prev: prev, next: next };
+  return { free: free, prev: prev, next: next, hits: hits };
 }
-function updateSlotMsg(slot, n, total) {
+function updateSlotMsg(slot, n, total, all) {
   if (!slot) return;
   var m = $('slot-msg'); m.className = 'slot-msg' + (slot.ok ? '' : ' warn');
-  m.textContent = slot.ok ? n + ' of ' + total + ' rooms are free from ' + fT.format(slot.s) + ' to ' + fT.format(slot.e) + ' on ' + dateLabel(slot.date) + '.' : 'End time must be after the start time.';
+  if (!slot.ok) { m.textContent = 'End time must be after the start time.'; return; }
+  var span = fT.format(slot.s) + ' to ' + fT.format(slot.e) + ' on ' + dateLabel(slot.date);
+  if (ONLY) {                                                           // opened from a specific-room link
+    var x = (all || []).filter(function (y) { return y.r.name.toLowerCase() === ONLY.toLowerCase(); })[0];
+    m.textContent = !x ? 'Room ' + ONLY + ' was not found in the timetable data.'
+      : x.r.name + ' is ' + (x.sl.free ? 'free' : 'occupied') + ' from ' + span + (DATES[slot.date] ? '.' : ' (no timetable data for that day, so it is assumed free).');
+    return;
+  }
+  m.textContent = n + ' of ' + total + ' rooms are free from ' + span + '.';
 }
 
 /* ---------- room details popup ---------- */
@@ -243,7 +251,7 @@ function render() {
 
   var slot = getSlot(), slotFree = 0;
   if (slot && slot.ok) all.forEach(function (x) { x.sl = slotInfo(x.r, slot); if (x.sl.free) slotFree++; });
-  updateSlotMsg(slot, slotFree, all.length);
+  updateSlotMsg(slot, slotFree, all.length, all);
   $('status').disabled = $('minfree').disabled = !!slot;
 
   var free = all.filter(function (x) { return !x.st.busy; });
@@ -254,10 +262,11 @@ function render() {
   if (!DATES[today]) { note.className = 'note warn'; note.textContent = 'No classes are scheduled for today (' + today + ') in the timetable data, so every room shows as free.'; }
   else note.textContent = 'Based on the weekly class timetable for ' + today + '. Rooms with no scheduled class show as free; ad-hoc bookings and online rooms are not included.';
 
-  if (slot && slot.ok) note.textContent = 'Showing rooms with no class at any point during the selected time slot. Click a room for details.';
+  if (slot && slot.ok) note.textContent = ONLY ? 'Showing this room for the selected time slot. Click the card for details.' : 'Showing rooms with no class at any point during the selected time slot. Click a room for details.';
 
   var list = all.filter(function (x) {
-    if (slot && !(slot.ok && x.sl.free)) return false;
+    if (slot && !slot.ok) return false;
+    if (slot && !ONLY && !x.sl.free) return false;                      // a specific-room link keeps its room visible, free or not
     if (ONLY && x.r.name.toLowerCase() !== ONLY.toLowerCase()) return false;
     if (q && x.r.name.toLowerCase().indexOf(q) < 0) return false;
     if (blk && x.r.block !== blk) return false;
@@ -277,11 +286,11 @@ function render() {
   if (!list.length) { g.innerHTML = '<div class="empty">' + (ONLY ? 'Room “' + esc(ONLY) + '” was not found in the timetable data. Rooms with no scheduled class this week are not listed.' : (slot ? (slot.ok ? 'No rooms are free for the whole of that time slot.' : 'Choose an end time that is after the start time.') : 'No rooms match these filters.')) + '</div>'; firstRender = false; return; }
   var cards = list.map(function (x, i) {
     var r = x.r, s = x.st, cls, pill, lbl, big, pct, sub;
-    if (slot && slot.ok) {                                              // time-slot mode: show the free window around the slot
-      var sl = x.sl;
-      return { b: r.block, h: '<div class="card free" data-room="' + esc(r.name) + '" tabindex="0" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + ' · ' + esc(levelOf(r.name)) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">Available</span></div>' +
-        '<div class="lbl">Free window</div><div class="big sm">' + (sl.prev ? fT.format(sl.prev.e) : 'Start of day') + ' – ' + (sl.next ? fT.format(sl.next.s) : 'End of day') + '</div><div class="bar"><i style="width:100%"></i></div>' +
-        '<div class="sub">Free for the whole slot</div><div class="hint">View details ›</div></div>' };
+    if (slot && slot.ok) {                                              // time-slot mode
+      var sl = x.sl, head = '<div class="card ' + (sl.free ? 'free' : 'busy') + '" data-room="' + esc(r.name) + '" tabindex="0" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + ' · ' + esc(levelOf(r.name)) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">' + (sl.free ? 'Available' : 'Occupied') + '</span></div>';
+      return { b: r.block, h: head + (sl.free
+        ? '<div class="lbl">Free window</div><div class="big sm">' + (sl.prev ? fT.format(sl.prev.e) : 'Start of day') + ' – ' + (sl.next ? fT.format(sl.next.s) : 'End of day') + '</div><div class="bar"><i style="width:100%"></i></div><div class="sub">Free for the whole slot</div></div>'
+        : '<div class="lbl">Classes during the slot</div><div class="big sm">' + sl.hits.map(function (h) { return fT.format(h.s) + ' – ' + fT.format(h.e); }).join(', ') + '</div><div class="bar"><i style="width:100%"></i></div><div class="sub">Not free for the whole slot</div></div>') };
     }
     if (s.busy) {
       cls = 'busy'; pill = 'Occupied'; lbl = 'Free in'; big = '<span class="cd" data-t="' + s.until + '">' + dur(s.until - now) + '</span>';
@@ -295,13 +304,13 @@ function render() {
       cls = 'free'; pill = 'Free'; lbl = 'Free for'; big = 'Rest of the day'; pct = 100; sub = 'No more classes scheduled today';
     }
     return { b: r.block, h: '<div class="card ' + cls + '" data-room="' + esc(r.name) + '" tabindex="0" style="animation-delay:' + Math.min(i * 18, 450) + 'ms"><div class="row"><div><div class="room">' + esc(r.name) + '</div><div class="meta">' + esc(r.block) + ' · ' + esc(levelOf(r.name)) + (r.campus ? ' · ' + esc(r.campus) : '') + '</div></div><span class="pill">' + pill + '</span></div>' +
-      '<div class="lbl">' + lbl + '</div><div class="big">' + big + '</div><div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div><div class="sub">' + sub + '</div><div class="hint">View details ›</div></div>' };
+      '<div class="lbl">' + lbl + '</div><div class="big">' + big + '</div><div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div><div class="sub">' + sub + '</div></div>' };
   });
   var groups = {};
   list.forEach(function (x, i) { (groups[x.r.block] = groups[x.r.block] || []).push(i); });
   g.innerHTML = Object.keys(groups).sort(blockSort).map(function (k) {
     var idx = groups[k], f = idx.filter(function (i) { return !list[i].st.busy; }).length;
-    return '<h2 class="sec">' + esc(k) + '<small>' + ((slot && slot.ok) ? idx.length + ' available' : f + ' free · ' + (idx.length - f) + ' occupied') + '</small></h2><div class="grid">' +
+    return '<h2 class="sec">' + esc(k) + '<small>' + ((slot && slot.ok) ? (function () { var av = idx.filter(function (i) { return list[i].sl.free; }).length; return av + ' available' + (idx.length > av ? ' · ' + (idx.length - av) + ' occupied' : ''); })() : f + ' free · ' + (idx.length - f) + ' occupied') + '</small></h2><div class="grid">' +
       idx.map(function (i) { return cards[i].h; }).join('') + '</div>';
   }).join('');
   firstRender = false;
