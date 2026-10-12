@@ -97,12 +97,40 @@
           "replacementType": "",
           "isTest": false,
           "testType": ""
+        },
+        {
+          "moduleCode": "AAPP013-4-2-OOP-LAB-20",
+          "moduleName": "Object Oriented Programming",
+          "time": "13:30 - 15:30",
+          "location": "TBD",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lab",
+          "isReplacement": true,
+          "replacementType": "Lab",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
     {
       "date": "Thu, 15-Oct-2026",
       "classes": [
+        {
+          "moduleCode": "AAPP013-4-2-OOP-L-6",
+          "moduleName": "Object Oriented Programming",
+          "time": "10:45 - 12:45",
+          "location": "TBD",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": true,
+          "replacementType": "Lecture",
+          "isTest": false,
+          "testType": ""
+        },
         {
           "moduleCode": "AAPP007-4-2-SYAD-L-12",
           "moduleName": "System Analysis & Design",
