@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>APU Classroom Availability</title>
+<link rel="shortcut icon" href="../img/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root { --bg:#121212; --surface:#1c1c1e; --surface2:#2a2a2d; --border:#38383a; --accent:#3880ff; --text:#f2f2f7; --muted:#98989f; --free:#30d158; --soon:#ff9f0a; --busy:#ff453a; }
@@ -99,6 +100,8 @@
   .dnav b { font-size:.85rem; min-width:9rem; text-align:center; }
   .dnav button { padding:.25rem .7rem; font-size:.85rem; }
   .dnav button:disabled { opacity:.35; cursor:default; transform:none; box-shadow:none; }
+  .tag { display:inline-block; font-size:.62rem; font-weight:700; padding:.1rem .45rem; border-radius:9999px; background:rgba(255,159,10,.18); color:var(--soon); margin-right:.4rem; vertical-align:middle; }
+  .srow.moved { color:var(--muted); font-style:italic; }
   .empty { text-align:center; color:var(--muted); padding:3rem 0; }
   #manual { margin-top:.6rem; } #manual textarea { width:100%; margin:.5rem 0; font-size:.75rem; }
   .hidden { display:none !important; }
@@ -126,7 +129,7 @@
   <div class="controls">
     <input id="search" placeholder="Search room, e.g. D-07 or Tech Lab">
     <select id="block"><option value="">All blocks</option></select>
-    <select id="status"><option value="">Free &amp; occupied classroom</option><option value="free">Free classroom only</option><option value="busy">Occupied classroom only</option></select>
+    <select id="status"><option value="">Free &amp; occupied</option><option value="free">Free classroom only</option><option value="busy">Occupied classroom only</option></select>
     <select id="minfree"><option value="0">Any free duration</option><option value="30">Free ≥ 30 min</option><option value="60">Free ≥ 1 hour</option><option value="120">Free ≥ 2 hours</option></select>
     <button id="refresh">Refresh data</button>
     <button id="slot-toggle" class="ghost">🕒 Find by time slot</button>
@@ -152,6 +155,6 @@
 <div id="pop" class="pop hidden"></div>
 <div id="modal" class="modal hidden"><div class="panel" role="dialog" aria-modal="true"><button id="m-close" class="x" aria-label="Close">&times;</button><div id="m-body"></div></div></div>
 
-<script src = "../Java/classroom.js"></script>
+<script src = '../Java/classroom.js'></script>
 </body>
 </html>
