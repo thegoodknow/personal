@@ -6,7 +6,7 @@
   "announcements": { "isExamWeek": false },
   "exams": [
   {
-    "date": "2026-11-16",
+    "date": "2026-11-23",
     "module": "Object Oriented Programming (AAPP013)",
     "location": "Auditorium 2 @ Level 6",
     "time": "09:00 AM - 11:00 AM",
@@ -26,7 +26,7 @@
         {
           "title": "Class Test 1",
           "type": "Class Test",
-          "dueDate": "2026-10-20",
+          "dueDate": "2026-10-23",
           "done": false
         },
         {

@@ -163,6 +163,20 @@
           "replacementType": "",
           "isTest": false,
           "testType": ""
+        },
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-8",
+          "moduleName": "Algebra And Discreate Mathematics",
+          "time": "09:00 - 11:00",
+          "location": "TBD",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": true,
+          "testType": "Class Test 1"
         }
       ]
     }
