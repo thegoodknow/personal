@@ -18,7 +18,7 @@ var ONLY = (function () {                                              // ?class
 
 /* ---------- data ---------- */
 /* ---------- sync with the weekly timetable files (replacement classes) ---------- */
-var REPL = [], REPL_COUNT = 0, MONI = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+var REPL = [], S3ROWS = [], REPL_COUNT = 0, MONI = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
 function isoFromLabel(l) {                                             // "Mon, 05-Oct-2026" -> "2026-10-05"
   var m = /(\d{1,2})-([A-Za-z]{3})-(\d{4})/.exec(l || '');
   return m && MONI[m[2]] != null ? m[3] + '-' + pad2(MONI[m[2]] + 1) + '-' + pad2(+m[1]) : '';
@@ -35,38 +35,52 @@ function weekFiles() {                                                 // this w
   return [0, 7].map(function (n) { return new Date(base + n * 86400000).toISOString().slice(0, 10); });
 }
 function loadReplacements() {
-  return Promise.all(weekFiles().map(function (f) { return getJson(REPO_TT + f + '.json').catch(function () { return null; }); })).then(function (files) {
+  return Promise.all(weekFiles().map(function (f) { return getJson(REPO_TT + f + '.json?t=' + Date.now()).catch(function () { return null; }); })).then(function (files) {
     var out = [];
     files.forEach(function (w) {
       if (!w || !Array.isArray(w.days)) return;
       w.days.forEach(function (d) {
         var date = isoFromLabel(d.date);
         (d.classes || []).forEach(function (c) {
-          if (!c.isReplacement || !date) return;
+          if (!date) return;
           var ts = (c.time || '').match(/\d{1,2}:\d{2}\s*(?:AM|PM)?/gi);
           if (!ts || ts.length < 2) return;
-          out.push({ date: date, from: hm24(ts[0]), to: hm24(ts[1]), code: (c.moduleCode || '').trim(), mod: c.moduleName || '', room: (c.location || '').trim(), campus: c.campus || '', lect: c.lecturer || '' });
+          out.push({ date: date, from: hm24(ts[0]), to: hm24(ts[1]), code: (c.moduleCode || '').trim(), mod: c.moduleName || '', room: (c.location || '').trim(), campus: c.campus || '', lect: c.lecturer || '', repl: !!c.isReplacement });
         });
       });
     });
     return out;
   });
 }
-function applyReplacements(rows) {                                     // free the original room, occupy the replacement room
-  var out = rows, moved = [];
+function refreshRepl() {                                               // cheap re-sync (small repo files only), re-applied to the cached timetable
+  return loadReplacements().then(function (r) { REPL = r; if (S3ROWS.length) setData(S3ROWS); });
+}
+function applyReplacements(rows) {                                     // the weekly timetable file wins for the synced intake
+  var out = rows.slice(), moved = [];
   REPL_COUNT = 0;
   REPL.forEach(function (c) {
     if (!c.code) return;
-    var code = c.code.toUpperCase(), from = '';
-    out = out.filter(function (r) {
-      if (r.INTAKE !== SYNC_INTAKE || r.DATESTAMP_ISO !== c.date) return true;
+    var code = c.code.toUpperCase(), hit = [], same = -1;
+    out.forEach(function (r, i) {
+      if (r.INTAKE !== SYNC_INTAKE || r.DATESTAMP_ISO !== c.date) return;
       var id = (r.MODID || '').replace(/\s*\(online\)/i, '').trim().toUpperCase();
-      if (!id || !(id.indexOf(code) === 0 || code.indexOf(id) === 0)) return true;
-      var same = (r.ROOM || '').trim() === c.room && (r.TIME_FROM_ISO || '').slice(11, 16) === c.from && (r.TIME_TO_ISO || '').slice(11, 16) === c.to;
-      if (!same) { moved.push({ room: (r.ROOM || '').trim(), campus: r.LOCATION || '', date: c.date, s: Date.parse(r.TIME_FROM_ISO), e: Date.parse(r.TIME_TO_ISO), code: c.code, mod: c.mod, to: c.room }); from = from || (r.ROOM || '').trim(); }
-      return false;
+      if (!id || !(id.indexOf(code) === 0 || code.indexOf(id) === 0)) return;
+      hit.push(i);
+      if (same < 0 && (r.ROOM || '').trim() === c.room && (r.TIME_FROM_ISO || '').slice(11, 16) === c.from && (r.TIME_TO_ISO || '').slice(11, 16) === c.to) same = i;
     });
-    out.push({ INTAKE: SYNC_INTAKE, MODID: c.code, MODULE_NAME: c.mod, ROOM: c.room, LOCATION: c.campus, NAME: c.lect, DATESTAMP_ISO: c.date, TIME_FROM_ISO: c.date + 'T' + c.from + ':00+08:00', TIME_TO_ISO: c.date + 'T' + c.to + ':00+08:00', GROUPING: '', _repl: true, _from: from });
+    if (same >= 0) { if (c.repl) out[same] = Object.assign({}, out[same], { _tag: 'Replacement' }); return; }   // timetable already agrees
+    var roomDiff = false, from = '';
+    hit.forEach(function (i) {
+      var r = out[i], rm = (r.ROOM || '').trim(), moves = rm !== c.room;
+      roomDiff = roomDiff || moves;
+      if (moves && !from) from = rm;
+      moved.push({ room: rm, campus: r.LOCATION || '', date: c.date, s: Date.parse(r.TIME_FROM_ISO), e: Date.parse(r.TIME_TO_ISO), code: c.code, mod: c.mod,
+        msg: moves ? 'moved to ' + c.room : 'rescheduled to ' + fmt12(c.from) + ' – ' + fmt12(c.to) });
+    });
+    out = out.filter(function (r, i) { return hit.indexOf(i) < 0; });
+    out.push({ INTAKE: SYNC_INTAKE, MODID: c.code, MODULE_NAME: c.mod, ROOM: c.room, LOCATION: c.campus, NAME: c.lect, DATESTAMP_ISO: c.date,
+      TIME_FROM_ISO: c.date + 'T' + c.from + ':00+08:00', TIME_TO_ISO: c.date + 'T' + c.to + ':00+08:00', GROUPING: '',
+      _tag: c.repl ? 'Replacement' : !hit.length ? 'Added' : roomDiff ? 'Room changed' : 'Rescheduled', _from: from });
     REPL_COUNT++;
   });
   return { rows: out, moved: moved };
@@ -74,7 +88,7 @@ function applyReplacements(rows) {                                     // free t
 function getJson(url) { return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
 function loadData() {
   $('updated').textContent = 'refreshing…';
-  return Promise.all([getJson(API).catch(function () { return getJson(PROXY(API)); }), loadReplacements()]).then(function (res) { REPL = res[1]; setData(res[0]); }).catch(function () {
+  return Promise.all([getJson(API).catch(function () { return getJson(PROXY(API)); }), loadReplacements()]).then(function (res) { REPL = res[1]; S3ROWS = res[0]; setData(res[0]); }).catch(function () {
     $('updated').textContent = ROOMS.length ? 'refresh failed, showing last data' : 'could not load data';
     if (!ROOMS.length) { $('manual').classList.remove('hidden'); $('manual').open = true; }
   });
@@ -105,7 +119,7 @@ function setData(json) {
     if (isNaN(s) || isNaN(e)) return;
     DATES[r.DATESTAMP_ISO] = 1;
     var o = map[name] || (map[name] = { name: name, campus: r.LOCATION || '', block: blockOf(name), cls: [] });
-    o.cls.push({ s: s, e: e, date: r.DATESTAMP_ISO, code: (r.MODID || '').replace(/\s*\(online\)/i, ''), mod: r.MODULE_NAME || '', lect: r.NAME || '', intake: r.INTAKE || '', repl: !!r._repl, from: r._from || '' });
+    o.cls.push({ s: s, e: e, date: r.DATESTAMP_ISO, code: (r.MODID || '').replace(/\s*\(online\)/i, ''), mod: r.MODULE_NAME || '', lect: r.NAME || '', intake: r.INTAKE || '', tag: r._tag || '', from: r._from || '' });
   });
   applied.moved.forEach(function (m) {                                  // keep the original room listed, with a note that the class moved away
     if (!m.room || /^onl/i.test(m.room)) return;
@@ -264,13 +278,13 @@ function grp(items) {
   var map = {}, out = [];
   items.forEach(function (c) {
     var k = c.code + '|' + c.s + '|' + c.e;
-    if (!map[k]) { map[k] = { code: c.code, mod: c.mod, lect: c.lect, s: c.s, e: c.e, ints: [], repl: c.repl, from: c.from }; out.push(map[k]); }
+    if (!map[k]) { map[k] = { code: c.code, mod: c.mod, lect: c.lect, s: c.s, e: c.e, ints: [], tag: c.tag, from: c.from }; out.push(map[k]); }
     if (c.intake && map[k].ints.indexOf(c.intake) < 0) map[k].ints.push(c.intake);
   });
   return out.sort(function (a, b) { return a.s - b.s; });
 }
 function classBox(c) {
-  return '<div class="cl"><b>' + (c.repl ? '<span class="tag">Replacement</span>' : '') + fT.format(c.s) + ' – ' + fT.format(c.e) + '</b><div>' + esc(c.code) + (c.mod ? ' · ' + esc(c.mod) : '') + '</div>' +
+  return '<div class="cl"><b>' + (c.tag ? '<span class="tag">' + esc(c.tag) + '</span>' : '') + fT.format(c.s) + ' – ' + fT.format(c.e) + '</b><div>' + esc(c.code) + (c.mod ? ' · ' + esc(c.mod) : '') + '</div>' +
     (c.from ? '<div class="m">Moved from ' + esc(c.from) + '</div>' : '') + (c.lect ? '<div class="m">Lecturer: ' + esc(c.lect) + '</div>' : '') + (c.ints.length ? '<div class="m">Intakes: ' + esc(c.ints.join(', ')) + '</div>' : '') + '</div>';
 }
 function renderModal() {
@@ -298,9 +312,9 @@ function renderModal() {
   blocksOf(room, md).forEach(function (b) { items = items.concat(b.items); });
   h += '<h3>Schedule</h3><div class="dnav"><button type="button" class="ghost" data-dn="-1"' + (md <= keys[0] ? ' disabled' : '') + ' aria-label="Previous day">‹</button><b>' + (md === today ? 'Today · ' : '') + esc(dateLabel(md)) + '</b><button type="button" class="ghost" data-dn="1"' + (md >= keys[keys.length - 1] ? ' disabled' : '') + ' aria-label="Next day">›</button>' + (md !== today ? '<button type="button" class="ghost" data-dn="0">Today</button>' : '') + '</div>';
   var rows = grp(items).map(function (c) {
-    return '<div class="srow' + (md === today && c.s <= now && now < c.e ? ' now' : '') + '">' + fT.format(c.s) + ' – ' + fT.format(c.e) + ' · ' + esc(c.code) + (c.mod ? ' · ' + esc(c.mod) : '') + (c.repl ? ' · Replacement' : '') + '</div>';
+    return '<div class="srow' + (md === today && c.s <= now && now < c.e ? ' now' : '') + '">' + fT.format(c.s) + ' – ' + fT.format(c.e) + ' · ' + esc(c.code) + (c.mod ? ' · ' + esc(c.mod) : '') + (c.tag ? ' · ' + esc(c.tag) : '') + '</div>';
   }).join('') + (room.moved || []).filter(function (m) { return m.date === md; }).map(function (m) {
-    return '<div class="srow moved">↪ ' + fT.format(m.s) + ' – ' + fT.format(m.e) + ' · ' + esc(m.code) + ' moved to ' + esc(m.to) + '</div>';
+    return '<div class="srow moved">↪ ' + fT.format(m.s) + ' – ' + fT.format(m.e) + ' · ' + esc(m.code) + ' ' + esc(m.msg) + '</div>';
   }).join('');
   h += rows || '<div class="m">' + (DATES[md] ? 'No classes in this room on this day.' : 'No timetable data for this day yet.') + '</div>';
   $('m-body').innerHTML = h;
@@ -329,7 +343,7 @@ function render() {
 
   if (slot && slot.ok) note.textContent = ONLY ? 'Showing this room for the selected time slot. Click the card for details.' : 'Showing rooms with no class at any point during the selected time slot. Click a room for details.';
 
-  if (REPL_COUNT) note.textContent += ' Synced ' + REPL_COUNT + ' replacement class' + (REPL_COUNT === 1 ? '' : 'es') + ' for ' + SYNC_INTAKE + '.';
+  if (REPL_COUNT) note.textContent += ' Synced ' + REPL_COUNT + ' timetable change' + (REPL_COUNT === 1 ? '' : 's') + ' for ' + SYNC_INTAKE + '.';
 
   var list = all.filter(function (x) {
     if (slot && !slot.ok) return false;
@@ -396,8 +410,9 @@ function tick() {
   if (redo && ROOMS.length) render();
 }
 setInterval(tick, 1000);
-setInterval(loadData, 5 * 60 * 1000);                                   // re-pull the timetable every 5 minutes
-document.addEventListener('visibilitychange', function () { if (!document.hidden && ROOMS.length) render(); });
+setInterval(loadData, 5 * 60 * 1000);
+setInterval(refreshRepl, 60 * 1000);                                    // pick up last-minute room changes quickly                                   // re-pull the timetable every 5 minutes
+document.addEventListener('visibilitychange', function () { if (!document.hidden && ROOMS.length) { render(); refreshRepl(); } });
 
 ['search', 'block', 'status', 'minfree'].forEach(function (id) { $(id).addEventListener(id === 'search' ? 'input' : 'change', function () { if (ROOMS.length) render(); }); });
 $('refresh').addEventListener('click', loadData);
