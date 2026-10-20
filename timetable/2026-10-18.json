@@ -85,20 +85,6 @@
       "date": "Wed, 21-Oct-2026",
       "classes": [
         {
-          "moduleCode": "AINT007-4-1-FUUD-L-6",
-          "moduleName": "Fundamentals Of UI UX Design",
-          "time": "08:30 - 10:30",
-          "location": "E-08-02",
-          "campus": "APU CAMPUS",
-          "lecturer": "SITI FARHAH MOHD NIZAM",
-          "isOnline": false,
-          "classType": "Lecture",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        },
-        {
           "moduleCode": "AAPP007-4-2-SYAD-T-23",
           "moduleName": "System Analysis & Design",
           "time": "10:45 - 12:45",
