@@ -1,0 +1,123 @@
+{
+  "weekStartDate": "2026-11-08",
+  "days": [
+    {
+      "date": "Tue, 10-Nov-2026",
+      "classes": [
+        {
+          "moduleCode": "AAPP013-4-2-OOP-L-6",
+          "moduleName": "Object Oriented Programming",
+          "time": "16:00 - 18:00",
+          "location": "D-08-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Wed, 11-Nov-2026",
+      "classes": [
+        {
+          "moduleCode": "AINT007-4-1-FUUD-L-6",
+          "moduleName": "Fundamentals Of UI UX Design",
+          "time": "08:30 - 10:30",
+          "location": "E-08-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAPP007-4-2-SYAD-T-23",
+          "moduleName": "System Analysis & Design",
+          "time": "10:45 - 12:45",
+          "location": "D-07-07",
+          "campus": "APU CAMPUS",
+          "lecturer": "THAVAMALINI SIVASAMY",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Thu, 12-Nov-2026",
+      "classes": [
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-9",
+          "moduleName": "Algebra And Discreate Mathematics",
+          "time": "10:30 - 12:00",
+          "location": "D-08-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AAPP007-4-2-SYAD-L-12",
+          "moduleName": "System Analysis & Design",
+          "time": "13:30 - 15:30",
+          "location": "B-09-03",
+          "campus": "APU CAMPUS",
+          "lecturer": "THAVAMALINI SIVASAMY",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AINT007-4-1-FUUD-T-16",
+          "moduleName": "Fundamentals Of UI UX Design",
+          "time": "15:45 - 17:45",
+          "location": "E-08-07",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    },
+    {
+      "date": "Fri, 13-Nov-2026",
+      "classes": [
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-8",
+          "moduleName": "Algebra And Discreate Mathematics",
+          "time": "08:45 - 10:15",
+          "location": "E-08-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": false,
+          "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        }
+      ]
+    }
+  ]
+}
