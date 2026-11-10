@@ -64,6 +64,19 @@
           "replacementType": "",
           "isTest": false,
           "testType": ""
+        },{
+          "moduleCode": "AAPP013-4-2-OOP-LAB-20",
+          "moduleName": "Object Oriented Programming",
+          "time": "13:30 - 15:30",
+          "location": "B-09-03",
+          "campus": "APU CAMPUS",
+          "lecturer": "LIM CHUN CHEAK",
+          "isOnline": false,
+          "classType": "Lab",
+          "isReplacement": true,
+          "replacementType": "Lab",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
