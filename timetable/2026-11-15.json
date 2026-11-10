@@ -31,6 +31,20 @@
           "replacementType": "",
           "isTest": false,
           "testType": ""
+        },
+        {
+          "moduleCode": "AAQS039-4-1-ADM-L-9",
+          "moduleName": "Algebra And Discreate Mathematics",
+          "time": "15:45 - 17:15",
+          "location": "B-05-02",
+          "campus": "APU CAMPUS",
+          "lecturer": "DR. ALEX LOW CHEE WAI",
+          "isOnline": false,
+          "classType": "Lecture",
+          "isReplacement": true,
+          "replacementType": "Lecture",
+          "isTest": false,
+          "testType": ""
         }
       ]
     },
@@ -110,34 +124,6 @@
           "location": "D-09-03",
           "campus": "APU CAMPUS",
           "lecturer": "LIM CHUN CHEAK",
-          "isOnline": false,
-          "classType": "Lecture",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        },
-        {
-          "moduleCode": "AAQS039-4-1-ADM-T-19",
-          "moduleName": "Algebra And Discreate Mathematics",
-          "time": "11:00 - 12:00",
-          "location": "E-08-04",
-          "campus": "APU CAMPUS",
-          "lecturer": "DR. ALEX LOW CHEE WAI",
-          "isOnline": false,
-          "classType": "Tutorial",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        },
-        {
-          "moduleCode": "AAQS039-4-1-ADM-L-9",
-          "moduleName": "Algebra And Discreate Mathematics",
-          "time": "13:45 - 15:15",
-          "location": "B-09-01",
-          "campus": "APU CAMPUS",
-          "lecturer": "DR. ALEX LOW CHEE WAI",
           "isOnline": false,
           "classType": "Lecture",
           "isReplacement": false,
