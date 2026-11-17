@@ -102,13 +102,27 @@
           "moduleCode": "AINT007-4-1-FUUD-T-16",
           "moduleName": "Fundamentals Of UI UX Design",
           "time": "10:30 - 12:30",
-          "location": "D-09-08",
+          "location": "B-06-01",
           "campus": "APU CAMPUS",
           "lecturer": "SITI FARHAH MOHD NIZAM",
           "isOnline": false,
           "classType": "Tutorial",
           "isReplacement": false,
           "replacementType": "",
+          "isTest": false,
+          "testType": ""
+        },
+        {
+          "moduleCode": "AINT007-4-1-FUUD-T-16",
+          "moduleName": "Fundamentals Of UI UX Design",
+          "time": "12:30 - 13:30",
+          "location": "B-06-01",
+          "campus": "APU CAMPUS",
+          "lecturer": "SITI FARHAH MOHD NIZAM",
+          "isOnline": false,
+          "classType": "Tutorial",
+          "isReplacement": true,
+          "replacementType": "Tutorial",
           "isTest": false,
           "testType": ""
         }
