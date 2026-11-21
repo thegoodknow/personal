@@ -27,12 +27,13 @@
           "title": "Class Test 1",
           "type": "Class Test",
           "dueDate": "2026-10-23",
-          "done": false
+          "done": true
         },
         {
           "title": "Class Test 2",
           "type": "Class Test",
-          "dueDate": "2026-11-16",
+          "dueDate": "2026-11-24",
+          "dueTime":"14:00",
           "done": false
         },
         {
@@ -190,7 +191,8 @@
         {
           "title": "Class Test",
           "type": "Class Test",
-          "dueDate": "2027-01-04",
+          "dueDate": "2026-12-14",
+          "dueTime": "13:30",
           "done": false
         }
       ]
