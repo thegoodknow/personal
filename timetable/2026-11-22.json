@@ -52,20 +52,6 @@
           "testType": ""
         },
         {
-          "moduleCode": "AAPP007-4-2-SYAD-T-23",
-          "moduleName": "System Analysis & Design",
-          "time": "10:45 - 12:45",
-          "location": "B-04-08",
-          "campus": "APU CAMPUS",
-          "lecturer": "THAVAMALINI SIVASAMY",
-          "isOnline": false,
-          "classType": "Tutorial",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        },
-        {
           "moduleCode": "AAQS039-4-1-ADM-L-8",
           "moduleName": "Algebra And Discreate Mathematics",
           "time": "13:30 - 15:00",
@@ -83,22 +69,7 @@
     },
     {
       "date": "Wed, 25-Nov-2026",
-      "classes": [
-        {
-          "moduleCode": "AINT007-4-1-FUUD-T-16",
-          "moduleName": "Fundamentals Of UI UX Design",
-          "time": "10:30 - 12:30",
-          "location": "D-09-08",
-          "campus": "APU CAMPUS",
-          "lecturer": "SITI FARHAH MOHD NIZAM",
-          "isOnline": false,
-          "classType": "Tutorial",
-          "isReplacement": false,
-          "replacementType": "",
-          "isTest": false,
-          "testType": ""
-        }
-      ]
+      "classes": []
     },
     {
       "date": "Thu, 26-Nov-2026",
